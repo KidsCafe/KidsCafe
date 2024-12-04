@@ -1,0 +1,28 @@
+spring:
+  config:
+    activate:
+      on-profile: dev  # dev 프로파일
+  datasource:
+    url: jdbc:mysql://localhost:3306/dev_database?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&serverTimezone=UTC
+    username: root #사용자
+    password: 123456789 #비밀번호
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false  # View에서 DB 연결 방지
+  jwt:
+    secret: dev-secret-key
+    expiration: 60*60*24  # 24시간 (초 단위)
+  springdoc:
+    api-docs:
+      enabled: true
+    swagger-ui:
+      enabled: true
+
+logging:
+  level:
+    root: INFO
+    org.springframework: INFO
+    org.hibernate.SQL: WARN
+    org.hibernate.type.descriptor.sql.BasicBinder: WARN

@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: Kidscafe
+  profiles:
+    active: dev
+  datasource:
+    url: jdbc:mysql://localhost:3306/dev_database?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC
+    username: root #사용자
+    password: 123456789 #비밀번호
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.MySQLDialect
+  web:
+    encoding:
+      charset: UTF-8
+      force-request: true
+      force-response: true
+
+server:
+  port: 8080
+
+logging:
+  level:
+    root: INFO
+    org.springframework: INFO
+    org.hibernate.SQL: WARN
+    org.hibernate.type.descriptor.sql.BasicBinder: WARN
