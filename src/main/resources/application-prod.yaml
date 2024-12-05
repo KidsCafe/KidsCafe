@@ -3,9 +3,9 @@ spring:
     activate:
       on-profile: prod  # prod 프로파일
   datasource:
-    url: jdbc:mysql://prod-db-server:3306/prod_database?useSSL=true&characterEncoding=UTF-8&serverTimezone=UTC
-    username: prod_user
-    password: prod_password
+    url: jdbc:mysql://prod-db-server:3306/kidscafe
+    username: root #사용자
+    password: 12345678 #비밀번호
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
