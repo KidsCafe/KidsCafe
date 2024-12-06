@@ -38,4 +38,5 @@ out/
 
 ### properties ###
 *.properties
+*.yaml
 *.yml
