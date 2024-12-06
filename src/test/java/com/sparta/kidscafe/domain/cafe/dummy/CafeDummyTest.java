@@ -50,6 +50,7 @@ public class CafeDummyTest {
   @Test
   @Rollback(false)
   void createCafe() {
+    // 막혀랄 push
     //  user dummy test 돌려야함
     List<User> owners = userRepository.findAllByRole(RoleType.OWNER);
     for (User owner : owners) {
