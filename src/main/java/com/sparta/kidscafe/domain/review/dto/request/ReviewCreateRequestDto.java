@@ -1,4 +1,12 @@
 package com.sparta.kidscafe.domain.review.dto.request;
 
-public class ReviewCreateRequestDto {
+
+import jakarta.validation.constraints.NotNull;
+
+public record ReviewCreateRequestDto(
+    @NotNull
+    double star,
+    @NotNull
+    String content
+) {
 }
