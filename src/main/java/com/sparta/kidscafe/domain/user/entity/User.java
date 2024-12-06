@@ -55,12 +55,15 @@ public class User extends Timestamped {
   @Enumerated(value = EnumType.STRING)
   private SocialLoginType socialType;
 
+  @Builder.Default
   @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
   private List<Bookmark> bookmarks = new ArrayList<>();
 
+  @Builder.Default
   @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
   private List<Review> reviews = new ArrayList<>();
 
+  @Builder.Default
   @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
   private List<Reservation> reservations = new ArrayList<>();
 }

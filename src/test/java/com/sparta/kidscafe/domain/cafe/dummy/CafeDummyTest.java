@@ -52,7 +52,7 @@ public class CafeDummyTest {
   @Transactional
   @Rollback(false)
   void createCafe() {
-    //  user dummy test 돌려야함
+    //  user dummy test 돌려야함ds
     List<User> owners = userRepository.findAllByRole(RoleType.OWNER);
     for (User owner : owners) {
       List<Cafe> cafes = DummyCafe.createDummyCafes(owner, 10);
