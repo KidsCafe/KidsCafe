@@ -42,10 +42,6 @@ public class Review extends Timestamped {
   @JoinColumn(name = "cafe_id")
   private Cafe cafe;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "reservation_id")
-  private Reservation reservation;
-
   @Column(nullable = false)
   private double star;
 
