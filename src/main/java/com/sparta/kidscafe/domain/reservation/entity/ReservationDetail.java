@@ -40,7 +40,7 @@ public class ReservationDetail {
   private Long targetId;
 
   @Column(nullable = false)
-  private Integer price;
+  private int price;
 
   @Column(nullable = false)
   private Long count;

@@ -47,7 +47,7 @@ public class Review extends Timestamped {
   private Reservation reservation;
 
   @Column(nullable = false)
-  private Double star;
+  private double star;
 
   @Column(nullable = false)
   private String content;

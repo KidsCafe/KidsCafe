@@ -5,6 +5,7 @@ import com.sparta.kidscafe.domain.bookmark.entity.Bookmark;
 import com.sparta.kidscafe.domain.fee.entity.Fee;
 import com.sparta.kidscafe.domain.pricepolicy.entity.PricePolicy;
 import com.sparta.kidscafe.domain.room.entity.Room;
+import com.sparta.kidscafe.domain.user.entity.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,6 +20,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -37,18 +39,21 @@ public class Cafe extends Timestamped {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "user_id")
+  private User user;
+
   @Column(nullable = false, length = 50)
   private String name;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "cafe_id")
-  private Cafe cafe;
+  @Column(nullable = false)
+  private String region;
 
   @Column(nullable = false)
   private String address;
 
   @Column(nullable = false)
-  private Integer size;
+  private int size;
 
   @Column(nullable = false)
   private boolean multiFamily;
@@ -69,12 +74,10 @@ public class Cafe extends Timestamped {
   private String hyperlink;
 
   @Column(updatable = false)
-  @Temporal(TemporalType.TIMESTAMP)
-  private LocalDateTime openedAt;
+  private LocalTime openedAt;
 
   @Column(updatable = false)
-  @Temporal(TemporalType.TIMESTAMP)
-  private LocalDateTime closedAt;
+  private LocalTime closedAt;
 
   @OneToMany(mappedBy = "cafe", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
   private List<Bookmark> bookmarks = new ArrayList<>();

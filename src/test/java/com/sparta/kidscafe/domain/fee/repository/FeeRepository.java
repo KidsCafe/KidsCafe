@@ -1,5 +1,8 @@
 package com.sparta.kidscafe.domain.fee.repository;
 
-public class FeeRepository {
+import com.sparta.kidscafe.domain.fee.entity.Fee;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface FeeRepository extends JpaRepository<Fee, Long> {
 
 }

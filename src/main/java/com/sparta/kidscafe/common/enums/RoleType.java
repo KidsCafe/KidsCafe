@@ -1,6 +1,6 @@
 package com.sparta.kidscafe.common.enums;
 
-public enum AuthType {
+public enum RoleType {
   /**
    * 일반 사용자 권한
    */

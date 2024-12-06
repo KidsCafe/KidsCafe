@@ -38,13 +38,16 @@ public class PricePolicy extends Timestamped {
   private TargetType targetType;
 
   @Column(nullable = false)
+  private Long targetId;
+
+  @Column(nullable = false)
   private String title;
 
   @Column(nullable = false)
   private String dayType;
 
   @Column(nullable = false)
-  private Double rate;
+  private double rate;
 
   @Column(nullable = false)
   private Integer totalPrice;

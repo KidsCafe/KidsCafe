@@ -1,7 +1,7 @@
 package com.sparta.kidscafe.domain.user.entity;
 
 import com.sparta.kidscafe.common.entity.Timestamped;
-import com.sparta.kidscafe.common.enums.AuthType;
+import com.sparta.kidscafe.common.enums.RoleType;
 import com.sparta.kidscafe.common.enums.SocialLoginType;
 import com.sparta.kidscafe.domain.bookmark.entity.Bookmark;
 import com.sparta.kidscafe.domain.reservation.entity.Reservation;
@@ -50,7 +50,7 @@ public class User extends Timestamped {
   private String address;
 
   @Enumerated(value = EnumType.STRING)
-  private AuthType auth;
+  private RoleType role;
 
   @Enumerated(value = EnumType.STRING)
   private SocialLoginType socialType;

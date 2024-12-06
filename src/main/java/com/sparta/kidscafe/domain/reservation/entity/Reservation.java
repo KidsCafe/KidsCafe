@@ -34,7 +34,7 @@ import lombok.NoArgsConstructor;
 public class Reservation extends Timestamped {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private int id;
+  private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "cafe_id")
@@ -45,13 +45,18 @@ public class Reservation extends Timestamped {
   private User user;
 
   @Column(updatable = false)
-  @Temporal(TemporalType.TIMESTAMP)
   private LocalDateTime startedAt;
 
   @Column(updatable = false)
-  @Temporal(TemporalType.TIMESTAMP)
   private LocalDateTime finishedAt;
+
+  @Column(updatable = false)
+  private int totalPrice;
 
   @OneToMany(mappedBy = "reservation", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
   private List<ReservationDetail> reservationDetails = new ArrayList<>();
+
+  public void updateTotalPrice(int price) {
+    totalPrice = price;
+  }
 }

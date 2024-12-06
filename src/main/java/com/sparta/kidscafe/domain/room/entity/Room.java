@@ -39,11 +39,11 @@ public class Room extends Timestamped {
   private String description;
 
   @Column(nullable = false)
-  private Integer minCount;
+  private int minCount;
 
   @Column(nullable = false)
-  private Integer maxCount;
+  private int maxCount;
 
   @Column(nullable = false)
-  private Integer price;
+  private int price;
 }
