@@ -17,9 +17,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +58,7 @@ public class Cafe extends Timestamped {
   @Column(nullable = false)
   private boolean roomExist;
 
-  @Column(nullable = false)
+  @Column
   private String dayOff;
 
   @Column(nullable = false)
@@ -70,7 +67,7 @@ public class Cafe extends Timestamped {
   @Column(nullable = false)
   private boolean restaurant;
 
-  @Column(nullable = false)
+  @Column
   private String hyperlink;
 
   @Column(updatable = false)
@@ -79,19 +76,24 @@ public class Cafe extends Timestamped {
   @Column(updatable = false)
   private LocalTime closedAt;
 
+  @Builder.Default
   @OneToMany(mappedBy = "cafe", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
   private List<Bookmark> bookmarks = new ArrayList<>();
 
+  @Builder.Default
   @OneToMany(mappedBy = "cafe", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
   private List<CafeImage> cafeImages = new ArrayList<>();
 
   // TODO khj 한방 쿼리가 된다면 밑에 항목들 제거
+  @Builder.Default
   @OneToMany(mappedBy = "cafe", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
   private List<Room> rooms = new ArrayList<>();
 
+  @Builder.Default
   @OneToMany(mappedBy = "cafe", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
   private List<Fee> fees = new ArrayList<>();
 
+  @Builder.Default
   @OneToMany(mappedBy = "cafe", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
   private List<PricePolicy> pricePolicies = new ArrayList<>();
 }
