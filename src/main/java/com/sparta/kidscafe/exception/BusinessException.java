@@ -1,23 +1,18 @@
 package com.sparta.kidscafe.exception;
 
-import org.springframework.http.HttpStatus;
+import lombok.Getter;
 
+@Getter
 public class BusinessException extends RuntimeException {
+    private final ErrorCode errorCode;
 
-    private final String errorCode;
-    private final HttpStatus httpStatus;
-
-    public BusinessException(String errorCode, String message, HttpStatus httpStatus) {
-        super(message);
+    public BusinessException(ErrorCode errorCode) {
+        super(errorCode.getMessage());
         this.errorCode = errorCode;
-        this.httpStatus = httpStatus;
     }
 
-    public String getErrorCode() {
-        return errorCode;
-    }
-
-    public HttpStatus getHttpStatus() {
-        return httpStatus;
+    public BusinessException(ErrorCode errorCode, String detailMsg) {
+        super(errorCode.getMessage() + " [" + detailMsg + "]");
+        this.errorCode = errorCode;
     }
 }

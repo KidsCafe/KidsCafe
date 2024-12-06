@@ -12,13 +12,20 @@ public class DummyReservation {
 
   public static Reservation createDummyReservation(User user, Cafe cafe) {
     LocalDateTime randomStartedAt = TestUtil.getRandomLocalDateTime(
-        cafe.getOpenedAt().getHour(),
-        cafe.getClosedAt().getHour()
+        10,
+        14
     );
+
     LocalDateTime randomFinishedAt = TestUtil.getRandomLocalDateTime(
-        randomStartedAt.getHour() + 1,
-        cafe.getClosedAt().getHour()
+        randomStartedAt.plusHours(1).getHour(),
+        21
     );
+
+    LocalDateTime tempDateTime = randomStartedAt;
+    if(randomFinishedAt.isBefore(randomStartedAt)) {
+      randomStartedAt = randomFinishedAt;
+      randomFinishedAt = tempDateTime;
+    }
 
     return Reservation.builder()
         .cafe(cafe)
@@ -29,12 +36,11 @@ public class DummyReservation {
         .build();
   }
 
-  public static Reservation updateDummyReservationTotalPrice(Reservation reservation, List<ReservationDetail> details) {
+  public static void updateDummyReservationTotalPrice(Reservation reservation, List<ReservationDetail> details) {
     int totalPrice = 0;
     for (ReservationDetail detail : details) {
       totalPrice += detail.getPrice();
     }
     reservation.updateTotalPrice(totalPrice);
-    return reservation;
   }
 }

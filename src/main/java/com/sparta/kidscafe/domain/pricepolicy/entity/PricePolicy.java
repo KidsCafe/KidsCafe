@@ -48,7 +48,4 @@ public class PricePolicy extends Timestamped {
 
   @Column(nullable = false)
   private double rate;
-
-  @Column(nullable = false)
-  private Integer totalPrice;
 }

@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 public class ReviewDummyTest {
@@ -27,23 +28,23 @@ public class ReviewDummyTest {
   @Autowired
   private UserRepository userRepository;
 
-
   @Test
+  @Transactional
   @Rollback(false)
   void createReview() {
     // user dummy tes 돌려야함
     // cafe dummy test 돌려야함
     // 예약 dummy test 돌리고 와야함
-    List<User> users = userRepository.findAllByRole(RoleType.USER);
-    for(User user : users) {
-      List<Reservation> reservations =  user.getReservations();
-      for(Reservation reservation : reservations) {
-        Review review = DummyReview.createDummyReview(user, reservation);
-        reviewRepository.save(review);
-
-        List<ReviewImage> reviewImages = DummyReviewImage.createDummyCafeImages(review, 5);
-        reviewImageRepository.saveAll(reviewImages);
-      }
-    }
+//    List<User> users = userRepository.findAllByRole(RoleType.USER);
+//    for(User user : users) {
+//      List<Reservation> reservations =  user.getReservations();
+//      for(Reservation reservation : reservations) {
+//        Review review = DummyReview.createDummyReview(user, reservation);
+//        reviewRepository.save(review);
+//
+//        List<ReviewImage> reviewImages = DummyReviewImage.createDummyCafeImages(review, 5);
+//        reviewImageRepository.saveAll(reviewImages);
+//      }
+//    }
   }
 }

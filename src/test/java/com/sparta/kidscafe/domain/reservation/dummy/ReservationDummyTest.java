@@ -57,9 +57,7 @@ public class ReservationDummyTest {
         reservationDetails.addAll(
             DummyReservationDetail.createDummyReservationDetailsByRoom(reservation, rooms));
         reservationDetailRepository.saveAll(reservationDetails);
-
         DummyReservation.updateDummyReservationTotalPrice(reservation, reservationDetails);
-        reservation.updateTotalPrice(reservation.getTotalPrice());
       }
     }
   }

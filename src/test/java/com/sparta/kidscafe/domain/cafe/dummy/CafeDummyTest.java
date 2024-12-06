@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 public class CafeDummyTest {
@@ -48,9 +49,9 @@ public class CafeDummyTest {
   private UserRepository userRepository;
 
   @Test
+  @Transactional
   @Rollback(false)
   void createCafe() {
-    // 막혀랄 push
     //  user dummy test 돌려야함
     List<User> owners = userRepository.findAllByRole(RoleType.OWNER);
     for (User owner : owners) {
