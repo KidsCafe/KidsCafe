@@ -1,27 +1,30 @@
 package com.sparta.kidscafe.common.dto;
 
 import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.experimental.SuperBuilder;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 
 // 페아징 객체를 반환할때 사용하는 responseDto
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class PageResponseDto<T> {
+@Getter
+@SuperBuilder(builderMethodName = "createResponseBuilder")
+public class PageResponseDto<T> extends StatusDto {
   private List<T> data;
   private int page;
   private int size;
   private int totalPage;
 
-  public static <T> PageResponseDto<T> success(List<T> data, Pageable pageable, int totalPage) {
-    return PageResponseDto.<T>builder()
-        .data(data)
+  public static <T> PageResponseDto<T> success(Page<T> data, HttpStatus status, String message) {
+    Pageable pageable = data.getPageable();
+    return PageResponseDto.<T>createResponseBuilder()
+        .data(data.stream().toList())
+        .status(status.value())
+        .message(message)
         .page(pageable.getPageNumber() + 1)
         .size(pageable.getPageSize())
-        .totalPage(totalPage)
+        .totalPage(data.getTotalPages())
         .build();
   }
 }
