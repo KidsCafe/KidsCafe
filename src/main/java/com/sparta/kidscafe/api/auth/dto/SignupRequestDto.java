@@ -4,7 +4,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 
 public record SignupRequestDto(
-	@Email
+	@Email(message = "이메일 형식에 맞게 작성해주세요.")
     @NotNull(message = "이메일은 필수 입력 사항입니다.")
     String email,
 
@@ -21,6 +21,7 @@ public record SignupRequestDto(
     String nickname,
 
 	@NotNull(message = "")
-	String socialLoginType) {
+	String socialLoginType
+) {
 
 }
