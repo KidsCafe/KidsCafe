@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import com.sparta.kidscafe.api.auth.dto.SigninRequestDto;
 import com.sparta.kidscafe.api.auth.dto.SigninResponseDto;
 import com.sparta.kidscafe.api.auth.dto.SignupRequestDto;
+import com.sparta.kidscafe.common.util.JwtUtil;
 import com.sparta.kidscafe.common.util.PasswordEncoder;
 import com.sparta.kidscafe.domain.user.entity.User;
 import com.sparta.kidscafe.domain.user.repository.UserRepository;
@@ -17,6 +18,7 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
     public void signup(SignupRequestDto requestDto) {
         if(userRepository.existsByEmail(requestDto.email())){
@@ -38,6 +40,7 @@ public class AuthService {
         if(!passwordEncoder.matches(requestDto.password(), user.getPassword())){
             throw new IllegalArgumentException("Wrong password : 비밀번호가 일치하지 않습니다.");
         }
-        return new SigninResponseDto(null);
+        String accessToken = jwtUtil.generateAccessToken(user);
+        return new SigninResponseDto(accessToken);
     }
 }

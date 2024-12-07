@@ -12,8 +12,11 @@ spring:
       ddl-auto: update
     open-in-view: false  # View에서 DB 연결 방지
   jwt:
-    secret: dev-secret-key
-    expiration: 60*60*24  # 24시간 (초 단위)
+    token:
+      secret:
+        key: a2ltd2FueW91bmdTZWNyZXRLZXlTcHJpbmdEYXRhSnBh
+      expires:
+        in: 1800000
   springdoc:
     api-docs:
       enabled: true
