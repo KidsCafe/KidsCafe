@@ -14,7 +14,6 @@ import com.sparta.kidscafe.common.dto.StatusDto;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
 import com.sparta.kidscafe.domain.cafe.repository.CafeRepository;
 import com.sparta.kidscafe.domain.review.dto.request.ReviewCreateRequestDto;
-import com.sparta.kidscafe.domain.review.dto.request.ReviewImageRequestDto;
 import com.sparta.kidscafe.domain.review.entity.Review;
 import com.sparta.kidscafe.domain.review.repository.ReviewImageRepository;
 import com.sparta.kidscafe.domain.review.repository.ReviewRepository;
@@ -72,7 +71,7 @@ class ReviewServiceTest {
         new MockMultipartFile("file2", "file2.jpg", "image/jpeg", "dummy content2".getBytes())
     );
 
-    ReviewImageRequestDto imageRequestDto = new ReviewImageRequestDto(mockFiles);
+    List<MultipartFile> reviewImages = List.of();
 
     List<String> uploadedUrls = List.of(
         "https://bucket.s3.ap-northeast-2.amazonaws.com/file1.jpg",
@@ -84,7 +83,7 @@ class ReviewServiceTest {
     when(s3FileUploader.uploadFiles(mockFiles)).thenReturn(uploadedUrls);
 
     // Act
-    StatusDto response = reviewService.createReview(mockUser, requestDto, imageRequestDto, mockCafe.getId());
+    StatusDto response = reviewService.createReview(mockUser, requestDto, reviewImages, mockCafe.getId());
 
     // Assert
     assertNotNull(response);
@@ -102,13 +101,13 @@ class ReviewServiceTest {
     User mockUser = User.builder().id(userId).build();
 
     ReviewCreateRequestDto requestDto = new ReviewCreateRequestDto(5, "Great Cafe!");
-    ReviewImageRequestDto imageRequestDto = new ReviewImageRequestDto(List.of());
+    List<MultipartFile> reviewImages = List.of();
 
     when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
     // Act & Assert
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-        () -> reviewService.createReview(mockUser, requestDto, imageRequestDto, 1L));
+        () -> reviewService.createReview(mockUser, requestDto, reviewImages, 1L));
 
     assertEquals("USER NOT FOUND", exception.getMessage());
     verify(userRepository, times(1)).findById(userId);
@@ -121,14 +120,14 @@ class ReviewServiceTest {
     User mockUser = User.builder().id(1L).build();
 
     ReviewCreateRequestDto requestDto = new ReviewCreateRequestDto(5, "Great Cafe!");
-    ReviewImageRequestDto imageRequestDto = new ReviewImageRequestDto(List.of());
+    List<MultipartFile> reviewImages = List.of();
 
     when(userRepository.findById(mockUser.getId())).thenReturn(Optional.of(mockUser));
     when(cafeRepository.findById(cafeId)).thenReturn(Optional.empty());
 
     // Act & Assert
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-        () -> reviewService.createReview(mockUser, requestDto, imageRequestDto, cafeId));
+        () -> reviewService.createReview(mockUser, requestDto, reviewImages, cafeId));
 
     assertEquals("CAFE NOT FOUND", exception.getMessage());
     verify(cafeRepository, times(1)).findById(cafeId);

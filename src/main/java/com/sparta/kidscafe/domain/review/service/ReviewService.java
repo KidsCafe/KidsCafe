@@ -1,16 +1,10 @@
 package com.sparta.kidscafe.domain.review.service;
 
-import static com.sparta.kidscafe.common.enums.RoleType.ADMIN;
-import static com.sparta.kidscafe.common.enums.RoleType.OWNER;
-import static com.sparta.kidscafe.common.enums.RoleType.USER;
-
 import com.sparta.kidscafe.common.client.S3FileUploader;
 import com.sparta.kidscafe.common.dto.StatusDto;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
 import com.sparta.kidscafe.domain.cafe.repository.CafeRepository;
 import com.sparta.kidscafe.domain.review.dto.request.ReviewCreateRequestDto;
-import com.sparta.kidscafe.domain.review.dto.request.ReviewImageRequestDto;
-import com.sparta.kidscafe.domain.review.dto.response.ReviewResponseDto;
 import com.sparta.kidscafe.domain.review.entity.Review;
 import com.sparta.kidscafe.domain.review.entity.ReviewImage;
 import com.sparta.kidscafe.domain.review.repository.ReviewImageRepository;
@@ -22,6 +16,8 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +30,7 @@ public class ReviewService {
   private final ReviewImageRepository reviewImageRepository;
 
   public StatusDto createReview(User testUser, ReviewCreateRequestDto request,
-      ReviewImageRequestDto imageRequest, Long cafeId) {
+      @RequestPart List<MultipartFile> reviewImages, Long cafeId) {
 
     Long id = testUser.getId();
 
@@ -56,7 +52,7 @@ public class ReviewService {
     reviewRepository.save(newReview);
 
     // 이미지 업로드
-    List<String> uploads = s3FileUploader.uploadFiles(imageRequest.reviewImages());
+    List<String> uploads = s3FileUploader.uploadFiles(reviewImages);
 
     // 이미지 리스트를 리뷰이미지 객체로 변환
     List<ReviewImage> images = new ArrayList<>();
