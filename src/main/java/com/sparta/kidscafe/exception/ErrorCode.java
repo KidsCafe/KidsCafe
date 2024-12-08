@@ -19,6 +19,10 @@ public enum ErrorCode {
     // Reservation 관련 에러
     RESERVATION_NOT_FOUND("RESERVATION_NOT_FOUND", "예약을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 
+    // === guguggagga ===
+    CAFE_IMAGE_UPLOAD_FAILED("", "카페 이미지 업로드 실패", HttpStatus.INTERNAL_SERVER_ERROR),
+    // ==================
+
     // 공통 에러
     BAD_REQUEST("BAD_REQUEST", "잘못된 요청입니다.", HttpStatus.BAD_REQUEST),
     INTERNAL_SERVER_ERROR("INTERNAL_SERVER_ERROR", "서버 에러가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),

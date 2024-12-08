@@ -10,11 +10,13 @@ import com.sparta.kidscafe.domain.user.repository.UserRepository;
 import com.sparta.kidscafe.dummy.DummyBookmark;
 import java.util.Collections;
 import java.util.List;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 
+@Tag("dummy-test")
 @SpringBootTest
 public class BookmarkDummyTest {
 

@@ -1,7 +1,6 @@
 package com.sparta.kidscafe.domain.cafe.entity;
 
 import com.sparta.kidscafe.common.entity.Timestamped;
-import com.sparta.kidscafe.domain.review.entity.Review;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
