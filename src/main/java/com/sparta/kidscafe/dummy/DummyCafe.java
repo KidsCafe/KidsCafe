@@ -15,7 +15,6 @@ public class DummyCafe {
     String address = "대한민국 어딘가";
     int randomSize = TestUtil.getRandomInteger(50, 500);
     boolean randomMultiFamily = TestUtil.getRandomBoolean();
-    boolean randomRoomExist = TestUtil.getRandomBoolean();
     String randomDayOff = TestUtil.getRandomDayOff();
     boolean randomParking = TestUtil.getRandomBoolean();
     boolean randomRestaurant = TestUtil.getRandomBoolean();
@@ -29,7 +28,6 @@ public class DummyCafe {
         .address(address)
         .size(randomSize)
         .multiFamily(randomMultiFamily)
-        .roomExist(randomRoomExist)
         .dayOff(randomDayOff)
         .parking(randomParking)
         .restaurant(randomRestaurant)

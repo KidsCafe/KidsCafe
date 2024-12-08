@@ -55,9 +55,6 @@ public class Cafe extends Timestamped {
   @Column(nullable = false)
   private boolean multiFamily;
 
-  @Column(nullable = false)
-  private boolean roomExist;
-
   @Column
   private String dayOff;
 

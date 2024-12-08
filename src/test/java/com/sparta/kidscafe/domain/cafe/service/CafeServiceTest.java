@@ -10,6 +10,7 @@ import com.sparta.kidscafe.common.dto.StatusDto;
 import com.sparta.kidscafe.common.util.FileUtil;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeCreateRequestDto;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
+import com.sparta.kidscafe.domain.cafe.repository.CafeImageRepository;
 import com.sparta.kidscafe.domain.cafe.repository.CafeRepository;
 import com.sparta.kidscafe.domain.fee.entity.Fee;
 import com.sparta.kidscafe.domain.fee.repository.FeeRepository;
@@ -34,6 +35,9 @@ import org.springframework.web.multipart.MultipartFile;
 public class CafeServiceTest {
   @Mock
   private CafeRepository cafeRepository;
+
+  @Mock
+  private CafeImageRepository cafeImageRepository;
 
   @Mock
   private RoomRepository roomRepository;
@@ -78,6 +82,7 @@ public class CafeServiceTest {
     // when: createCafe 메서드 호출
     CafeService service = new CafeService(
         cafeRepository,
+        cafeImageRepository,
         roomRepository,
         feeRepository,
         pricePolicyRepository,

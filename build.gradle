@@ -68,8 +68,14 @@ dependencies {
     testImplementation 'org.mockito:mockito-junit-jupiter' // Mockito with JUnit 5
 }
 
-tasks.named('test') {
-    useJUnitPlatform() // JUnit 플랫폼 사용
+test {
+    systemProperty 'spring-profiles.active', 'test'
+    def isBuild = project.hasProperty('excludeTests')
+    useJUnitPlatform() { // JUnit 플랫폼 사용
+        if(isBuild) {
+            excludeTags("dummy-test")
+        }
+    }
 }
 
 // Querydsl 빌드 옵션 (옵셔널)
