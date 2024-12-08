@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 
 /**
- * 페아징 객체를 반환할때 사용하는 responseDto
+ * 페이징 객체를 반환할때 사용하는 responseDto
  */
 @Getter
 @SuperBuilder(builderMethodName = "createResponseBuilder")
