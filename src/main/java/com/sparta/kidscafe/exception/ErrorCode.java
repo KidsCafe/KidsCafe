@@ -8,6 +8,7 @@ public enum ErrorCode {
     // User 관련 에러
     USER_NOT_FOUND("USER_NOT_FOUND", "사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     DUPLICATE_EMAIL("DUPLICATE_EMAIL", "이미 사용 중인 이메일입니다.", HttpStatus.BAD_REQUEST),
+    WRONG_PASSWORD("WRONG_PASSWORD", "비밀번호가 틀립니다.", HttpStatus.BAD_REQUEST),
 
     // Cafe 관련 에러
     CAFE_NOT_FOUND("CAFE_NOT_FOUND", "카페를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
