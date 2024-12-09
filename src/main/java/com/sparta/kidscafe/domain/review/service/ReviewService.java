@@ -1,6 +1,7 @@
 package com.sparta.kidscafe.domain.review.service;
 
 import static com.sparta.kidscafe.exception.ErrorCode.CAFE_NOT_FOUND;
+import static com.sparta.kidscafe.exception.ErrorCode.REVIEW_NOT_FOUND;
 import static com.sparta.kidscafe.exception.ErrorCode.USER_NOT_FOUND;
 
 import com.sparta.kidscafe.common.client.S3FileUploader;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -104,5 +106,27 @@ public class ReviewService {
         ));
 
     return PageResponseDto.success(reviewDtos,HttpStatus.OK, "카페 리뷰 조회 성공");
+  }
+
+  public PageResponseDto<ReviewResponseDto> getMyReviews(User testUser, PageRequest of) {
+    Long id = testUser.getId();
+
+    // 유저 확인
+    User user = userRepository.findById(id)
+        .orElseThrow(() -> new BusinessException (USER_NOT_FOUND));
+
+    // 유저가 작성한 리뷰 가져오기
+    Page<Review> reviews = reviewRepository.findByReviewId(id);
+
+    // 리뷰 목록 변환
+    Page<ReviewResponseDto> reviewDtos = reviews.map(review -> new ReviewResponseDto(
+        review.getId(),
+        review.getUser().getId(),
+        review.getCafe().getId(),
+        review.getStar(),
+        review.getContent()
+    ));
+
+    return PageResponseDto.success(reviewDtos,HttpStatus.OK, "리뷰 조회 성공");
   }
 }
