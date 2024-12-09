@@ -19,16 +19,19 @@ import com.sparta.kidscafe.domain.user.repository.UserRepository;
 import com.sparta.kidscafe.exception.BusinessException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ReviewService {
 
   private final UserRepository userRepository;
@@ -79,16 +82,10 @@ public class ReviewService {
         .build();
   }
 
-  public PageResponseDto<ReviewResponseDto> getReviews(User testUser, Long cafeId, Pageable pageable) {
-    Long id = testUser.getId();
-
-    // 유저 확인
-    User user = userRepository.findById(id)
-        .orElseThrow(() -> new BusinessException (USER_NOT_FOUND));
-
+  @Transactional(readOnly = true)
+  public PageResponseDto<ReviewResponseDto> getReviews(Long cafeId, Pageable pageable) {
     // 카페 확인
-    Cafe cafe = cafeRepository.findById(cafeId)
-        .orElseThrow(() -> new BusinessException (CAFE_NOT_FOUND));
+    cafeRepository.findById(cafeId).orElseThrow(() -> new BusinessException (CAFE_NOT_FOUND));
 
     // 특정 리뷰 조회
     Page<Review> reviews = reviewRepository.findByCafeId(cafeId, pageable);
@@ -105,15 +102,15 @@ public class ReviewService {
     return PageResponseDto.success(reviewDtos,HttpStatus.OK, "카페 리뷰 조회 성공");
   }
 
-  public PageResponseDto<ReviewResponseDto> getMyReviews(User testUser, PageRequest of) {
+  @Transactional(readOnly = true)
+  public PageResponseDto<ReviewResponseDto> getMyReviews(User testUser, PageRequest pageable) {
     Long id = testUser.getId();
 
     // 유저 확인
-    User user = userRepository.findById(id)
-        .orElseThrow(() -> new BusinessException (USER_NOT_FOUND));
+    userRepository.findById(id).orElseThrow(() -> new BusinessException (USER_NOT_FOUND));
 
     // 유저가 작성한 리뷰 가져오기
-    Page<Review> reviews = reviewRepository.findByReviewId(id);
+    Page<Review> reviews = reviewRepository.findAllByUserId(id, pageable);
 
     // 리뷰 목록 변환
     Page<ReviewResponseDto> reviewDtos = reviews.map(review -> new ReviewResponseDto(
@@ -125,5 +122,23 @@ public class ReviewService {
     ));
 
     return PageResponseDto.success(reviewDtos,HttpStatus.OK, "리뷰 조회 성공");
+  }
+
+  public StatusDto updateReview(User testUser,Long reviewId, ReviewCreateRequestDto request) {
+    Long id = testUser.getId();
+
+    // 유저 확인
+    userRepository.findById(id).orElseThrow(() -> new BusinessException (USER_NOT_FOUND));
+
+    // 리뷰 가져오기
+    Optional<Review> review = reviewRepository.findById(reviewId);
+
+    // 리뷰 입히기
+    review.ifPresent(value -> value.UpdateReview(request.star(), request.content()));
+
+    return StatusDto.builder()
+        .status(HttpStatus.OK.value())
+        .message("리뷰 수정완료")
+        .build();
   }
 }

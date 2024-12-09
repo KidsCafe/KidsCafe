@@ -57,4 +57,9 @@ public class Review extends Timestamped {
     this.star = star;
     this.content = content;
   }
+
+  public void UpdateReview(double star, String content) {
+    this.star = star;
+    this.content = content;
+  }
 }

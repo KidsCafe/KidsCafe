@@ -17,6 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -43,10 +45,9 @@ public class ReviewController {
 
   @GetMapping("/cafes/{cafeId}/reviews")
     public ResponseEntity<PageResponseDto<ReviewResponseDto>> getReviews (@PathVariable Long cafeId, @RequestParam int page, @RequestParam int size) {
-    User testUser = User.builder().id(1L).build();
     return ResponseEntity
         .status(HttpStatus.OK)
-        .body(reviewService.getReviews(testUser, cafeId, PageRequest.of(page,size)));
+        .body(reviewService.getReviews(cafeId, PageRequest.of(page,size)));
   }
 
   @GetMapping("/reviews")
@@ -55,5 +56,12 @@ public class ReviewController {
     return ResponseEntity
         .status(HttpStatus.OK)
         .body(reviewService.getMyReviews(testUser, PageRequest.of(page,size)));
+  }
+
+  @PutMapping("/reviews/{reviewId}")
+    public ResponseEntity<StatusDto> updateReview (@PathVariable Long reviewId, @Valid @RequestBody ReviewCreateRequestDto request) {
+    User testUser = User.builder().id(1L).build();
+    StatusDto response = reviewService.updateReview(testUser, reviewId, request);
+    return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 }
