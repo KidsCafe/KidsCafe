@@ -4,7 +4,9 @@ import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 import org.springframework.http.HttpStatus;
 
-// 단일 객체를 반환할때 사용하는 responseDto
+/**
+ * 단일 객체를 반환할때 사용하는 responseDto
+ */
 @Getter
 @SuperBuilder(builderMethodName = "createResponseBuilder")
 public class ResponseDto<T> extends StatusDto{
