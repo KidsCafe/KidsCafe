@@ -1,14 +1,19 @@
 package com.sparta.kidscafe.domain.cafe.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.anyList;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.sparta.kidscafe.common.dto.PageResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
 import com.sparta.kidscafe.common.util.FileUtil;
+import com.sparta.kidscafe.domain.cafe.dto.SearchCondition;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeCreateRequestDto;
+import com.sparta.kidscafe.domain.cafe.dto.response.CafeResponseDto;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
 import com.sparta.kidscafe.domain.cafe.repository.CafeImageRepository;
 import com.sparta.kidscafe.domain.cafe.repository.CafeRepository;
@@ -28,11 +33,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.multipart.MultipartFile;
 
 @ExtendWith(MockitoExtension.class) // @Mock 사용을 위해 설정합니다.
 public class CafeServiceTest {
+
   @Mock
   private CafeRepository cafeRepository;
 
@@ -64,7 +73,7 @@ public class CafeServiceTest {
   }
 
   @Test
-  @DisplayName("카페 등록 - 사장님")
+  @DisplayName("카페 등록 성공 - 사장님")
   void createCafeByOwner_success() {
     // given: CafeCreateRequestDto의 메서드들 mock 처리
     Cafe cafe = mock(Cafe.class);
@@ -90,8 +99,8 @@ public class CafeServiceTest {
     StatusDto result = service.createCafe(user, requestDto, cafeImages);
 
     // then: 결과 확인
-    assert(result.getStatus() == HttpStatus.CREATED.value());
-    assert(result.getMessage().equals("[Test Cafe] 등록 성공"));
+    assert (result.getStatus() == HttpStatus.CREATED.value());
+    assert (result.getMessage().equals("[Test Cafe] 등록 성공"));
 
     // cafeRepository, roomRepository, feeRepository, pricePolicyRepository, fileUtil이 각각 호출되었는지 검증
     verify(cafeRepository, times(1)).save(cafe);
@@ -99,5 +108,43 @@ public class CafeServiceTest {
     verify(feeRepository, times(1)).saveAll(anyList());
     verify(pricePolicyRepository, times(1)).saveAll(anyList());
     verify(fileUtil, times(1)).uploadCafeImage(cafeImages, cafe.getId());
+  }
+
+  @Test
+  @DisplayName("카페 목록 조회 성공 - 사용자가 검색한")
+  void searchCafe_success() {
+    // Arrange: 테스트 입력값 및 Mock 동작 정의
+    SearchCondition searchCondition = SearchCondition.builder()
+        .name("Test Cafe")
+        .region("Seoul")
+        .pageable(PageRequest.of(0, 10))
+        .build();
+
+    List<CafeResponseDto> cafeResponseDtoList = Arrays.asList(
+        new CafeResponseDto(1L, "Test Cafe", "Seoul", 50, 4.5, 20L, true, true, true, null, null),
+        new CafeResponseDto(2L, "Another Cafe", "Seoul", 30, 4.0, 15L, true, true, false, null,
+            null)
+    );
+
+    Page<CafeResponseDto> mockPage = new PageImpl<>(cafeResponseDtoList,
+        searchCondition.getPageable(), 2);
+
+    // Mock 동작 설정: Repository 호출 시 Mock 결과 반환
+    when(cafeRepository.searchCafe(any(SearchCondition.class))).thenReturn(mockPage);
+
+    // Act: 테스트 대상 메서드 호출
+    CafeService service = new CafeService(
+        cafeRepository,
+        cafeImageRepository,
+        roomRepository,
+        feeRepository,
+        pricePolicyRepository,
+        fileUtil);
+    PageResponseDto<CafeResponseDto> response = service.searchCafe(searchCondition);
+
+    // Assert: 반환값 검증
+    assertThat(response.getData()).hasSize(2); // 반환된 데이터 크기 확인
+    assertThat(response.getData().get(0).getName()).isEqualTo("Test Cafe"); // 첫 번째 Cafe 이름 확인
+    assertThat(response.getData().get(1).getName()).isEqualTo("Another Cafe"); // 두 번째 Cafe 이름 확인
   }
 }
