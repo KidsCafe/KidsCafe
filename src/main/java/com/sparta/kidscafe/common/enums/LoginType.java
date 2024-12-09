@@ -18,6 +18,6 @@ public enum LoginType {
     return Stream.of(LoginType.values())
         .filter(category -> category.toString().equals(inputValue.toUpperCase()))
         .findFirst()
-        .orElse(null);
+        .orElseThrow(() -> new IllegalArgumentException("Invalid LoginType: " + inputValue));
   }
 }
