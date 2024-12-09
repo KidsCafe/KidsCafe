@@ -6,17 +6,15 @@ import com.sparta.kidscafe.domain.user.entity.User;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.commons.lang3.RandomStringUtils;
 
 public class DummyCafe {
 
   public static Cafe createDummyCafe(User owner) {
-    String randomCafeName = RandomStringUtils.randomAlphanumeric(10);
+    String randomCafeName = TestUtil.getRandomString(10);
     String region = "부산광역시";
     String address = "대한민국 어딘가";
     int randomSize = TestUtil.getRandomInteger(50, 500);
     boolean randomMultiFamily = TestUtil.getRandomBoolean();
-    boolean randomRoomExist = TestUtil.getRandomBoolean();
     String randomDayOff = TestUtil.getRandomDayOff();
     boolean randomParking = TestUtil.getRandomBoolean();
     boolean randomRestaurant = TestUtil.getRandomBoolean();
@@ -30,7 +28,6 @@ public class DummyCafe {
         .address(address)
         .size(randomSize)
         .multiFamily(randomMultiFamily)
-        .roomExist(randomRoomExist)
         .dayOff(randomDayOff)
         .parking(randomParking)
         .restaurant(randomRestaurant)
