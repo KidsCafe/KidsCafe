@@ -1,6 +1,7 @@
 package com.sparta.kidscafe.domain.review.service;
 
 import static com.sparta.kidscafe.exception.ErrorCode.CAFE_NOT_FOUND;
+import static com.sparta.kidscafe.exception.ErrorCode.REVIEW_NOT_FOUND;
 import static com.sparta.kidscafe.exception.ErrorCode.USER_NOT_FOUND;
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -148,7 +149,6 @@ class ReviewServiceTest {
     // Given
     Long testUserId = 1L;
     Long cafeId = 100L;
-    User testUser = User.builder().id(testUserId).build();
 
     User mockUser = User.builder().id(testUserId).build();
     Cafe mockCafe = Cafe.builder().id(cafeId).build();
@@ -184,29 +184,8 @@ class ReviewServiceTest {
     assertEquals(4, review2.star());
     assertEquals("Nice coffee!", review2.content());
 
-    verify(userRepository, times(1)).findById(testUserId);
     verify(cafeRepository, times(1)).findById(cafeId);
     verify(reviewRepository, times(1)).findByCafeId(cafeId, pageable);
-  }
-
-  @Test
-  void getReviews_UserNotFound() {
-    // Given
-    Long testUserId = 1L;
-    Long cafeId = 100L;
-
-    when(userRepository.findById(testUserId)).thenReturn(Optional.empty());
-
-    // When / Then
-    BusinessException exception = assertThrows(
-        BusinessException.class,
-        () -> reviewService.getReviews(cafeId, PageRequest.of(0, 10))
-    );
-
-    assertEquals(USER_NOT_FOUND, exception.getErrorCode());
-    verify(userRepository, times(1)).findById(testUserId);
-    verify(cafeRepository, never()).findById(any());
-    verify(reviewRepository, never()).findByCafeId(any(), any());
   }
 
   @Test
@@ -230,6 +209,90 @@ class ReviewServiceTest {
     verify(userRepository, times(1)).findById(testUserId);
     verify(cafeRepository, times(1)).findById(cafeId);
     verify(reviewRepository, never()).findByCafeId(any(), any());
+  }
+
+  @Test
+  void updateReview_Success() {
+    // Given
+    Long testUserId = 1L;
+    Long reviewId = 100L;
+
+    User testUser = User.builder().id(testUserId).build();
+    ReviewCreateRequestDto request = new ReviewCreateRequestDto(4, "Updated content!");
+
+    User mockUser = User.builder().id(testUserId).build();
+    Review mockReview = Review.builder()
+        .id(reviewId)
+        .user(mockUser)
+        .star(5)
+        .content("Original content")
+        .build();
+
+    // Mocking
+    when(userRepository.findById(testUserId)).thenReturn(Optional.of(mockUser));
+    when(reviewRepository.findById(reviewId)).thenReturn(Optional.of(mockReview));
+
+    // When
+    StatusDto result = reviewService.updateReview(testUser, reviewId, request);
+
+    // Then
+    assertNotNull(result);
+    assertEquals(HttpStatus.OK.value(), result.getStatus());
+    assertEquals("리뷰 수정완료", result.getMessage());
+
+    verify(userRepository, times(1)).findById(testUserId);
+    verify(reviewRepository, times(1)).findById(reviewId);
+
+    // Verify that the review was updated
+    assertEquals(request.star(), mockReview.getStar());
+    assertEquals(request.content(), mockReview.getContent());
+  }
+
+  @Test
+  void updateReview_UserNotFound() {
+    // Given
+    Long testUserId = 1L;
+    Long reviewId = 100L;
+
+    User testUser = User.builder().id(testUserId).build();
+    ReviewCreateRequestDto request = new ReviewCreateRequestDto(4, "Updated content!");
+
+    when(userRepository.findById(testUserId)).thenReturn(Optional.empty());
+
+    // When / Then
+    BusinessException exception = assertThrows(
+        BusinessException.class,
+        () -> reviewService.updateReview(testUser, reviewId, request)
+    );
+
+    assertEquals(USER_NOT_FOUND, exception.getErrorCode());
+    verify(userRepository, times(1)).findById(testUserId);
+    verify(reviewRepository, never()).findById(any());
+  }
+
+  @Test
+  void updateReview_ReviewNotFound() {
+    // Given
+    Long testUserId = 1L;
+    Long reviewId = 100L;
+
+    User testUser = User.builder().id(testUserId).build();
+    ReviewCreateRequestDto request = new ReviewCreateRequestDto(4, "Updated content!");
+
+    User mockUser = User.builder().id(testUserId).build();
+
+    when(userRepository.findById(testUserId)).thenReturn(Optional.of(mockUser));
+    when(reviewRepository.findById(reviewId)).thenReturn(Optional.empty());
+
+    // When / Then
+    BusinessException exception = assertThrows(
+        BusinessException.class,
+        () -> reviewService.updateReview(testUser, reviewId, request)
+    );
+
+    assertEquals(REVIEW_NOT_FOUND, exception.getErrorCode());
+    verify(userRepository, times(1)).findById(testUserId);
+    verify(reviewRepository, times(1)).findById(reviewId);
   }
 }
 
