@@ -9,6 +9,8 @@ import com.sparta.kidscafe.common.util.JwtUtil;
 import com.sparta.kidscafe.common.util.PasswordEncoder;
 import com.sparta.kidscafe.domain.user.entity.User;
 import com.sparta.kidscafe.domain.user.repository.UserRepository;
+import com.sparta.kidscafe.exception.BusinessException;
+import com.sparta.kidscafe.exception.ErrorCode;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,7 +24,7 @@ public class AuthService {
 
     public void signup(SignupRequestDto requestDto) {
         if(userRepository.existsByEmail(requestDto.email())){
-            throw new IllegalArgumentException("Email already in use : 이메일 중복입니다.");
+            throw new BusinessException(ErrorCode.DUPLICATE_EMAIL);
         }
         User user = User.builder()
             .email(requestDto.email())
@@ -36,9 +38,9 @@ public class AuthService {
 
     public SigninResponseDto signin(SigninRequestDto requestDto) {
         User user = userRepository.findByEmail(requestDto.email())
-            .orElseThrow(() -> new IllegalArgumentException("Not Found Email : 등록된 이메일을 찾을 수 없습니다."));
+            .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
         if(!passwordEncoder.matches(requestDto.password(), user.getPassword())){
-            throw new IllegalArgumentException("Wrong password : 비밀번호가 일치하지 않습니다.");
+            throw new BusinessException(ErrorCode.WRONG_PASSWORD);
         }
         String accessToken = jwtUtil.generateAccessToken(user);
         return new SigninResponseDto(accessToken);
