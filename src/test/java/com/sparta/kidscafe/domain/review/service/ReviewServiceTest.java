@@ -162,12 +162,11 @@ class ReviewServiceTest {
     Page<Review> reviewPage = new PageImpl<>(mockReviews, pageable, mockReviews.size());
 
     // Mocking
-    when(userRepository.findById(testUserId)).thenReturn(Optional.of(mockUser));
     when(cafeRepository.findById(cafeId)).thenReturn(Optional.of(mockCafe));
     when(reviewRepository.findByCafeId(cafeId, pageable)).thenReturn(reviewPage);
 
     // When
-    PageResponseDto<ReviewResponseDto> result = reviewService.getReviews(testUser, cafeId, pageable);
+    PageResponseDto<ReviewResponseDto> result = reviewService.getReviews(cafeId, pageable);
 
     // Then
     assertNotNull(result);
@@ -195,14 +194,13 @@ class ReviewServiceTest {
     // Given
     Long testUserId = 1L;
     Long cafeId = 100L;
-    User testUser = User.builder().id(testUserId).build();
 
     when(userRepository.findById(testUserId)).thenReturn(Optional.empty());
 
     // When / Then
     BusinessException exception = assertThrows(
         BusinessException.class,
-        () -> reviewService.getReviews(testUser, cafeId, PageRequest.of(0, 10))
+        () -> reviewService.getReviews(cafeId, PageRequest.of(0, 10))
     );
 
     assertEquals(USER_NOT_FOUND, exception.getErrorCode());
@@ -216,7 +214,6 @@ class ReviewServiceTest {
     // Given
     Long testUserId = 1L;
     Long cafeId = 100L;
-    User testUser = User.builder().id(testUserId).build();
 
     User mockUser = User.builder().id(testUserId).build();
 
@@ -226,7 +223,7 @@ class ReviewServiceTest {
     // When / Then
     BusinessException exception = assertThrows(
         BusinessException.class,
-        () -> reviewService.getReviews(testUser, cafeId, PageRequest.of(0, 10))
+        () -> reviewService.getReviews(cafeId, PageRequest.of(0, 10))
     );
 
     assertEquals(CAFE_NOT_FOUND, exception.getErrorCode());
