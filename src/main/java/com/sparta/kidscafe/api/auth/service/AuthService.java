@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service;
 import com.sparta.kidscafe.api.auth.controller.dto.SigninRequestDto;
 import com.sparta.kidscafe.api.auth.controller.dto.SigninResponseDto;
 import com.sparta.kidscafe.api.auth.controller.dto.SignupRequestDto;
+import com.sparta.kidscafe.common.enums.LoginType;
 import com.sparta.kidscafe.common.enums.RoleType;
-import com.sparta.kidscafe.common.enums.SocialLoginType;
 import com.sparta.kidscafe.common.util.JwtUtil;
 import com.sparta.kidscafe.common.util.PasswordEncoder;
 import com.sparta.kidscafe.domain.user.entity.User;
@@ -35,7 +35,7 @@ public class AuthService {
             .nickname(requestDto.nickname())
             .address(requestDto.address())
             .role(RoleType.valueOf(requestDto.role().toUpperCase()))
-            .socialType(SocialLoginType.valueOf(requestDto.socialType().toUpperCase()))
+            .loginType(LoginType.valueOf(requestDto.loginType().toUpperCase()))
             .build();
         userRepository.save(user);
     }

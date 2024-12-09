@@ -1,11 +1,15 @@
 package com.sparta.kidscafe.domain.user.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.sparta.kidscafe.common.entity.Timestamped;
+import com.sparta.kidscafe.common.enums.LoginType;
 import com.sparta.kidscafe.common.enums.RoleType;
-import com.sparta.kidscafe.common.enums.SocialLoginType;
 import com.sparta.kidscafe.domain.bookmark.entity.Bookmark;
 import com.sparta.kidscafe.domain.reservation.entity.Reservation;
 import com.sparta.kidscafe.domain.review.entity.Review;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -16,8 +20,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -53,7 +55,7 @@ public class User extends Timestamped {
   private RoleType role;
 
   @Enumerated(value = EnumType.STRING)
-  private SocialLoginType socialType;
+  private LoginType loginType;
 
   @Builder.Default
   @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
