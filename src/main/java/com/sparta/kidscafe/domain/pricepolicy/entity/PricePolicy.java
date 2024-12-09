@@ -26,15 +26,17 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "price_policy")
 public class PricePolicy extends Timestamped {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "cafe_id")
+  @JoinColumn(name = "cafe_id", nullable = false)
   private Cafe cafe;
 
   @Enumerated(value = EnumType.STRING)
+  @Column(nullable = false)
   private TargetType targetType;
 
   @Column(nullable = false)
