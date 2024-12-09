@@ -1,5 +1,7 @@
 package com.sparta.kidscafe.common.enums;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -13,6 +15,7 @@ public enum AgeGroup {
 
   private final String name;
 
+  @JsonCreator
   public static AgeGroup getAgeGroup(String name) {
     for (AgeGroup ageGroup : AgeGroup.values()) {
       if (ageGroup.getName().equals(name)) {
@@ -20,5 +23,10 @@ public enum AgeGroup {
       }
     }
     return ADULT;
+  }
+
+  @JsonValue
+  public String getName() {
+    return name;
   }
 }

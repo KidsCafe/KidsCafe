@@ -2,7 +2,6 @@ package com.sparta.kidscafe.domain.reservation.entity;
 
 import com.sparta.kidscafe.common.entity.Timestamped;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
-import com.sparta.kidscafe.domain.room.entity.Room;
 import com.sparta.kidscafe.domain.user.entity.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -15,8 +14,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +50,7 @@ public class Reservation extends Timestamped {
   @Column(updatable = false)
   private int totalPrice;
 
+  @Builder.Default
   @OneToMany(mappedBy = "reservation", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
   private List<ReservationDetail> reservationDetails = new ArrayList<>();
 
