@@ -26,8 +26,8 @@ public class OAuth2Config {
 
 	@Bean
 	public InMemoryProviderRepository inMemoryProviderRepository(){
-		Map<OAuth2ProviderType, OAuth2ProviderProperties> provider = OAuth2Adapter.getOAuth2Provider(properties);
-		return new InMemoryProviderRepository(provider);
+		Map<OAuth2ProviderType, OAuth2ProviderProperties> providers = OAuth2Adapter.getOAuth2Provider(properties);
+		return new InMemoryProviderRepository(providers);
 	}
 
 	@Bean
