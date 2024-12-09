@@ -11,12 +11,6 @@ spring:
     hibernate:
       ddl-auto: update
     open-in-view: false  # View에서 DB 연결 방지
-  jwt:
-    token:
-      secret:
-        key: a2ltd2FueW91bmdTZWNyZXRLZXlTcHJpbmdEYXRhSnBh
-      expires:
-        in: 1800000
   springdoc:
     api-docs:
       enabled: true
@@ -29,3 +23,10 @@ logging:
     org.springframework: INFO
     org.hibernate.SQL: WARN
     org.hibernate.type.descriptor.sql.BasicBinder: WARN
+
+jwt:
+  token:
+    secret:
+      key: a2ltd2FueW91bmdTZWNyZXRLZXlTcHJpbmdEYXRhSnBh
+    expires:
+      in: 1800000
