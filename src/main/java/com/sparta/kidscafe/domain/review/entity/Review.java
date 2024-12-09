@@ -2,6 +2,7 @@ package com.sparta.kidscafe.domain.review.entity;
 
 import com.sparta.kidscafe.common.entity.Timestamped;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
+import com.sparta.kidscafe.domain.report.entity.Report;
 import com.sparta.kidscafe.domain.user.entity.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -39,6 +40,10 @@ public class Review extends Timestamped {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "cafe_id")
   private Cafe cafe;
+
+  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+  @JoinColumn(name = "report_id")
+  private Report report;
 
   @Column(nullable = false)
   private double star;
