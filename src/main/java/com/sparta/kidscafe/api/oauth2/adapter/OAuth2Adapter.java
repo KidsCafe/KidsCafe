@@ -8,6 +8,11 @@ import com.sparta.kidscafe.api.oauth2.provider.OAuth2ProviderProperties;
 import com.sparta.kidscafe.api.oauth2.service.OAuth2ProviderType;
 
 public class OAuth2Adapter {
+
+	private OAuth2Adapter(){
+
+	}
+
 	public static Map<OAuth2ProviderType, OAuth2ProviderProperties> getOAuth2Provider(OAuth2Properties properties) {
 		Map<OAuth2ProviderType, OAuth2ProviderProperties> providers = new HashMap<>();
 		properties.getUser().forEach((key, value) -> {
