@@ -17,11 +17,11 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/signup")
-    public ResponseEntity<Void> signup(@RequestBody SignupRequestDto requestDto){
+    public ResponseEntity<String> signup(@RequestBody SignupRequestDto requestDto){
         authService.signup(requestDto);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .build();
+                .body("회원가입이 정상적으로 처리되었습니다.");
     }
 
     @PostMapping("/signin")
