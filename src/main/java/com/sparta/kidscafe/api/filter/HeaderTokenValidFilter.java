@@ -34,6 +34,6 @@ public class HeaderTokenValidFilter extends OncePerRequestFilter {
 	}
 
 	public boolean isApplicable(HttpServletRequest request) {
-		return request.getRequestURI().startsWith("/api/v1/token");
+		return request.getRequestURI().startsWith("/api/auth");
 	}
 }
