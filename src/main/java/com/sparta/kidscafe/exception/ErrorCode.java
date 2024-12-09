@@ -20,6 +20,9 @@ public enum ErrorCode {
     // Reservation 관련 에러
     RESERVATION_NOT_FOUND("RESERVATION_NOT_FOUND", "예약을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 
+    // Bookmark 관련 에러
+    NO_BOOKMARKS_FOUND("NO_BOOKMARKS_FOUND", "즐겨찾기 목록이 비어있습니다.", HttpStatus.NOT_FOUND),
+
     // === guguggagga ===
     CAFE_IMAGE_UPLOAD_FAILED("", "카페 이미지 업로드 실패", HttpStatus.INTERNAL_SERVER_ERROR),
     // ==================

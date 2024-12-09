@@ -41,4 +41,9 @@ public class Bookmark extends Timestamped {
   @JoinColumn(name = "cafe_id", nullable = false)
   @OnDelete(action = OnDeleteAction.CASCADE)
   private Cafe cafe;
+
+  public Bookmark(User user, Cafe cafe) {
+    this.user = user;
+    this.cafe = cafe;
+  }
 }

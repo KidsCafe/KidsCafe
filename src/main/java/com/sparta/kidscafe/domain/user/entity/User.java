@@ -66,4 +66,10 @@ public class User extends Timestamped {
   @Builder.Default
   @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
   private List<Reservation> reservations = new ArrayList<>();
+
+  public User (Long id, String email, RoleType role) {
+    this.id = id;
+    this.email = email;
+    this.role = role;
+  }
 }

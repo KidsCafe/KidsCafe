@@ -93,4 +93,9 @@ public class Cafe extends Timestamped {
   @Builder.Default
   @OneToMany(mappedBy = "cafe", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
   private List<PricePolicy> pricePolicies = new ArrayList<>();
+
+  public Cafe(Long id, String name) {
+    this.id = id;
+    this.name = name;
+  }
 }
