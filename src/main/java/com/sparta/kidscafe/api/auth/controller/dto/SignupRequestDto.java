@@ -21,7 +21,10 @@ public record SignupRequestDto(
     String nickname,
 
 	@NotNull(message = "")
-	String socialLoginType
+	String socialType,
+
+	@NotNull(message = "사장님이실 경우 사장님 체크해주세요")
+	String role
 ) {
 
 }
