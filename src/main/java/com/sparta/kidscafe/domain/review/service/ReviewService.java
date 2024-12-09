@@ -1,9 +1,12 @@
 package com.sparta.kidscafe.domain.review.service;
 
 import static com.sparta.kidscafe.exception.ErrorCode.CAFE_NOT_FOUND;
+import static com.sparta.kidscafe.exception.ErrorCode.FORBIDDEN;
+import static com.sparta.kidscafe.exception.ErrorCode.REVIEW_NOT_FOUND;
 import static com.sparta.kidscafe.exception.ErrorCode.USER_NOT_FOUND;
 
 import com.sparta.kidscafe.common.client.S3FileUploader;
+import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.PageResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
@@ -40,18 +43,16 @@ public class ReviewService {
   private final ReviewRepository reviewRepository;
   private final ReviewImageRepository reviewImageRepository;
 
-  public StatusDto createReview(User testUser, ReviewCreateRequestDto request,
+  public StatusDto createReview(AuthUser authUser, ReviewCreateRequestDto request,
       List<MultipartFile> reviewImages, Long cafeId) {
 
-    Long id = testUser.getId();
+    Long id = authUser.getId();
 
     // 유저 확인
-    User user = userRepository.findById(id)
-        .orElseThrow(() -> new BusinessException (USER_NOT_FOUND));
+    User user = userRepository.findById(id).orElseThrow(() -> new BusinessException (USER_NOT_FOUND));
 
     // 카페 확인
-    Cafe cafe = cafeRepository.findById(cafeId)
-        .orElseThrow(() -> new BusinessException (CAFE_NOT_FOUND));
+    Cafe cafe = cafeRepository.findById(cafeId).orElseThrow(() -> new BusinessException (CAFE_NOT_FOUND));
 
     Review newReview = Review.builder()
         .user(user)
@@ -103,8 +104,8 @@ public class ReviewService {
   }
 
   @Transactional(readOnly = true)
-  public PageResponseDto<ReviewResponseDto> getMyReviews(User testUser, PageRequest pageable) {
-    Long id = testUser.getId();
+  public PageResponseDto<ReviewResponseDto> getMyReviews(AuthUser authUser, PageRequest pageable) {
+    Long id = authUser.getId();
 
     // 유저 확인
     userRepository.findById(id).orElseThrow(() -> new BusinessException (USER_NOT_FOUND));
@@ -124,14 +125,16 @@ public class ReviewService {
     return PageResponseDto.success(reviewDtos,HttpStatus.OK, "리뷰 조회 성공");
   }
 
-  public StatusDto updateReview(User testUser,Long reviewId, ReviewCreateRequestDto request) {
-    Long id = testUser.getId();
-
-    // 유저 확인
-    userRepository.findById(id).orElseThrow(() -> new BusinessException (USER_NOT_FOUND));
-
+  public StatusDto updateReview(AuthUser authUser, Long reviewId, ReviewCreateRequestDto request) {
     // 리뷰 가져오기
     Optional<Review> review = reviewRepository.findById(reviewId);
+
+    // 리뷰 사용자 확인
+    Long id = authUser.getId();
+
+    if (!id.equals(review.get().getId())) {
+      throw new BusinessException (FORBIDDEN);
+    }
 
     // 리뷰 입히기
     review.ifPresent(value -> value.UpdateReview(request.star(), request.content()));
@@ -140,5 +143,19 @@ public class ReviewService {
         .status(HttpStatus.OK.value())
         .message("리뷰 수정완료")
         .build();
+  }
+
+  public void deleteReview(AuthUser authUser, Long reviewId) {
+    // 리뷰확인
+    Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new BusinessException (REVIEW_NOT_FOUND));
+
+    // 리뷰 사용자 확인
+    Long id = authUser.getId();
+
+    if (!id.equals(review.getId())) {
+      throw new BusinessException (FORBIDDEN);
+    }
+
+    reviewRepository.delete(review);
   }
 }
