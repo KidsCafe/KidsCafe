@@ -2,9 +2,9 @@ package com.sparta.kidscafe.api.auth.service;
 
 import org.springframework.stereotype.Service;
 
-import com.sparta.kidscafe.api.auth.dto.SigninRequestDto;
-import com.sparta.kidscafe.api.auth.dto.SigninResponseDto;
-import com.sparta.kidscafe.api.auth.dto.SignupRequestDto;
+import com.sparta.kidscafe.api.auth.controller.dto.SigninRequestDto;
+import com.sparta.kidscafe.api.auth.controller.dto.SigninResponseDto;
+import com.sparta.kidscafe.api.auth.controller.dto.SignupRequestDto;
 import com.sparta.kidscafe.common.util.JwtUtil;
 import com.sparta.kidscafe.common.util.PasswordEncoder;
 import com.sparta.kidscafe.domain.user.entity.User;

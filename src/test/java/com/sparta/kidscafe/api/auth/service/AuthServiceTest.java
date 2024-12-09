@@ -1,12 +1,8 @@
 package com.sparta.kidscafe.api.auth.service;
 
 import static org.assertj.core.api.AssertionsForClassTypes.*;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import javax.naming.AuthenticationException;
-
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,11 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.sparta.kidscafe.api.auth.dto.SigninRequestDto;
-import com.sparta.kidscafe.api.auth.dto.SignupRequestDto;
-import com.sparta.kidscafe.common.util.JwtUtil;
-import com.sparta.kidscafe.common.util.PasswordEncoder;
-import com.sparta.kidscafe.domain.user.entity.User;
+import com.sparta.kidscafe.api.auth.controller.dto.SignupRequestDto;
 import com.sparta.kidscafe.domain.user.repository.UserRepository;
 
 @ExtendWith(MockitoExtension.class)

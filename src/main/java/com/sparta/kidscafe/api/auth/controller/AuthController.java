@@ -1,8 +1,8 @@
 package com.sparta.kidscafe.api.auth.controller;
 
-import com.sparta.kidscafe.api.auth.dto.SigninRequestDto;
-import com.sparta.kidscafe.api.auth.dto.SigninResponseDto;
-import com.sparta.kidscafe.api.auth.dto.SignupRequestDto;
+import com.sparta.kidscafe.api.auth.controller.dto.SigninRequestDto;
+import com.sparta.kidscafe.api.auth.controller.dto.SigninResponseDto;
+import com.sparta.kidscafe.api.auth.controller.dto.SignupRequestDto;
 import com.sparta.kidscafe.api.auth.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

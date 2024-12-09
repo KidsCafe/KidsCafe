@@ -1,4 +1,4 @@
-package com.sparta.kidscafe.api.auth.dto;
+package com.sparta.kidscafe.api.auth.controller.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
