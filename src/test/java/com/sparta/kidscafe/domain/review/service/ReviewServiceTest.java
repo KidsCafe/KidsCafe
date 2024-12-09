@@ -90,7 +90,7 @@ class ReviewServiceTest {
 
     when(userRepository.findById(mockUser.getId())).thenReturn(Optional.of(mockUser));
     when(cafeRepository.findById(mockCafe.getId())).thenReturn(Optional.of(mockCafe));
-    when(s3FileUploader.uploadFiles(mockFiles)).thenReturn(uploadedUrls);
+    when(s3FileUploader.uploadFiles(any())).thenReturn(uploadedUrls);
 
     // Act
     StatusDto response = reviewService.createReview(mockUser, requestDto, reviewImages, mockCafe.getId());
@@ -116,10 +116,10 @@ class ReviewServiceTest {
     when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
     // Act & Assert
-    IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+    BusinessException exception = assertThrows(BusinessException.class,
         () -> reviewService.createReview(mockUser, requestDto, reviewImages, 1L));
 
-    assertEquals("USER NOT FOUND", exception.getMessage());
+    assertEquals("사용자를 찾을 수 없습니다.", exception.getMessage());
     verify(userRepository, times(1)).findById(userId);
   }
 
@@ -136,10 +136,10 @@ class ReviewServiceTest {
     when(cafeRepository.findById(cafeId)).thenReturn(Optional.empty());
 
     // Act & Assert
-    IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+    BusinessException exception = assertThrows(BusinessException.class,
         () -> reviewService.createReview(mockUser, requestDto, reviewImages, cafeId));
 
-    assertEquals("CAFE NOT FOUND", exception.getMessage());
+    assertEquals("카페를 찾을 수 없습니다.", exception.getMessage());
     verify(cafeRepository, times(1)).findById(cafeId);
   }
 

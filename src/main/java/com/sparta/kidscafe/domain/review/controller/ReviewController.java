@@ -48,4 +48,12 @@ public class ReviewController {
         .status(HttpStatus.OK)
         .body(reviewService.getReviews(testUser, cafeId, PageRequest.of(page,size)));
   }
+
+  @GetMapping("/reviews")
+    public ResponseEntity<PageResponseDto<ReviewResponseDto>> getMyReviews (@RequestParam int page, @RequestParam int size) {
+    User testUser = User.builder().id(1L).build();
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(reviewService.getMyReviews(testUser, PageRequest.of(page,size)));
+  }
 }
