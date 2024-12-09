@@ -14,8 +14,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.sparta.kidscafe.api.auth.controller.dto.SigninRequestDto;
+import com.sparta.kidscafe.api.auth.controller.dto.SigninResponseDto;
 import com.sparta.kidscafe.api.auth.controller.dto.SignupRequestDto;
+import com.sparta.kidscafe.common.util.JwtUtil;
 import com.sparta.kidscafe.common.util.PasswordEncoder;
+import com.sparta.kidscafe.domain.user.entity.User;
 import com.sparta.kidscafe.domain.user.repository.UserRepository;
 import com.sparta.kidscafe.exception.BusinessException;
 
@@ -27,6 +30,9 @@ class AuthServiceTest {
 
 	@Mock
 	private PasswordEncoder passwordEncoder;
+
+	@Mock
+	private JwtUtil jwtUtil;
 
 	@InjectMocks
 	private AuthService authService;
@@ -55,7 +61,7 @@ class AuthServiceTest {
 	public void signup_test(){
 		// given
 		SignupRequestDto signupRequestDto = new SignupRequestDto(
-			"test1@test.com",
+			"test@test.com",
 			"1234",
 			"test1",
 			"test address",
@@ -87,7 +93,44 @@ class AuthServiceTest {
 			.hasMessageContaining(String.valueOf(USER_NOT_FOUND));
 	}
 
-	// @Test
-	// @DisplayName("로그인 : 비밀번호가 틀립니다.")
-	// public
+	@Test
+	@DisplayName("로그인 : 비밀번호가 틀립니다.")
+	public void wrong_password_test(){
+		// given
+		SigninRequestDto signinRequestDto = new SigninRequestDto("test@test.com", "1234");
+		User savedUser = User.builder()
+			.email("test@test.com")
+			.password("encodedpassword")
+			.build();
+		when(userRepository.findByEmail(signinRequestDto.email())).thenReturn(Optional.of(savedUser));
+		when(passwordEncoder.matches("1234", "encodedpassword")).thenReturn(false);
+
+		// when // then
+		assertThatThrownBy(() -> authService.signin(signinRequestDto))
+			.isInstanceOf(BusinessException.class)
+			.hasMessageContaining(String.valueOf(WRONG_PASSWORD));
+	}
+
+	@Test
+	@DisplayName("로그인 : 로그인 시 token 발급")
+	public void access_token_test(){
+		// given
+		SigninRequestDto signinRequestDto = new SigninRequestDto("test@test.com", "1234");
+		User savedUser = User.builder()
+			.email("test@test.com")
+			.password("encodedpassword")
+			.build();
+		when(userRepository.findByEmail(signinRequestDto.email())).thenReturn(Optional.of(savedUser));
+		when(passwordEncoder.matches("1234", "encodedpassword")).thenReturn(true);
+		when(jwtUtil.generateAccessToken(any())).thenReturn("accessToken");
+
+		// when
+		SigninResponseDto signinResponseDto = authService.signin(signinRequestDto);
+
+		// then
+		assertThat(signinResponseDto.accessToken()).isEqualTo("accessToken");
+		verify(jwtUtil, times(1)).generateAccessToken(any());
+		verify(passwordEncoder, times(1)).matches(any(), any());
+		verify(userRepository, times(1)).findByEmail(any());
+	}
 }
