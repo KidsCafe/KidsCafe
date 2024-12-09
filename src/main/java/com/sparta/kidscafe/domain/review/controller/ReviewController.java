@@ -1,5 +1,7 @@
 package com.sparta.kidscafe.domain.review.controller;
 
+import com.sparta.kidscafe.common.annotation.Auth;
+import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.PageResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
 import com.sparta.kidscafe.domain.review.dto.request.ReviewCreateRequestDto;
@@ -14,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,12 +37,12 @@ public class ReviewController {
 
   @PostMapping(value = "/cafes/{cafeId}/reviews",consumes = MediaType.MULTIPART_FORM_DATA_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<StatusDto> createReview (
+        @Auth AuthUser authUser,
         @Valid @RequestPart ReviewCreateRequestDto request,
         @RequestPart List<MultipartFile> reviewImages,
         @PathVariable Long cafeId
   ) {
-    User testUser = User.builder().id(1L).build();
-    StatusDto response = reviewService.createReview(testUser, request, reviewImages, cafeId);
+    StatusDto response = reviewService.createReview(authUser, request, reviewImages, cafeId);
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 
@@ -51,17 +54,21 @@ public class ReviewController {
   }
 
   @GetMapping("/reviews")
-    public ResponseEntity<PageResponseDto<ReviewResponseDto>> getMyReviews (@RequestParam int page, @RequestParam int size) {
-    User testUser = User.builder().id(1L).build();
+    public ResponseEntity<PageResponseDto<ReviewResponseDto>> getMyReviews (@Auth AuthUser authUser, @RequestParam int page, @RequestParam int size) {
     return ResponseEntity
         .status(HttpStatus.OK)
-        .body(reviewService.getMyReviews(testUser, PageRequest.of(page,size)));
+        .body(reviewService.getMyReviews(authUser, PageRequest.of(page,size)));
   }
 
   @PutMapping("/reviews/{reviewId}")
-    public ResponseEntity<StatusDto> updateReview (@PathVariable Long reviewId, @Valid @RequestBody ReviewCreateRequestDto request) {
-    User testUser = User.builder().id(1L).build();
-    StatusDto response = reviewService.updateReview(testUser, reviewId, request);
-    return ResponseEntity.status(HttpStatus.OK).body(response);
+    public ResponseEntity<StatusDto> updateReview (@Auth AuthUser authUser, @PathVariable Long reviewId, @Valid @RequestBody ReviewCreateRequestDto request) {
+    StatusDto response = reviewService.updateReview(authUser, reviewId, request);
+    return ResponseEntity.status(HttpStatus.RESET_CONTENT).body(response);
+  }
+
+  @DeleteMapping("/reviews/{reviewId}")
+  public ResponseEntity<Void> deleteReview (@Auth AuthUser authUser, @PathVariable Long reviewId) {
+   reviewService.deleteReview(authUser, reviewId);
+    return ResponseEntity.noContent().build();
   }
 }
