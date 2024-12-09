@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 @SuperBuilder(builderMethodName = "createResponseBuilder")
 public class PageResponseDto<T> extends StatusDto {
+
   private List<T> data;
   private int page;
   private int size;
