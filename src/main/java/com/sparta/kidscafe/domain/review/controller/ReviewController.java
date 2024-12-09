@@ -41,7 +41,7 @@ public class ReviewController {
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 
-  @GetMapping("/cafes/{cafeId}/review")
+  @GetMapping("/cafes/{cafeId}/reviews")
     public ResponseEntity<PageResponseDto<ReviewResponseDto>> getReviews (@PathVariable Long cafeId, @RequestParam int page, @RequestParam int size) {
     User testUser = User.builder().id(1L).build();
     return ResponseEntity
