@@ -13,7 +13,7 @@ class PricePolicyDummyTest {
     @DisplayName("가격 정책 Dummy 데이터 생성 테스트")
     void createDummyPricePolicy() {
         PricePolicy pricePolicy = PricePolicy.builder()
-                .targetType(TargetType.PEOPLE)
+                .targetType(TargetType.FEE)
                 .targetId(1L)
                 .title("주말 추가 요금")
                 .dayType("월, 화, 수, 목, 금, 토, 일")

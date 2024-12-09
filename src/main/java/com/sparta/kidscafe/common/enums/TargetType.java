@@ -9,8 +9,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum TargetType {
     FEE("입장료"),
-    ROOM("방"),
-    PEOPLE("사람");
+    ROOM("방");
 
     private final String name;
 

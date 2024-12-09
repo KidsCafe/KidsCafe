@@ -31,7 +31,7 @@ class PricePolicyServiceTest {
     @BeforeEach
     void setUp() {
         requestDto = PricePolicyCreateRequestDto.builder()
-                .targetType(TargetType.PEOPLE)
+                .targetType(TargetType.FEE)
                 .targetId(1L)
                 .title("주말 추가 요금")
                 .dayType("월, 화, 수, 목, 금, 토, 일")
