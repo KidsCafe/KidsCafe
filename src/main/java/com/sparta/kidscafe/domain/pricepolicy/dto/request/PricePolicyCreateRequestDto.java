@@ -4,14 +4,12 @@ import com.sparta.kidscafe.common.enums.TargetType;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
 import com.sparta.kidscafe.domain.pricepolicy.entity.PricePolicy;
 import jakarta.validation.constraints.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor // 추가된 부분
 @Builder
 public class PricePolicyCreateRequestDto {
 
