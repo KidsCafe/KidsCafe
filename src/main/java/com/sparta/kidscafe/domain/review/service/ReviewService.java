@@ -1,12 +1,10 @@
 package com.sparta.kidscafe.domain.review.service;
 
 import static com.sparta.kidscafe.exception.ErrorCode.CAFE_NOT_FOUND;
-import static com.sparta.kidscafe.exception.ErrorCode.REVIEW_NOT_FOUND;
 import static com.sparta.kidscafe.exception.ErrorCode.USER_NOT_FOUND;
 
 import com.sparta.kidscafe.common.client.S3FileUploader;
 import com.sparta.kidscafe.common.dto.PageResponseDto;
-import com.sparta.kidscafe.common.dto.ResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
 import com.sparta.kidscafe.domain.cafe.repository.CafeRepository;
@@ -21,7 +19,6 @@ import com.sparta.kidscafe.domain.user.repository.UserRepository;
 import com.sparta.kidscafe.exception.BusinessException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
