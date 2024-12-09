@@ -4,12 +4,16 @@ package com.sparta.kidscafe.domain.pricepolicy.service;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
 import com.sparta.kidscafe.domain.cafe.repository.CafeRepository;
 import com.sparta.kidscafe.domain.pricepolicy.dto.request.PricePolicyCreateRequestDto;
+import com.sparta.kidscafe.domain.pricepolicy.dto.response.PricePolicyResponseDto;
 import com.sparta.kidscafe.domain.pricepolicy.entity.PricePolicy;
 import com.sparta.kidscafe.domain.pricepolicy.repository.PricePolicyRepository;
 import com.sparta.kidscafe.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -36,5 +40,14 @@ public class PricePolicyService {
 
     // 3. 저장
     pricePolicyRepository.save(pricePolicy);
+  }
+
+  @Transactional(readOnly = true)
+  public List<PricePolicyResponseDto> getPricePolicies(Long cafeId) {
+    List<PricePolicy> pricePolicies = pricePolicyRepository.findAllByCafeId(cafeId);
+
+    return pricePolicies.stream()
+            .map(policy -> PricePolicyResponseDto.fromEntity(policy, policy.getTargetName()))
+            .collect(Collectors.toList());
   }
 }
