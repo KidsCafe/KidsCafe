@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -34,6 +35,13 @@ public class HeaderTokenValidFilter extends OncePerRequestFilter {
 	}
 
 	public boolean isApplicable(HttpServletRequest request) {
-		return request.getRequestURI().startsWith("/api/auth");
+		// 회원 가입, 로그인 관련 API 는 인증 필요 없이 요청 진행
+		String url = request.getRequestURI();
+		if (!StringUtils.hasText(url))
+			return true;
+		return url.startsWith("/api/auth") ||
+				url.contains("api/cafes") ||
+				url.startsWith("/css") ||
+				url.startsWith("/js");
 	}
 }
