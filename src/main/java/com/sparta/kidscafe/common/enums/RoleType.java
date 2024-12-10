@@ -5,17 +5,9 @@ import java.util.Arrays;
 import com.sun.jdi.request.InvalidRequestStateException;
 
 public enum RoleType {
-  /**
-   * 일반 사용자 권한
-   */
+
   USER,
-  /**
-   * 관리자 권한
-   */
   ADMIN,
-  /**
-   * 관리자 권한
-   */
   OWNER;
 
   public static RoleType of(String roleType) {

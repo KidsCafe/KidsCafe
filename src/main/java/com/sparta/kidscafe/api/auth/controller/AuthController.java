@@ -4,6 +4,8 @@ import com.sparta.kidscafe.api.auth.controller.dto.SigninRequestDto;
 import com.sparta.kidscafe.api.auth.controller.dto.SigninResponseDto;
 import com.sparta.kidscafe.api.auth.controller.dto.SignupRequestDto;
 import com.sparta.kidscafe.api.auth.service.AuthService;
+import com.sparta.kidscafe.common.annotation.Auth;
+import com.sparta.kidscafe.common.dto.AuthUser;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,5 +34,11 @@ public class AuthController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(responseDto);
+    }
+
+    // AuthUser 정보 확인 api
+    @GetMapping("/user-info")
+    public ResponseEntity<AuthUser> getUserInfo(@Auth AuthUser authUser){
+        return ResponseEntity.ok(authUser);
     }
 }
