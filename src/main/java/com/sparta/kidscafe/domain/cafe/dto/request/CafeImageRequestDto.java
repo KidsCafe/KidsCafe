@@ -20,31 +20,35 @@ public class CafeImageRequestDto {
   private String newImagePath; // 업로드할 이미지 path
 
   public boolean isCreated() {
-    return id != null;
+    return id == null;
   }
 
   public boolean isUpdated() {
     if(id == null)
       return false;
 
-    return !StringUtils.hasText(newImagePath);
+    return StringUtils.hasText(newImagePath);
   }
 
   public MultipartFile getMatchImageByMultipartFile(List<MultipartFile> images) {
     for(MultipartFile image : images) {
-      if(newImagePath.equals(image.getOriginalFilename())) {
+      int lastIndex = newImagePath.lastIndexOf("\\");
+      String fileName = newImagePath.substring(lastIndex + 1);
+      if(fileName.equals(image.getOriginalFilename())) {
         return image;
       }
     }
+
     return null;
   }
 
   public CafeImage getMatchImageFromCafeImage(List<CafeImage> images) {
     for(CafeImage image : images) {
-      if(newImagePath.equals(image.getImagePath())) {
+      if(id.equals(image.getId())) {
         return image;
       }
     }
+
     return null;
   }
 

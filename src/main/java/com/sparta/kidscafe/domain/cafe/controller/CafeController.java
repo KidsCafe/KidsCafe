@@ -65,7 +65,7 @@ public class CafeController {
   @PatchMapping("/cafes/{cafeId}")
   public ResponseEntity<StatusDto> updateCafe(
       @Auth AuthUser authUser,
-      @RequestPart Long cafeId,
+      @PathVariable Long cafeId,
       @RequestPart List<MultipartFile> cafeImages,
       @Valid @RequestPart CafeModifyRequestDto requestDto
       ) {

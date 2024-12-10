@@ -30,13 +30,14 @@ public class CafeImageService {
         cafeImageRepository.save(cafeImage.convertDtoToEntity(cafe, imagePath));
       } else if (cafeImage.isUpdated()) {
         MultipartFile matchMultiPartImage = cafeImage.getMatchImageByMultipartFile(newCafeImages);
-        CafeImage matchCafeImage = cafeImage.getMatchImageFromCafeImage(cafeImages);
+        CafeImage updateImage = cafeImage.getMatchImageFromCafeImage(cafeImages);
         String newImagePath = fileUtil.updateCafeImage(cafeId,
-            matchCafeImage.getImagePath(), matchMultiPartImage);
-        matchCafeImage.update(newImagePath);
+            updateImage.getImagePath(), matchMultiPartImage);
+        updateImage.update(newImagePath);
       } else {
-        CafeImage matchImage = cafeImage.getMatchImageFromCafeImage(cafeImages);
-        cafeImageRepository.delete(matchImage);
+        CafeImage deleteImage = cafeImage.getMatchImageFromCafeImage(cafeImages);
+        fileUtil.deleteFile(deleteImage.getImagePath());
+        cafeImages.remove(deleteImage);
       }
     }
   }

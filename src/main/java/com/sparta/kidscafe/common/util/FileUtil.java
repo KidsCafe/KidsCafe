@@ -71,10 +71,12 @@ public class FileUtil {
     }
   }
 
-  public boolean deleteFile(String deleteImagePath) {
+  public void deleteFile(String deleteImagePath) {
     File file = new File(deleteImagePath);
     if (file.exists()) {
-      return file.delete(); // 삭제 성공 시 true 반환
+      if (!file.delete()) {
+        throw new BusinessException(ErrorCode.CAFE_IMAGE_REMOVE_FAILED);
+      }
     } else {
       throw new BusinessException(ErrorCode.CAFE_IMAGE_NOT_EXIST);
     }
