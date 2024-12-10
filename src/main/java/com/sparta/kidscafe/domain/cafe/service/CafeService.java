@@ -1,8 +1,11 @@
 package com.sparta.kidscafe.domain.cafe.service;
 
+import com.sparta.kidscafe.common.dto.PageResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
 import com.sparta.kidscafe.common.util.FileUtil;
+import com.sparta.kidscafe.domain.cafe.dto.SearchCondition;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeCreateRequestDto;
+import com.sparta.kidscafe.domain.cafe.dto.response.CafeResponseDto;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
 import com.sparta.kidscafe.domain.cafe.entity.CafeImage;
 import com.sparta.kidscafe.domain.cafe.repository.CafeImageRepository;
@@ -25,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 @RequiredArgsConstructor
 public class CafeService {
+
   private final CafeRepository cafeRepository;
   private final CafeImageRepository cafeImageRepository;
   private final RoomRepository roomRepository;
@@ -33,11 +37,19 @@ public class CafeService {
   private final FileUtil fileUtil;
 
   @Transactional
-  public StatusDto createCafe(User user, CafeCreateRequestDto requestDto, List<MultipartFile> cafeImages) {
+  public StatusDto createCafe(User user, CafeCreateRequestDto requestDto,
+      List<MultipartFile> cafeImages) {
     Cafe cafe = saveCafe(requestDto, user);
     saveCafeImage(cafe, cafeImages);
     saveCafeDetailInfo(requestDto, cafe);
-    return createStatusDto(HttpStatus.CREATED, "["+ cafe.getName() + "] 등록 성공");
+    return createStatusDto(HttpStatus.CREATED, "[" + cafe.getName() + "] 등록 성공");
+  }
+
+  public PageResponseDto<CafeResponseDto> searchCafe(SearchCondition condition) {
+    return PageResponseDto.success(
+        cafeRepository.searchCafe(condition),
+        HttpStatus.OK,
+        "카페 조회 성공");
   }
 
   private Cafe saveCafe(CafeCreateRequestDto requestDto, User user) {
@@ -49,7 +61,7 @@ public class CafeService {
   private void saveCafeImage(Cafe cafe, List<MultipartFile> cafeImages) {
     List<String> imagePaths = fileUtil.uploadCafeImage(cafeImages, cafe.getId());
     List<CafeImage> saveImages = new ArrayList<>();
-    for(String imagePath : imagePaths) {
+    for (String imagePath : imagePaths) {
       CafeImage cafeImage = CafeImage.builder()
           .cafe(cafe)
           .imagePath(imagePath)
