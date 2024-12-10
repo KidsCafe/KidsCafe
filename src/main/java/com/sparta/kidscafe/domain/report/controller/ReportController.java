@@ -5,6 +5,7 @@ import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.PageResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
 import com.sparta.kidscafe.domain.report.dto.request.ReportRequestDto;
+import com.sparta.kidscafe.domain.report.dto.request.ReportUpdateDto;
 import com.sparta.kidscafe.domain.report.dto.response.ReportResponseDto;
 import com.sparta.kidscafe.domain.report.service.ReportService;
 import jakarta.validation.Valid;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -56,5 +58,14 @@ public class ReportController {
     return ResponseEntity
         .status(HttpStatus.OK)
         .body(reportService.getReports(PageRequest.of(page,size)));
+  }
+
+  @PatchMapping("/reports/{reportId)")
+  public ResponseEntity<StatusDto> updateReport (
+      @Valid @RequestBody ReportUpdateDto request,
+      @PathVariable Long reportId
+  ) {
+    StatusDto response = reportService.updateReport(request, reportId);
+    return ResponseEntity.status(HttpStatus.RESET_CONTENT).body(response);
   }
 }

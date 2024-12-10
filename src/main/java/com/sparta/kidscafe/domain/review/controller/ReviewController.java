@@ -45,21 +45,33 @@ public class ReviewController {
   }
 
   @GetMapping("/cafes/{cafeId}/reviews")
-    public ResponseEntity<PageResponseDto<ReviewResponseDto>> getReviews (@PathVariable Long cafeId, @RequestParam int page, @RequestParam int size) {
+    public ResponseEntity<PageResponseDto<ReviewResponseDto>> getReviews (
+        @PathVariable Long cafeId,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size
+  ) {
     return ResponseEntity
         .status(HttpStatus.OK)
         .body(reviewService.getReviews(cafeId, PageRequest.of(page,size)));
   }
 
   @GetMapping("/reviews")
-    public ResponseEntity<PageResponseDto<ReviewResponseDto>> getMyReviews (@Auth AuthUser authUser, @RequestParam int page, @RequestParam int size) {
+    public ResponseEntity<PageResponseDto<ReviewResponseDto>> getMyReviews (
+        @Auth AuthUser authUser,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size
+  ) {
     return ResponseEntity
         .status(HttpStatus.OK)
         .body(reviewService.getMyReviews(authUser, PageRequest.of(page,size)));
   }
 
   @PutMapping("/reviews/{reviewId}")
-    public ResponseEntity<StatusDto> updateReview (@Auth AuthUser authUser, @PathVariable Long reviewId, @Valid @RequestBody ReviewCreateRequestDto request) {
+    public ResponseEntity<StatusDto> updateReview (
+        @Auth AuthUser authUser,
+        @PathVariable Long reviewId,
+        @Valid @RequestBody ReviewCreateRequestDto request
+  ) {
     StatusDto response = reviewService.updateReview(authUser, reviewId, request);
     return ResponseEntity.status(HttpStatus.RESET_CONTENT).body(response);
   }
