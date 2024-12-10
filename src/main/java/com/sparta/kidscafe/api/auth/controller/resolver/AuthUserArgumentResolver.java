@@ -34,11 +34,16 @@ public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
 	) {
 		String authorizationHeader = webRequest.getHeader("Authorization");
 
-		if(authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")){
+		if(authorizationHeader == null){
 			throw new IllegalArgumentException("유효하지 않은 Authorization 헤더입니다.");
 		}
 
-		String accessToken = authorizationHeader.substring("Bearer ".length());
+		String accessToken;
+		if(authorizationHeader.startsWith("Bearer ")){
+			accessToken = authorizationHeader.substring("Bearer ".length());
+		} else {
+			accessToken = authorizationHeader;
+		}
 
 		Long userId = jwtUtil.extractUserId(accessToken);
 		String email = jwtUtil.extractEmail(accessToken);

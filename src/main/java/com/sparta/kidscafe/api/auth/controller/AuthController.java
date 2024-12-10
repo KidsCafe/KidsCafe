@@ -36,6 +36,7 @@ public class AuthController {
                 .body(responseDto);
     }
 
+    // AuthUser 정보 확인 api
     @GetMapping("/user-info")
     public ResponseEntity<AuthUser> getUserInfo(@Auth AuthUser authUser){
         return ResponseEntity.ok(authUser);
