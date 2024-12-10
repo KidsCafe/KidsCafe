@@ -17,9 +17,9 @@ public enum SearchSortBy {
 
   @JsonCreator
   public static SearchSortBy getAgeGroup(String name) {
-    for (SearchSortBy ageGroup : SearchSortBy.values()) {
-      if (ageGroup.toString().equals(name)) {
-        return ageGroup;
+    for (SearchSortBy sortBy : SearchSortBy.values()) {
+      if (sortBy.toString().equals(name)) {
+        return sortBy;
       }
     }
     return CAFE_NAME;

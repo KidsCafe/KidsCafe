@@ -121,8 +121,35 @@ public class CafeServiceTest {
         .build();
 
     List<CafeResponseDto> cafeResponseDtoList = Arrays.asList(
-        new CafeResponseDto(1L, "Test Cafe", "Seoul", 50, 4.5, 20L, true, true, true, null, null),
-        new CafeResponseDto(2L, "Another Cafe", "Seoul", 30, 4.0, 15L, true, true, false, null,
+        new CafeResponseDto(
+            1L,
+            "Test Cafe",
+            "Seoul",
+            50,
+            4.5,
+            20L,
+            "월",
+            true,
+            true,
+            true,
+            true,
+            "http://..",
+            null,
+            null),
+        new CafeResponseDto(
+            2L,
+            "Another Cafe",
+            "Seoul",
+            30,
+            4.0,
+            15L,
+            "토, 일",
+            true,
+            true,
+            false,
+            true,
+            "http://..",
+            null,
             null)
     );
 

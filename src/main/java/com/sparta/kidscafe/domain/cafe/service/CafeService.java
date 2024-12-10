@@ -1,10 +1,12 @@
 package com.sparta.kidscafe.domain.cafe.service;
 
 import com.sparta.kidscafe.common.dto.PageResponseDto;
+import com.sparta.kidscafe.common.dto.ResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
 import com.sparta.kidscafe.common.util.FileUtil;
 import com.sparta.kidscafe.domain.cafe.dto.SearchCondition;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeCreateRequestDto;
+import com.sparta.kidscafe.domain.cafe.dto.response.CafeDetailResponseDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeResponseDto;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
 import com.sparta.kidscafe.domain.cafe.entity.CafeImage;
@@ -42,14 +44,39 @@ public class CafeService {
     Cafe cafe = saveCafe(requestDto, user);
     saveCafeImage(cafe, cafeImages);
     saveCafeDetailInfo(requestDto, cafe);
-    return createStatusDto(HttpStatus.CREATED, "[" + cafe.getName() + "] 등록 성공");
+    return createStatusDto(
+        HttpStatus.CREATED,
+        "[" + cafe.getName() + "] 등록 성공"
+    );
   }
 
   public PageResponseDto<CafeResponseDto> searchCafe(SearchCondition condition) {
     return PageResponseDto.success(
         cafeRepository.searchCafe(condition),
         HttpStatus.OK,
-        "카페 조회 성공");
+        "카페 조회 성공"
+    );
+  }
+
+  public ResponseDto<CafeDetailResponseDto> getCafe(Long cafeId) {
+    CafeResponseDto cafeResponseDto = cafeRepository.findCafeById(cafeId);
+    List<CafeImage> images = cafeImageRepository.findAllByCafeId(cafeId);
+    List<Room> rooms = roomRepository.findAllByCafeId(cafeId);
+    List<Fee> fees = feeRepository.findAllByCafeId(cafeId);
+    List<PricePolicy> pricePolicies = pricePolicyRepository.findAllByCafeId(cafeId);
+
+    CafeDetailResponseDto cafeDetailResponseDto = new CafeDetailResponseDto();
+    cafeDetailResponseDto.setCafeInfo(cafeResponseDto);
+    cafeDetailResponseDto.setCafeImage(images);
+    cafeDetailResponseDto.setRooms(rooms);
+    cafeDetailResponseDto.setFees(fees);
+    cafeDetailResponseDto.setPricePolicies(pricePolicies);
+
+    return ResponseDto.success(
+        cafeDetailResponseDto,
+        HttpStatus.OK,
+        "[" + cafeDetailResponseDto.getName() + "] 상세 조회 성공"
+    );
   }
 
   private Cafe saveCafe(CafeCreateRequestDto requestDto, User user) {

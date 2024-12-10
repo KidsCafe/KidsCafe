@@ -2,11 +2,9 @@ package com.sparta.kidscafe.domain.cafe.dto.response;
 
 import com.querydsl.core.annotations.QueryProjection;
 import java.time.LocalTime;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Builder
 @Getter
 @NoArgsConstructor
 public class CafeResponseDto {
@@ -17,9 +15,12 @@ public class CafeResponseDto {
   private int size;
   private double star;
   private Long reviewCount;
+  private String dayOff;
+  private boolean multiFamily;
   private boolean existRoom;
   private boolean parking;
-  private boolean restaurantExists;
+  private boolean existRestaurant;
+  private String hyperLink;
   private LocalTime openedAt;
   private LocalTime closedAt;
 
@@ -31,9 +32,12 @@ public class CafeResponseDto {
       int size,
       double star,
       Long reviewCount,
-      boolean existRoom, // boolean
+      String dayOff,
+      boolean multiFamily,
+      boolean existRoom,
       boolean parking,
-      boolean restaurantExists,
+      boolean existRestaurant,
+      String hyperLink,
       LocalTime openedAt,
       LocalTime closedAt) {
     this.id = id;
@@ -42,9 +46,12 @@ public class CafeResponseDto {
     this.size = size;
     this.star = star;
     this.reviewCount = reviewCount;
+    this.dayOff = dayOff;
+    this.multiFamily = multiFamily;
     this.existRoom = existRoom;
     this.parking = parking;
-    this.restaurantExists = restaurantExists;
+    this.existRestaurant = existRestaurant;
+    this.hyperLink = hyperLink;
     this.openedAt = openedAt;
     this.closedAt = closedAt;
   }
