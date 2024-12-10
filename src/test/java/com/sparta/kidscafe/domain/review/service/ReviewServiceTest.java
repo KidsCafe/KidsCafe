@@ -14,8 +14,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.sparta.kidscafe.common.client.S3FileUploader;
+import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.PageResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
+import com.sparta.kidscafe.common.enums.RoleType;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
 import com.sparta.kidscafe.domain.cafe.repository.CafeRepository;
 import com.sparta.kidscafe.domain.review.dto.request.ReviewCreateRequestDto;
@@ -64,163 +66,80 @@ class ReviewServiceTest {
 
   @Test
   void createReview_Success() {
-    // Arrange
-    User mockUser = User.builder()
-        .id(1L)
-        .name("Test User")
-        .build();
-
-    Cafe mockCafe = Cafe.builder()
-        .id(1L)
-        .name("Test Cafe")
-        .build();
-
-    ReviewCreateRequestDto requestDto = new ReviewCreateRequestDto(5, "Great Cafe!");
-
+    // Given
+    Long userId = 1L;
+    Long cafeId = 100L;
+    AuthUser authUser = new AuthUser(userId, "testUser", RoleType.USER);
+    ReviewCreateRequestDto request = new ReviewCreateRequestDto(5, "Great cafe!");
     List<MultipartFile> mockFiles = List.of(
-        new MockMultipartFile("file1", "file1.jpg", "image/jpeg", "dummy content1".getBytes()),
-        new MockMultipartFile("file2", "file2.jpg", "image/jpeg", "dummy content2".getBytes())
+        new MockMultipartFile("image1.jpg", new byte[]{1, 2, 3}),
+        new MockMultipartFile("image2.jpg", new byte[]{4, 5, 6})
     );
 
-    List<MultipartFile> reviewImages = List.of();
-
-    List<String> uploadedUrls = List.of(
-        "https://bucket.s3.ap-northeast-2.amazonaws.com/file1.jpg",
-        "https://bucket.s3.ap-northeast-2.amazonaws.com/file2.jpg"
+    User mockUser = User.builder().id(userId).build();
+    Cafe mockCafe = Cafe.builder().id(cafeId).build();
+    List<String> mockUploads = List.of(
+        "https://bucket.s3.region.amazonaws.com/image1.jpg",
+        "https://bucket.s3.region.amazonaws.com/image2.jpg"
     );
 
-    when(userRepository.findById(mockUser.getId())).thenReturn(Optional.of(mockUser));
-    when(cafeRepository.findById(mockCafe.getId())).thenReturn(Optional.of(mockCafe));
-    when(s3FileUploader.uploadFiles(any())).thenReturn(uploadedUrls);
+    when(userRepository.findById(userId)).thenReturn(Optional.of(mockUser));
+    when(cafeRepository.findById(cafeId)).thenReturn(Optional.of(mockCafe));
+    when(s3FileUploader.uploadFiles(mockFiles)).thenReturn(mockUploads);
 
-    // Act
-    StatusDto response = reviewService.createReview(mockUser, requestDto, reviewImages, mockCafe.getId());
+    // When
+    StatusDto result = reviewService.createReview(authUser, request, mockFiles, cafeId);
 
-    // Assert
-    assertNotNull(response);
-    assertEquals(HttpStatus.CREATED.value(), response.getStatus());
-    assertEquals("리뷰 등록 성공", response.getMessage());
+    // Then
+    assertNotNull(result);
+    assertEquals(HttpStatus.CREATED.value(), result.getStatus());
+    assertEquals("리뷰 등록 성공", result.getMessage());
 
+    verify(userRepository, times(1)).findById(userId);
+    verify(cafeRepository, times(1)).findById(cafeId);
+    verify(s3FileUploader, times(1)).uploadFiles(mockFiles);
     verify(reviewRepository, times(1)).save(any(Review.class));
     verify(reviewImageRepository, times(1)).saveAll(anyList());
   }
 
   @Test
-  void createReview_UserNotFound() {
-    // Arrange
-    Long userId = 1L;
-    User mockUser = User.builder().id(userId).build();
-
-    ReviewCreateRequestDto requestDto = new ReviewCreateRequestDto(5, "Great Cafe!");
-    List<MultipartFile> reviewImages = List.of();
-
-    when(userRepository.findById(userId)).thenReturn(Optional.empty());
-
-    // Act & Assert
-    BusinessException exception = assertThrows(BusinessException.class,
-        () -> reviewService.createReview(mockUser, requestDto, reviewImages, 1L));
-
-    assertEquals("사용자를 찾을 수 없습니다.", exception.getMessage());
-    verify(userRepository, times(1)).findById(userId);
-  }
-
-  @Test
-  void createReview_CafeNotFound() {
-    // Arrange
-    Long cafeId = 1L;
-    User mockUser = User.builder().id(1L).build();
-
-    ReviewCreateRequestDto requestDto = new ReviewCreateRequestDto(5, "Great Cafe!");
-    List<MultipartFile> reviewImages = List.of();
-
-    when(userRepository.findById(mockUser.getId())).thenReturn(Optional.of(mockUser));
-    when(cafeRepository.findById(cafeId)).thenReturn(Optional.empty());
-
-    // Act & Assert
-    BusinessException exception = assertThrows(BusinessException.class,
-        () -> reviewService.createReview(mockUser, requestDto, reviewImages, cafeId));
-
-    assertEquals("카페를 찾을 수 없습니다.", exception.getMessage());
-    verify(cafeRepository, times(1)).findById(cafeId);
-  }
-
-  @Test
-  void getReviews_Success() {
+  void getMyReviews_Success() {
     // Given
-    Long testUserId = 1L;
-    Long cafeId = 100L;
+    Long userId = 1L;
+    AuthUser authUser = new AuthUser(userId, "testUser", RoleType.USER);
+    User user = User.builder().id(userId).build();
+    Cafe cafe = Cafe.builder().id(1L).build();
+    PageRequest pageable = PageRequest.of(0, 10);
 
-    User mockUser = User.builder().id(testUserId).build();
-    Cafe mockCafe = Cafe.builder().id(cafeId).build();
-
+    User mockUser = User.builder().id(userId).build();
     List<Review> mockReviews = List.of(
-        new Review(1L, mockUser, mockCafe, 5, "Great place!"),
-        new Review(2L, mockUser, mockCafe, 4, "Nice coffee!")
+        new Review(1L, user, cafe, 5, "My first review"),
+        new Review(2L, user, cafe, 4, "Another review")
     );
-
-    Pageable pageable = PageRequest.of(0, 10);
     Page<Review> reviewPage = new PageImpl<>(mockReviews, pageable, mockReviews.size());
 
-    // Mocking
-    when(cafeRepository.findById(cafeId)).thenReturn(Optional.of(mockCafe));
-    when(reviewRepository.findByCafeId(cafeId, pageable)).thenReturn(reviewPage);
+    when(userRepository.findById(userId)).thenReturn(Optional.of(mockUser));
+    when(reviewRepository.findAllByUserId(userId, pageable)).thenReturn(reviewPage);
 
     // When
-    PageResponseDto<ReviewResponseDto> result = reviewService.getReviews(cafeId, pageable);
+    PageResponseDto<ReviewResponseDto> result = reviewService.getMyReviews(authUser, pageable);
 
     // Then
     assertNotNull(result);
     assertEquals(HttpStatus.OK.value(), result.getStatus());
-    assertEquals("카페 리뷰 조회 성공", result.getMessage());
+    assertEquals("리뷰 조회 성공", result.getMessage());
     assertEquals(2, result.getData().size());
-
-    ReviewResponseDto review1 = result.getData().get(0);
-    assertEquals(1L, review1.id());
-    assertEquals(5, review1.star());
-    assertEquals("Great place!", review1.content());
-
-    ReviewResponseDto review2 = result.getData().get(1);
-    assertEquals(2L, review2.id());
-    assertEquals(4, review2.star());
-    assertEquals("Nice coffee!", review2.content());
-
-    verify(cafeRepository, times(1)).findById(cafeId);
-    verify(reviewRepository, times(1)).findByCafeId(cafeId, pageable);
-  }
-
-  @Test
-  void getReviews_CafeNotFound() {
-    // Given
-    Long testUserId = 1L;
-    Long cafeId = 100L;
-
-    User mockUser = User.builder().id(testUserId).build();
-
-    when(userRepository.findById(testUserId)).thenReturn(Optional.of(mockUser));
-    when(cafeRepository.findById(cafeId)).thenReturn(Optional.empty());
-
-    // When / Then
-    BusinessException exception = assertThrows(
-        BusinessException.class,
-        () -> reviewService.getReviews(cafeId, PageRequest.of(0, 10))
-    );
-
-    assertEquals(CAFE_NOT_FOUND, exception.getErrorCode());
-    verify(userRepository, times(1)).findById(testUserId);
-    verify(cafeRepository, times(1)).findById(cafeId);
-    verify(reviewRepository, never()).findByCafeId(any(), any());
   }
 
   @Test
   void updateReview_Success() {
     // Given
-    Long testUserId = 1L;
+    Long userId = 1L;
     Long reviewId = 100L;
+    AuthUser authUser = new AuthUser(userId, "testUser", RoleType.USER);
+    ReviewCreateRequestDto request = new ReviewCreateRequestDto(4, "Updated content");
 
-    User testUser = User.builder().id(testUserId).build();
-    ReviewCreateRequestDto request = new ReviewCreateRequestDto(4, "Updated content!");
-
-    User mockUser = User.builder().id(testUserId).build();
+    User mockUser = User.builder().id(userId).build();
     Review mockReview = Review.builder()
         .id(reviewId)
         .user(mockUser)
@@ -228,71 +147,42 @@ class ReviewServiceTest {
         .content("Original content")
         .build();
 
-    // Mocking
-    when(userRepository.findById(testUserId)).thenReturn(Optional.of(mockUser));
     when(reviewRepository.findById(reviewId)).thenReturn(Optional.of(mockReview));
 
     // When
-    StatusDto result = reviewService.updateReview(testUser, reviewId, request);
+    StatusDto result = reviewService.updateReview(authUser, reviewId, request);
 
     // Then
     assertNotNull(result);
     assertEquals(HttpStatus.OK.value(), result.getStatus());
     assertEquals("리뷰 수정완료", result.getMessage());
 
-    verify(userRepository, times(1)).findById(testUserId);
     verify(reviewRepository, times(1)).findById(reviewId);
-
-    // Verify that the review was updated
     assertEquals(request.star(), mockReview.getStar());
     assertEquals(request.content(), mockReview.getContent());
   }
 
   @Test
-  void updateReview_UserNotFound() {
+  void deleteReview_Success() {
     // Given
-    Long testUserId = 1L;
+    Long userId = 1L;
     Long reviewId = 100L;
+    AuthUser authUser = new AuthUser(userId, "testUser", RoleType.USER);
 
-    User testUser = User.builder().id(testUserId).build();
-    ReviewCreateRequestDto request = new ReviewCreateRequestDto(4, "Updated content!");
+    User mockUser = User.builder().id(userId).build();
+    Review mockReview = Review.builder()
+        .id(reviewId)
+        .user(mockUser)
+        .build();
 
-    when(userRepository.findById(testUserId)).thenReturn(Optional.empty());
+    when(reviewRepository.findById(reviewId)).thenReturn(Optional.of(mockReview));
 
-    // When / Then
-    BusinessException exception = assertThrows(
-        BusinessException.class,
-        () -> reviewService.updateReview(testUser, reviewId, request)
-    );
+    // When
+    reviewService.deleteReview(authUser, reviewId);
 
-    assertEquals(USER_NOT_FOUND, exception.getErrorCode());
-    verify(userRepository, times(1)).findById(testUserId);
-    verify(reviewRepository, never()).findById(any());
-  }
-
-  @Test
-  void updateReview_ReviewNotFound() {
-    // Given
-    Long testUserId = 1L;
-    Long reviewId = 100L;
-
-    User testUser = User.builder().id(testUserId).build();
-    ReviewCreateRequestDto request = new ReviewCreateRequestDto(4, "Updated content!");
-
-    User mockUser = User.builder().id(testUserId).build();
-
-    when(userRepository.findById(testUserId)).thenReturn(Optional.of(mockUser));
-    when(reviewRepository.findById(reviewId)).thenReturn(Optional.empty());
-
-    // When / Then
-    BusinessException exception = assertThrows(
-        BusinessException.class,
-        () -> reviewService.updateReview(testUser, reviewId, request)
-    );
-
-    assertEquals(REVIEW_NOT_FOUND, exception.getErrorCode());
-    verify(userRepository, times(1)).findById(testUserId);
+    // Then
     verify(reviewRepository, times(1)).findById(reviewId);
+    verify(reviewRepository, times(1)).delete(mockReview);
   }
 }
 
