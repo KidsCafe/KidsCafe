@@ -1,18 +1,22 @@
 package com.sparta.kidscafe.domain.cafe.controller;
 
+import com.sparta.kidscafe.common.annotation.Auth;
+import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.PageResponseDto;
+import com.sparta.kidscafe.common.dto.ResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeCreateRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeSearchRequestDto;
+import com.sparta.kidscafe.domain.cafe.dto.response.CafeDetailResponseDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeResponseDto;
 import com.sparta.kidscafe.domain.cafe.service.CafeService;
-import com.sparta.kidscafe.domain.user.entity.User;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,22 +33,30 @@ public class CafeController {
 
   @PostMapping("/owners/cafes")
   public ResponseEntity<StatusDto> createCafe(
-      // TODO khj [인증/인가] 완료되면 교체할 것.
+      @Auth AuthUser authUser,
       @Valid @RequestPart CafeCreateRequestDto requestDto,
       @RequestPart List<MultipartFile> cafeImages
   ) {
-    // TODO khj [인증/인가] 완료되면 교체할 것.
-    User user = User.builder().id(15L).build();
     return ResponseEntity
         .status(HttpStatus.CREATED)
-        .body(cafeService.createCafe(user, requestDto, cafeImages));
+        .body(cafeService.createCafe(authUser, requestDto, cafeImages));
   }
 
   @GetMapping("/cafes")
   public ResponseEntity<PageResponseDto<CafeResponseDto>> searchCafe(
       @Valid @RequestBody CafeSearchRequestDto requestDto
   ) {
-    return ResponseEntity.status(HttpStatus.OK)
+    return ResponseEntity
+        .status(HttpStatus.OK)
         .body(cafeService.searchCafe(requestDto.getSearchCondition()));
+  }
+
+  @GetMapping("/cafes/{cafeId}")
+  public ResponseEntity<ResponseDto<CafeDetailResponseDto>> getCafe(
+      @PathVariable Long cafeId
+  ) {
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(cafeService.findCafe(cafeId));
   }
 }
