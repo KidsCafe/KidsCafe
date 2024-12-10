@@ -41,8 +41,8 @@ public class ReportController {
 
   @GetMapping("/owners/reports")
   public ResponseEntity<PageResponseDto<ReportResponseDto>> getMyReports (
-      @RequestParam int page,
-      @RequestParam int size,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size,
       @Auth AuthUser authUser
   ) {
     return ResponseEntity
@@ -52,8 +52,8 @@ public class ReportController {
 
   @GetMapping("/admin/reports")
   public ResponseEntity<PageResponseDto<ReportResponseDto>> getReports (
-      @RequestParam int page,
-      @RequestParam int size
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size
   ) {
     return ResponseEntity
         .status(HttpStatus.OK)
