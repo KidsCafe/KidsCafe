@@ -50,4 +50,15 @@ public class PricePolicy extends Timestamped {
 
   @Column(nullable = false)
   private double rate;
+
+  public String getTargetName() {
+    if (targetType == TargetType.FEE) {
+      return switch (targetId.intValue()) {
+        case 1 -> "[어린이] 0~2세";
+        case 2 -> "[어린이] 3~5세";
+        default -> "기타 대상";
+      };
+    }
+    return targetType.getName();
+  }
 }

@@ -14,7 +14,7 @@ import lombok.*;
 public class PricePolicyCreateRequestDto {
 
     @NotNull(message = "TargetType은 필수 입력값입니다.")
-    private TargetType targetType; // 정책 대상 종류 (FEE, ROOM, PEOPLE 등)
+    private TargetType targetType; // 정책 대상 종류 (FEE, ROOM)
 
     @NotNull(message = "Target ID는 필수 입력값입니다.")
     @Positive(message = "Target ID는 양수만 허용됩니다.")
