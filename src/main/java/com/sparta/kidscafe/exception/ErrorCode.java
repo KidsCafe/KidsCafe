@@ -13,6 +13,7 @@ public enum ErrorCode {
     // Cafe 관련 에러
     CAFE_NOT_FOUND("CAFE_NOT_FOUND", "카페를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     INVALID_CAFE_DATA("INVALID_CAFE_DATA", "카페 데이터가 유효하지 않습니다.", HttpStatus.BAD_REQUEST),
+    CAFE_IMAGE_UPLOAD_FAILED("CAFE_IMAGE_UPLOAD_FAILED", "카페 이미지 업로드에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
 
     // Review 관련 에러
     REVIEW_NOT_FOUND("REVIEW_NOT_FOUND", "리뷰를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
@@ -23,9 +24,9 @@ public enum ErrorCode {
     // Bookmark 관련 에러
     NO_BOOKMARKS_FOUND("NO_BOOKMARKS_FOUND", "즐겨찾기 목록이 비어있습니다.", HttpStatus.NOT_FOUND),
 
-    // === guguggagga ===
-    CAFE_IMAGE_UPLOAD_FAILED("", "카페 이미지 업로드 실패", HttpStatus.INTERNAL_SERVER_ERROR),
-    // ==================
+    // PricePolicy 관련 에러
+    PRICE_POLICY_NOT_FOUND("PRICE_POLICY_NOT_FOUND", "가격 정책을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+    PRICE_POLICY_MISMATCH("PRICE_POLICY_MISMATCH", "카페에 해당하지 않는 가격 정책입니다.", HttpStatus.BAD_REQUEST),
 
     // 공통 에러
     BAD_REQUEST("BAD_REQUEST", "잘못된 요청입니다.", HttpStatus.BAD_REQUEST),
