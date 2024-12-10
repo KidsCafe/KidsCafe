@@ -13,14 +13,12 @@ import com.sparta.kidscafe.common.dto.PageResponseDto;
 import com.sparta.kidscafe.common.dto.ResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
 import com.sparta.kidscafe.common.enums.RoleType;
-import com.sparta.kidscafe.common.util.FileUtil;
 import com.sparta.kidscafe.domain.cafe.dto.SearchCondition;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeCreateRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeDetailResponseDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeResponseDto;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
 import com.sparta.kidscafe.domain.cafe.entity.CafeImage;
-import com.sparta.kidscafe.domain.cafe.repository.CafeImageRepository;
 import com.sparta.kidscafe.domain.cafe.repository.CafeRepository;
 import com.sparta.kidscafe.domain.fee.entity.Fee;
 import com.sparta.kidscafe.domain.fee.repository.FeeRepository;
@@ -53,9 +51,6 @@ public class CafeServiceTest {
   private CafeRepository cafeRepository;
 
   @Mock
-  private CafeImageRepository cafeImageRepository;
-
-  @Mock
   private RoomRepository roomRepository;
 
   @Mock
@@ -68,7 +63,7 @@ public class CafeServiceTest {
   private UserRepository userRepository;
 
   @Mock
-  private FileUtil fileUtil;
+  private CafeImageService cafeImageService;
 
   private AuthUser authUser;
   private User user;
@@ -103,12 +98,11 @@ public class CafeServiceTest {
     // when: createCafe 메서드 호출
     CafeService service = new CafeService(
         cafeRepository,
-        cafeImageRepository,
         roomRepository,
         feeRepository,
         pricePolicyRepository,
         userRepository,
-        fileUtil);
+        cafeImageService);
 
     // Mock 동작 설정: Repository 호출 시 Mock 결과 반환
     when(userRepository.findById(authUser.getId())).thenReturn(Optional.of(user));
@@ -125,7 +119,7 @@ public class CafeServiceTest {
     verify(roomRepository, times(1)).saveAll(anyList());
     verify(feeRepository, times(1)).saveAll(anyList());
     verify(pricePolicyRepository, times(1)).saveAll(anyList());
-    verify(fileUtil, times(1)).uploadCafeImage(cafeImages, cafe.getId());
+    verify(cafeImageService, times(1)).saveCafeImages(cafe, cafeImages);
   }
 
   @Test
@@ -180,12 +174,11 @@ public class CafeServiceTest {
     // Act: 테스트 대상 메서드 호출
     CafeService service = new CafeService(
         cafeRepository,
-        cafeImageRepository,
         roomRepository,
         feeRepository,
         pricePolicyRepository,
         userRepository,
-        fileUtil);
+        cafeImageService);
     PageResponseDto<CafeResponseDto> response = service.searchCafe(searchCondition);
 
     // Assert: 반환값 검증
@@ -220,7 +213,7 @@ public class CafeServiceTest {
     List<PricePolicy> pricePolicies = Collections.emptyList();
 
     when(cafeRepository.findCafeById(cafeId)).thenReturn(cafeResponseDto);
-    when(cafeImageRepository.findAllByCafeId(cafeId)).thenReturn(images);
+    when(cafeImageService.searchCafeImage(cafeId)).thenReturn(images);
     when(roomRepository.findAllByCafeId(cafeId)).thenReturn(rooms);
     when(feeRepository.findAllByCafeId(cafeId)).thenReturn(fees);
     when(pricePolicyRepository.findAllByCafeId(cafeId)).thenReturn(pricePolicies);
@@ -228,12 +221,11 @@ public class CafeServiceTest {
     // when
     CafeService service = new CafeService(
         cafeRepository,
-        cafeImageRepository,
         roomRepository,
         feeRepository,
         pricePolicyRepository,
         userRepository,
-        fileUtil);
+        cafeImageService);
     ResponseDto<CafeDetailResponseDto> response = service.findCafe(cafeId);
 
     // then
@@ -252,12 +244,11 @@ public class CafeServiceTest {
     // when
     CafeService service = new CafeService(
         cafeRepository,
-        cafeImageRepository,
         roomRepository,
         feeRepository,
         pricePolicyRepository,
         userRepository,
-        fileUtil);
+        cafeImageService);
     ResponseDto<CafeDetailResponseDto> response = service.findCafe(cafeId);
 
     // then

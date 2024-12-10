@@ -23,31 +23,65 @@ public class FileUtil {
   @Value("${filePath.cafe}")
   private String defaultImagePath;
 
-  public String uploadCafeImage(MultipartFile image, Long cafeId) throws IOException {
-    StringBuilder imagePath = new StringBuilder(defaultImagePath);
-    imagePath.append(cafeId);
-    imagePath.append("/");
-    File directory = new File(imagePath.toString());
-    if (!directory.exists()) {
-      directory.mkdirs();
-    }
+  public String uploadCafeImage(Long cafeId, MultipartFile image) {
+    try {
+      StringBuilder imagePath = new StringBuilder(defaultImagePath);
+      imagePath.append(cafeId);
+      imagePath.append("/");
+      File directory = new File(imagePath.toString());
+      if (!directory.exists()) {
+        directory.mkdirs();
+      }
 
-    imagePath.append(cafeId);
-    imagePath.append("_");
-    imagePath.append(image.getOriginalFilename());
-    image.transferTo(new File(imagePath.toString()));
-    return imagePath.toString();
+      imagePath.append(cafeId);
+      imagePath.append("_");
+      imagePath.append(image.getOriginalFilename());
+      image.transferTo(new File(imagePath.toString()));
+      return imagePath.toString();
+    } catch (IOException ex) {
+      ex.printStackTrace();
+      throw new BusinessException(ErrorCode.CAFE_IMAGE_UPLOAD_FAILED);
+    }
   }
 
-  public List<String> uploadCafeImage(List<MultipartFile> images, Long cafeId) {
+  public List<String> uploadCafeImage(Long cafeId, List<MultipartFile> images) {
     List<String> imagePaths = new ArrayList<>();
     try {
-      for(MultipartFile image: images)
-        imagePaths.add(uploadCafeImage(image, cafeId));
+      StringBuilder dirPath = new StringBuilder(defaultImagePath);
+      dirPath.append(cafeId);
+      dirPath.append("/");
+      File directory = new File(dirPath.toString());
+      if (!directory.exists()) {
+        directory.mkdirs();
+      }
+
+      for (MultipartFile image : images) {
+        StringBuilder imagePath = new StringBuilder(dirPath.toString());
+        imagePath.append(cafeId);
+        imagePath.append("_");
+        imagePath.append(image.getOriginalFilename());
+        image.transferTo(new File(imagePath.toString()));
+        imagePaths.add(imagePath.toString());
+      }
+
       return imagePaths;
     } catch (IOException ex) {
       ex.printStackTrace();
       throw new BusinessException(ErrorCode.CAFE_IMAGE_UPLOAD_FAILED);
     }
+  }
+
+  public boolean deleteFile(String deleteImagePath) {
+    File file = new File(deleteImagePath);
+    if (file.exists()) {
+      return file.delete(); // 삭제 성공 시 true 반환
+    } else {
+      throw new BusinessException(ErrorCode.CAFE_IMAGE_NOT_EXIST);
+    }
+  }
+
+  public String updateCafeImage(Long cafeId, String oriImagePath, MultipartFile image) {
+    deleteFile(oriImagePath);
+    return uploadCafeImage(cafeId, image);
   }
 }

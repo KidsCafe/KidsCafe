@@ -4,14 +4,13 @@ import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.PageResponseDto;
 import com.sparta.kidscafe.common.dto.ResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
-import com.sparta.kidscafe.common.util.FileUtil;
 import com.sparta.kidscafe.domain.cafe.dto.SearchCondition;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeCreateRequestDto;
+import com.sparta.kidscafe.domain.cafe.dto.request.CafeModifyRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeDetailResponseDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeResponseDto;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
 import com.sparta.kidscafe.domain.cafe.entity.CafeImage;
-import com.sparta.kidscafe.domain.cafe.repository.CafeImageRepository;
 import com.sparta.kidscafe.domain.cafe.repository.CafeRepository;
 import com.sparta.kidscafe.domain.fee.entity.Fee;
 import com.sparta.kidscafe.domain.fee.repository.FeeRepository;
@@ -23,7 +22,6 @@ import com.sparta.kidscafe.domain.user.entity.User;
 import com.sparta.kidscafe.domain.user.repository.UserRepository;
 import com.sparta.kidscafe.exception.BusinessException;
 import com.sparta.kidscafe.exception.ErrorCode;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -37,19 +35,18 @@ import org.springframework.web.multipart.MultipartFile;
 public class CafeService {
 
   private final CafeRepository cafeRepository;
-  private final CafeImageRepository cafeImageRepository;
   private final RoomRepository roomRepository;
   private final FeeRepository feeRepository;
   private final PricePolicyRepository pricePolicyRepository;
   private final UserRepository userRepository;
-  private final FileUtil fileUtil;
+  private final CafeImageService cafeImageService;
 
   @Transactional
   public StatusDto createCafe(AuthUser authUser, CafeCreateRequestDto requestDto,
       List<MultipartFile> cafeImages) {
     User user = findByUserId(authUser.getId());
     Cafe cafe = saveCafe(requestDto, user);
-    saveCafeImage(cafe, cafeImages);
+    cafeImageService.saveCafeImages(cafe, cafeImages);
     saveCafeDetailInfo(requestDto, cafe);
     return createStatusDto(
         HttpStatus.CREATED,
@@ -82,12 +79,26 @@ public class CafeService {
     );
   }
 
+  @Transactional
+  public StatusDto updateCafe(AuthUser authUser, Long cafeId,
+      List<MultipartFile> cafeImages, CafeModifyRequestDto requestDto) {
+    Cafe cafe = cafeRepository.findByIdAndUserId(cafeId, authUser.getId())
+        .orElseThrow(() -> new BusinessException(ErrorCode.CAFE_NOT_FOUND));
+    cafe.update(requestDto);
+    cafeImageService.updateCafeImage(cafe, cafeImages, requestDto);
+    return createStatusDto(
+        HttpStatus.OK,
+        "[" + cafe.getName() + "] 수정 성공"
+    );
+  }
+
   private CafeDetailResponseDto createCafeDetailInfo(CafeResponseDto cafeResponseDto) {
-    if (cafeResponseDto == null)
+    if (cafeResponseDto == null) {
       return null;
+    }
 
     Long cafeId = cafeResponseDto.getId();
-    List<CafeImage> images = cafeImageRepository.findAllByCafeId(cafeId);
+    List<CafeImage> images = cafeImageService.searchCafeImage(cafeId);
     List<Room> rooms = roomRepository.findAllByCafeId(cafeId);
     List<Fee> fees = feeRepository.findAllByCafeId(cafeId);
     List<PricePolicy> pricePolicies = pricePolicyRepository.findAllByCafeId(cafeId);
@@ -105,19 +116,6 @@ public class CafeService {
     Cafe cafe = requestDto.convertDtoToEntityByCafe(user);
     cafeRepository.save(cafe);
     return cafe;
-  }
-
-  private void saveCafeImage(Cafe cafe, List<MultipartFile> cafeImages) {
-    List<String> imagePaths = fileUtil.uploadCafeImage(cafeImages, cafe.getId());
-    List<CafeImage> saveImages = new ArrayList<>();
-    for (String imagePath : imagePaths) {
-      CafeImage cafeImage = CafeImage.builder()
-          .cafe(cafe)
-          .imagePath(imagePath)
-          .build();
-      saveImages.add(cafeImage);
-    }
-    cafeImageRepository.saveAll(saveImages);
   }
 
   private void saveCafeDetailInfo(CafeCreateRequestDto requestDto, Cafe cafe) {

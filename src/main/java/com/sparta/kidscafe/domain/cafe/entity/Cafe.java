@@ -2,6 +2,7 @@ package com.sparta.kidscafe.domain.cafe.entity;
 
 import com.sparta.kidscafe.common.entity.Timestamped;
 import com.sparta.kidscafe.domain.bookmark.entity.Bookmark;
+import com.sparta.kidscafe.domain.cafe.dto.request.CafeModifyRequestDto;
 import com.sparta.kidscafe.domain.fee.entity.Fee;
 import com.sparta.kidscafe.domain.pricepolicy.entity.PricePolicy;
 import com.sparta.kidscafe.domain.room.entity.Room;
@@ -97,5 +98,18 @@ public class Cafe extends Timestamped {
   public Cafe(Long id, String name) {
     this.id = id;
     this.name = name;
+  }
+
+  public void update(CafeModifyRequestDto requestDto) {
+    name = requestDto.getName();
+    region = requestDto.getRegion();
+    address = requestDto.getAddress();
+    size = requestDto.getSize();
+    multiFamily = requestDto.isMultiFamily();
+    dayOff = requestDto.getDayOff();
+    parking = requestDto.isParking();
+    hyperlink = requestDto.getHyperlink();
+    openedAt = requestDto.getOpenedAt();
+    closedAt = requestDto.getClosedAt();
   }
 }
