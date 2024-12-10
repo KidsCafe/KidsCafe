@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 public enum ReportType {
   PENDING("신고신청"),
   IN_PROGRESS("신고처리중"),
-  COMPLETED("신고완료"),
+  COMPLETED("신고처리완료"),
   REJECTED("신고기각"),
   CANCELLED("신고취소");
 

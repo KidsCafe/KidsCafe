@@ -47,4 +47,14 @@ public class ReportController {
         .status(HttpStatus.OK)
         .body(reportService.getMyReports(authUser, PageRequest.of(page,size)));
   }
+
+  @GetMapping("/admin/reports")
+  public ResponseEntity<PageResponseDto<ReportResponseDto>> getReports (
+      @RequestParam int page,
+      @RequestParam int size
+  ) {
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(reportService.getReports(PageRequest.of(page,size)));
+  }
 }
