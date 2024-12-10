@@ -2,6 +2,7 @@ package com.sparta.kidscafe.domain.review.entity;
 
 import com.sparta.kidscafe.common.entity.Timestamped;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
+import com.sparta.kidscafe.domain.report.entity.Report;
 import com.sparta.kidscafe.domain.user.entity.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -45,6 +46,9 @@ public class Review extends Timestamped {
 
   @Column(nullable = false)
   private String content;
+
+  @OneToMany(mappedBy = "review", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+  private List<Report> report = new ArrayList<>();
 
   @Builder.Default
   @OneToMany(mappedBy = "review", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})

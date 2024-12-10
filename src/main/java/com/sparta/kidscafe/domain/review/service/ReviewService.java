@@ -132,7 +132,7 @@ public class ReviewService {
     // 리뷰 사용자 확인
     Long id = authUser.getId();
 
-    if (!id.equals(review.get().getId())) {
+    if (!id.equals(review.get().getUser().getId())) {
       throw new BusinessException (FORBIDDEN);
     }
 
@@ -152,7 +152,7 @@ public class ReviewService {
     // 리뷰 사용자 확인
     Long id = authUser.getId();
 
-    if (!id.equals(review.getId())) {
+    if (!id.equals(review.getUser().getId())) {
       throw new BusinessException (FORBIDDEN);
     }
 
