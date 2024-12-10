@@ -10,13 +10,16 @@ import static org.mockito.Mockito.when;
 
 import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.PageResponseDto;
+import com.sparta.kidscafe.common.dto.ResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
 import com.sparta.kidscafe.common.enums.RoleType;
 import com.sparta.kidscafe.common.util.FileUtil;
 import com.sparta.kidscafe.domain.cafe.dto.SearchCondition;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeCreateRequestDto;
+import com.sparta.kidscafe.domain.cafe.dto.response.CafeDetailResponseDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeResponseDto;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
+import com.sparta.kidscafe.domain.cafe.entity.CafeImage;
 import com.sparta.kidscafe.domain.cafe.repository.CafeImageRepository;
 import com.sparta.kidscafe.domain.cafe.repository.CafeRepository;
 import com.sparta.kidscafe.domain.fee.entity.Fee;
@@ -189,5 +192,77 @@ public class CafeServiceTest {
     assertThat(response.getData()).hasSize(2); // 반환된 데이터 크기 확인
     assertThat(response.getData().get(0).getName()).isEqualTo("Test Cafe"); // 첫 번째 Cafe 이름 확인
     assertThat(response.getData().get(1).getName()).isEqualTo("Another Cafe"); // 두 번째 Cafe 이름 확인
+  }
+
+  @Test
+  @DisplayName("카페 상세 조회 성공")
+  void getCafe_success() {
+    // given
+    Long cafeId = 1L;
+    CafeResponseDto cafeResponseDto = new CafeResponseDto(
+        1L,
+        "Test Cafe",
+        "Seoul",
+        50,
+        4.5,
+        20L,
+        "월",
+        true,
+        true,
+        true,
+        true,
+        "http://..",
+        null,
+        null);
+    List<CafeImage> images = Collections.emptyList();
+    List<Room> rooms = Collections.emptyList();
+    List<Fee> fees = Collections.emptyList();
+    List<PricePolicy> pricePolicies = Collections.emptyList();
+
+    when(cafeRepository.findCafeById(cafeId)).thenReturn(cafeResponseDto);
+    when(cafeImageRepository.findAllByCafeId(cafeId)).thenReturn(images);
+    when(roomRepository.findAllByCafeId(cafeId)).thenReturn(rooms);
+    when(feeRepository.findAllByCafeId(cafeId)).thenReturn(fees);
+    when(pricePolicyRepository.findAllByCafeId(cafeId)).thenReturn(pricePolicies);
+
+    // when
+    CafeService service = new CafeService(
+        cafeRepository,
+        cafeImageRepository,
+        roomRepository,
+        feeRepository,
+        pricePolicyRepository,
+        userRepository,
+        fileUtil);
+    ResponseDto<CafeDetailResponseDto> response = service.getCafe(cafeId);
+
+    // then
+    assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    assertThat(response.getData()).isNotNull();
+    assertThat(response.getMessage()).isEqualTo("[Test Cafe] 상세 조회 성공");
+  }
+
+  @Test
+  @DisplayName("카페 상세 조회 - 조회 결과가 없음")
+  void getCafe_notFound() {
+    // given
+    Long cafeId = 1L;
+    when(cafeRepository.findCafeById(cafeId)).thenReturn(null);
+
+    // when
+    CafeService service = new CafeService(
+        cafeRepository,
+        cafeImageRepository,
+        roomRepository,
+        feeRepository,
+        pricePolicyRepository,
+        userRepository,
+        fileUtil);
+    ResponseDto<CafeDetailResponseDto> response = service.getCafe(cafeId);
+
+    // then
+    assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    assertThat(response.getData()).isNull();
+    assertThat(response.getMessage()).isEqualTo("조회 결과가 없습니다.");
   }
 }

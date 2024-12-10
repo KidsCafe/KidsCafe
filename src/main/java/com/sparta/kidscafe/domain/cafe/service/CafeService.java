@@ -26,6 +26,7 @@ import com.sparta.kidscafe.exception.ErrorCode;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,15 +63,30 @@ public class CafeService {
   }
 
   public PageResponseDto<CafeResponseDto> searchCafe(SearchCondition condition) {
+    Page<CafeResponseDto> cafes = cafeRepository.searchCafe(condition);
     return PageResponseDto.success(
-        cafeRepository.searchCafe(condition),
+        cafes,
         HttpStatus.OK,
-        "카페 조회 성공"
+        cafes.isEmpty() ? "조회 결과가 없습니다." : "카페 조회 성공"
     );
   }
 
   public ResponseDto<CafeDetailResponseDto> getCafe(Long cafeId) {
     CafeResponseDto cafeResponseDto = cafeRepository.findCafeById(cafeId);
+    return ResponseDto.success(
+        getCafeDetailInfo(cafeResponseDto),
+        HttpStatus.OK,
+        cafeResponseDto == null ?
+            "조회 결과가 없습니다."
+            : "[" + cafeResponseDto.getName() + "] 상세 조회 성공"
+    );
+  }
+
+  private CafeDetailResponseDto getCafeDetailInfo(CafeResponseDto cafeResponseDto) {
+    if (cafeResponseDto == null)
+      return null;
+
+    Long cafeId = cafeResponseDto.getId();
     List<CafeImage> images = cafeImageRepository.findAllByCafeId(cafeId);
     List<Room> rooms = roomRepository.findAllByCafeId(cafeId);
     List<Fee> fees = feeRepository.findAllByCafeId(cafeId);
@@ -82,12 +98,7 @@ public class CafeService {
     cafeDetailResponseDto.setRooms(rooms);
     cafeDetailResponseDto.setFees(fees);
     cafeDetailResponseDto.setPricePolicies(pricePolicies);
-
-    return ResponseDto.success(
-        cafeDetailResponseDto,
-        HttpStatus.OK,
-        "[" + cafeDetailResponseDto.getName() + "] 상세 조회 성공"
-    );
+    return cafeDetailResponseDto;
   }
 
   private Cafe saveCafe(CafeCreateRequestDto requestDto, User user) {
