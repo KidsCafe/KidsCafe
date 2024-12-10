@@ -20,6 +20,9 @@ public enum ErrorCode {
     // Review 관련 에러
     REVIEW_NOT_FOUND("REVIEW_NOT_FOUND", "리뷰를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 
+    // Room 관련에러
+    ROOM_NOT_FOUND("ROOM_NOT_FOUND","룸을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+
     // Reservation 관련 에러
     RESERVATION_NOT_FOUND("RESERVATION_NOT_FOUND", "예약을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 
