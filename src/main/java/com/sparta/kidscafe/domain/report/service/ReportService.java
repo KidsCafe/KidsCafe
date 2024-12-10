@@ -5,9 +5,11 @@ import static com.sparta.kidscafe.exception.ErrorCode.REVIEW_NOT_FOUND;
 import static com.sparta.kidscafe.exception.ErrorCode.USER_NOT_FOUND;
 
 import com.sparta.kidscafe.common.dto.AuthUser;
+import com.sparta.kidscafe.common.dto.PageResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
 import com.sparta.kidscafe.domain.cafe.repository.CafeRepository;
 import com.sparta.kidscafe.domain.report.dto.request.ReportRequestDto;
+import com.sparta.kidscafe.domain.report.dto.response.ReportResponseDto;
 import com.sparta.kidscafe.domain.report.entity.Report;
 import com.sparta.kidscafe.domain.report.repository.ReportRepository;
 import com.sparta.kidscafe.domain.review.entity.Review;
@@ -17,6 +19,9 @@ import com.sparta.kidscafe.domain.user.repository.UserRepository;
 import com.sparta.kidscafe.exception.BusinessException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,4 +62,23 @@ public class ReportService {
         .message("신고 등록 완료")
         .build();
   }
+
+  @Transactional(readOnly = true)
+  public PageResponseDto<ReportResponseDto> getMyReports(AuthUser authUser, Pageable pageable) {
+    Long id = authUser.getId();
+
+    Page<Report> reports = reportRepository.findAllByUserId(id, pageable);
+
+    Page<ReportResponseDto> reportDtos = reports.map(report -> new ReportResponseDto(
+        report.getId(),
+        report.getUser().getId(),
+        report.getReview().getId(),
+        report.getContent(),
+        report.getStatus()
+    ));
+
+    return PageResponseDto.success(reportDtos,HttpStatus.OK, "신고 목록 조회 성공");
+  }
+
+
 }
