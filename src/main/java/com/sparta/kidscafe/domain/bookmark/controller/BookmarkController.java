@@ -7,7 +7,6 @@ import com.sparta.kidscafe.common.dto.StatusDto;
 import com.sparta.kidscafe.domain.bookmark.dto.response.BookmarkOwnerRetreiveResponseDto;
 import com.sparta.kidscafe.domain.bookmark.dto.response.BookmarkUserRetreiveResponseDto;
 import com.sparta.kidscafe.domain.bookmark.service.BookmarkService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
