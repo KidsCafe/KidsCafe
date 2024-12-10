@@ -10,7 +10,6 @@ import com.sparta.kidscafe.domain.cafe.dto.request.CafeSearchRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeDetailResponseDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeResponseDto;
 import com.sparta.kidscafe.domain.cafe.service.CafeService;
-import com.sparta.kidscafe.domain.user.entity.User;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -58,6 +57,6 @@ public class CafeController {
   ) {
     return ResponseEntity
         .status(HttpStatus.OK)
-        .body(cafeService.getCafe(cafeId));
+        .body(cafeService.findCafe(cafeId));
   }
 }

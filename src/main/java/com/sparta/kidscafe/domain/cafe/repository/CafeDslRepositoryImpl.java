@@ -46,7 +46,7 @@ public class CafeDslRepositoryImpl implements CafeDslRepository {
   }
 
   @Override
-  public Page<CafeResponseDto> searchCafe(SearchCondition condition) {
+  public Page<CafeResponseDto> findAllByCafe(SearchCondition condition) {
     long cntTotal = searchCafeTotalCount(condition);
     if (cntTotal == 0) {
       return Page.empty();

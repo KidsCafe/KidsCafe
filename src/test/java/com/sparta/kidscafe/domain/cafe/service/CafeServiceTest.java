@@ -175,7 +175,7 @@ public class CafeServiceTest {
         searchCondition.getPageable(), 2);
 
     // Mock 동작 설정: Repository 호출 시 Mock 결과 반환
-    when(cafeRepository.searchCafe(any(SearchCondition.class))).thenReturn(mockPage);
+    when(cafeRepository.findAllByCafe(any(SearchCondition.class))).thenReturn(mockPage);
 
     // Act: 테스트 대상 메서드 호출
     CafeService service = new CafeService(
@@ -196,7 +196,7 @@ public class CafeServiceTest {
 
   @Test
   @DisplayName("카페 상세 조회 성공")
-  void getCafe_success() {
+  void findCafe_success() {
     // given
     Long cafeId = 1L;
     CafeResponseDto cafeResponseDto = new CafeResponseDto(
@@ -234,7 +234,7 @@ public class CafeServiceTest {
         pricePolicyRepository,
         userRepository,
         fileUtil);
-    ResponseDto<CafeDetailResponseDto> response = service.getCafe(cafeId);
+    ResponseDto<CafeDetailResponseDto> response = service.findCafe(cafeId);
 
     // then
     assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
@@ -244,7 +244,7 @@ public class CafeServiceTest {
 
   @Test
   @DisplayName("카페 상세 조회 - 조회 결과가 없음")
-  void getCafe_notFound() {
+  void findCafe_notFound() {
     // given
     Long cafeId = 1L;
     when(cafeRepository.findCafeById(cafeId)).thenReturn(null);
@@ -258,7 +258,7 @@ public class CafeServiceTest {
         pricePolicyRepository,
         userRepository,
         fileUtil);
-    ResponseDto<CafeDetailResponseDto> response = service.getCafe(cafeId);
+    ResponseDto<CafeDetailResponseDto> response = service.findCafe(cafeId);
 
     // then
     assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());

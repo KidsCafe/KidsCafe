@@ -8,5 +8,5 @@ public interface CafeDslRepository {
 
   CafeResponseDto findCafeById(Long id);
 
-  Page<CafeResponseDto> searchCafe(SearchCondition condition);
+  Page<CafeResponseDto> findAllByCafe(SearchCondition condition);
 }

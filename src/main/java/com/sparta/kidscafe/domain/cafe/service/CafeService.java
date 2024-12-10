@@ -63,7 +63,7 @@ public class CafeService {
   }
 
   public PageResponseDto<CafeResponseDto> searchCafe(SearchCondition condition) {
-    Page<CafeResponseDto> cafes = cafeRepository.searchCafe(condition);
+    Page<CafeResponseDto> cafes = cafeRepository.findAllByCafe(condition);
     return PageResponseDto.success(
         cafes,
         HttpStatus.OK,
@@ -71,10 +71,10 @@ public class CafeService {
     );
   }
 
-  public ResponseDto<CafeDetailResponseDto> getCafe(Long cafeId) {
+  public ResponseDto<CafeDetailResponseDto> findCafe(Long cafeId) {
     CafeResponseDto cafeResponseDto = cafeRepository.findCafeById(cafeId);
     return ResponseDto.success(
-        getCafeDetailInfo(cafeResponseDto),
+        createCafeDetailInfo(cafeResponseDto),
         HttpStatus.OK,
         cafeResponseDto == null ?
             "조회 결과가 없습니다."
@@ -82,7 +82,7 @@ public class CafeService {
     );
   }
 
-  private CafeDetailResponseDto getCafeDetailInfo(CafeResponseDto cafeResponseDto) {
+  private CafeDetailResponseDto createCafeDetailInfo(CafeResponseDto cafeResponseDto) {
     if (cafeResponseDto == null)
       return null;
 
