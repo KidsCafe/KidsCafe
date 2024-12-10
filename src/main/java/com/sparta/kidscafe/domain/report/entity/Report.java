@@ -1,11 +1,14 @@
-package com.sparta.kidscafe.domain.bookmark.entity;
+package com.sparta.kidscafe.domain.report.entity;
 
 import com.sparta.kidscafe.common.entity.Timestamped;
-import com.sparta.kidscafe.domain.cafe.entity.Cafe;
+import com.sparta.kidscafe.common.enums.ReportType;
+import com.sparta.kidscafe.domain.review.entity.Review;
 import com.sparta.kidscafe.domain.user.entity.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,33 +20,29 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "bookmark")
-public class Bookmark extends Timestamped {
-
+@Table(name = "report")
+public class Report extends Timestamped {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id", nullable = false)
-  @OnDelete(action = OnDeleteAction.CASCADE)
+  @JoinColumn(name = "user_id")
   private User user;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "cafe_id", nullable = false)
-  @OnDelete(action = OnDeleteAction.CASCADE)
-  private Cafe cafe;
+  @JoinColumn(name = "review_id")
+  private Review review;
 
-  public Bookmark(User user, Cafe cafe) {
-    this.user = user;
-    this.cafe = cafe;
-  }
+  @Column(nullable = false)
+  private String content;
+
+  @Enumerated(value = EnumType.STRING)
+  private ReportType status = ReportType.PENDING;
 }

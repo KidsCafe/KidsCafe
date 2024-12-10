@@ -48,8 +48,8 @@ class AuthServiceTest {
 			"test si test gu test dong",
 			"testNickname",
 			"default",
-			"USER"
-		);
+			"USER");
+
 		when(userRepository.existsByEmail(any())).thenReturn(true);
 
 		// when // then

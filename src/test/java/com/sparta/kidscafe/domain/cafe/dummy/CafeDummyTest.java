@@ -54,7 +54,7 @@ public class CafeDummyTest {
   @Transactional
   @Rollback(false)
   void createCafe() {
-    //  user dummy test 돌려야함ds
+    //  user dummy test 돌려야함
     List<User> owners = userRepository.findAllByRole(RoleType.OWNER);
     for (User owner : owners) {
       List<Cafe> cafes = DummyCafe.createDummyCafes(owner, 10);
@@ -64,7 +64,7 @@ public class CafeDummyTest {
         List<CafeImage> cafeImages = DummyCafeImage.createDummyCafeImages(cafe, 5);
         cafeImageRepository.saveAll(cafeImages);
 
-        List<Room> rooms = DummyRoom.createDummyRooms(cafe, 5);
+        List<Room> rooms = DummyRoom.createDummyRooms(cafe, TestUtil.getRandomInteger(0, 5));
         roomRepository.saveAll(rooms);
 
         List<Fee> fees = DummyFee.createDummyFees(cafe);
@@ -72,15 +72,19 @@ public class CafeDummyTest {
 
         Collections.shuffle(rooms);
         Collections.shuffle(fees);
+
         List<PricePolicy> pricePolicies = DummyPricePolicy
             .createDummyPricePoliciesByFee(
                 cafe,
                 fees.subList(0, TestUtil.getRandomInteger(1, fees.size())));
-        pricePolicies.addAll(
-            DummyPricePolicy
-                .createDummyPricePoliciesByRoom(
-                    cafe,
-                    rooms.subList(0, TestUtil.getRandomInteger(1, rooms.size()))));
+        if(!rooms.isEmpty()) {
+          pricePolicies.addAll(
+              DummyPricePolicy
+                  .createDummyPricePoliciesByRoom(
+                      cafe,
+                      rooms.subList(0, TestUtil.getRandomInteger(1, rooms.size()))));
+        }
+
         pricePolicyRepository.saveAll(pricePolicies);
       }
     }
