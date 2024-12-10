@@ -2,6 +2,7 @@ package com.sparta.kidscafe.domain.room.service;
 
 import static com.sparta.kidscafe.exception.ErrorCode.CAFE_NOT_FOUND;
 import static com.sparta.kidscafe.exception.ErrorCode.FORBIDDEN;
+import static com.sparta.kidscafe.exception.ErrorCode.ROOM_NOT_FOUND;
 
 import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.ListResponseDto;
@@ -13,6 +14,7 @@ import com.sparta.kidscafe.domain.room.dto.response.RoomResponseDto;
 import com.sparta.kidscafe.domain.room.entity.Room;
 import com.sparta.kidscafe.domain.room.repository.RoomRepository;
 import com.sparta.kidscafe.exception.BusinessException;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -59,5 +61,23 @@ public class RoomService {
         .toList(),
         HttpStatus.OK,
         "룸 조회 성공");
+  }
+
+  public StatusDto updateRoom(AuthUser authUser, Long roomId, RoomCreateRequestDto request) {
+
+    Long id = authUser.getId();
+
+    Room room = roomRepository.findById(roomId).orElseThrow(()-> new BusinessException(ROOM_NOT_FOUND));
+
+    if (!id.equals(room.getCafe().getUser().getId())) {
+      throw new BusinessException(FORBIDDEN);
+    }
+
+    room.updateRoom(request);
+
+    return StatusDto.builder()
+        .status(HttpStatus.OK.value())
+        .message("룸 수정완료")
+        .build();
   }
 }
