@@ -21,12 +21,14 @@ public class PageResponseDto<T> extends StatusDto {
 
   public static <T> PageResponseDto<T> success(Page<T> data, HttpStatus status, String message) {
     Pageable pageable = data.getPageable();
+    int page = pageable.isPaged() ? pageable.getPageNumber() + 1 : 0;
+    int size = pageable.isPaged() ? pageable.getPageSize() : 0;
     return PageResponseDto.<T>createResponseBuilder()
-        .data(data.stream().toList())
+        .data(data.hasContent() ? data.getContent() : null)
         .status(status.value())
         .message(message)
-        .page(pageable.getPageNumber() + 1)
-        .size(pageable.getPageSize())
+        .page(page)
+        .size(size)
         .totalPage(data.getTotalPages())
         .build();
   }
