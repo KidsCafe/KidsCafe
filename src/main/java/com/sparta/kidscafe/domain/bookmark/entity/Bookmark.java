@@ -3,8 +3,6 @@ package com.sparta.kidscafe.domain.bookmark.entity;
 import com.sparta.kidscafe.common.entity.Timestamped;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
 import com.sparta.kidscafe.domain.user.entity.User;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
