@@ -8,4 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface ReportRepository extends JpaRepository<Report, Long> {
 
   Page<Report> findAllByUserId(Long id, Pageable pageable);
+
+  Page<Report> findAllByOrderByCreatedAtDesc(Pageable pageable);
 }

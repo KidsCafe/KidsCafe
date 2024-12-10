@@ -81,4 +81,18 @@ public class ReportService {
   }
 
 
+  public PageResponseDto<ReportResponseDto> getReports(Pageable pageable) {
+
+    Page<Report> reports = reportRepository.findAllByOrderByCreatedAtDesc(pageable);
+
+    Page<ReportResponseDto> reportDtos = reports.map(report -> new ReportResponseDto(
+        report.getId(),
+        report.getUser().getId(),
+        report.getReview().getId(),
+        report.getContent(),
+        report.getStatus()
+    ));
+
+    return PageResponseDto.success(reportDtos,HttpStatus.OK, "신고 목록 조회 성공");
+  }
 }
