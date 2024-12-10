@@ -43,4 +43,12 @@ public class PricePolicyController {
         return ResponseEntity.ok("가격 정책이 수정되었습니다.");
     }
 
+    @DeleteMapping("/{pricesId}")
+    public ResponseEntity<String> deletePricePolicy(
+            @PathVariable Long cafeId,
+            @PathVariable Long pricesId
+    ) {
+        pricePolicyService.deletePricePolicy(cafeId, pricesId);
+        return ResponseEntity.ok("가격 정책이 삭제되었습니다.");
+    }
 }
