@@ -4,19 +4,22 @@ import static com.sparta.kidscafe.exception.ErrorCode.CAFE_NOT_FOUND;
 import static com.sparta.kidscafe.exception.ErrorCode.FORBIDDEN;
 
 import com.sparta.kidscafe.common.dto.AuthUser;
+import com.sparta.kidscafe.common.dto.ListResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
 import com.sparta.kidscafe.domain.cafe.repository.CafeRepository;
 import com.sparta.kidscafe.domain.room.dto.request.RoomCreateRequestDto;
+import com.sparta.kidscafe.domain.room.dto.response.RoomResponseDto;
 import com.sparta.kidscafe.domain.room.entity.Room;
 import com.sparta.kidscafe.domain.room.repository.RoomRepository;
 import com.sparta.kidscafe.exception.BusinessException;
-import com.sparta.kidscafe.exception.ErrorCode;
-import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 @Service
 @RequiredArgsConstructor
 public class RoomService {
@@ -42,5 +45,19 @@ public class RoomService {
         .status(HttpStatus.CREATED.value())
         .message("룸 생성 성공")
         .build();
+  }
+
+  @Transactional(readOnly = true)
+  public ListResponseDto<RoomResponseDto> getRooms(Long cafeId) {
+
+    cafeRepository.findById(cafeId).orElseThrow(()-> new BusinessException(CAFE_NOT_FOUND));
+
+    List<Room> roomList = roomRepository.findAllByCafeId(cafeId);
+
+    return ListResponseDto.success(roomList.stream()
+        .map(RoomResponseDto::from)
+        .toList(),
+        HttpStatus.OK,
+        "룸 조회 성공");
   }
 }
