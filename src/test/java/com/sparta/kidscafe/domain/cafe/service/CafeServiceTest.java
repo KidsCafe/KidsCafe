@@ -8,8 +8,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.PageResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
+import com.sparta.kidscafe.common.enums.RoleType;
 import com.sparta.kidscafe.common.util.FileUtil;
 import com.sparta.kidscafe.domain.cafe.dto.SearchCondition;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeCreateRequestDto;
@@ -24,9 +26,11 @@ import com.sparta.kidscafe.domain.pricepolicy.repository.PricePolicyRepository;
 import com.sparta.kidscafe.domain.room.entity.Room;
 import com.sparta.kidscafe.domain.room.repository.RoomRepository;
 import com.sparta.kidscafe.domain.user.entity.User;
+import com.sparta.kidscafe.domain.user.repository.UserRepository;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -58,8 +62,12 @@ public class CafeServiceTest {
   private PricePolicyRepository pricePolicyRepository;
 
   @Mock
+  private UserRepository userRepository;
+
+  @Mock
   private FileUtil fileUtil;
 
+  private AuthUser authUser;
   private User user;
   private CafeCreateRequestDto requestDto;
   private List<MultipartFile> cafeImages;
@@ -67,7 +75,8 @@ public class CafeServiceTest {
   @BeforeEach
   void setUp() {
     // 테스트를 위한 기본 User 및 Request DTO 생성
-    user = User.builder().id(15L).build();
+    authUser = new AuthUser(15L, "test@email.com", RoleType.OWNER);
+    user = User.builder().id(authUser.getId()).build();
     requestDto = mock(CafeCreateRequestDto.class);
     cafeImages = Arrays.asList(mock(MultipartFile.class), mock(MultipartFile.class));
   }
@@ -95,8 +104,14 @@ public class CafeServiceTest {
         roomRepository,
         feeRepository,
         pricePolicyRepository,
+        userRepository,
         fileUtil);
-    StatusDto result = service.createCafe(user, requestDto, cafeImages);
+
+    // Mock 동작 설정: Repository 호출 시 Mock 결과 반환
+    when(userRepository.findById(authUser.getId())).thenReturn(Optional.of(user));
+
+    // when: 실행
+    StatusDto result = service.createCafe(authUser, requestDto, cafeImages);
 
     // then: 결과 확인
     assert (result.getStatus() == HttpStatus.CREATED.value());
@@ -166,6 +181,7 @@ public class CafeServiceTest {
         roomRepository,
         feeRepository,
         pricePolicyRepository,
+        userRepository,
         fileUtil);
     PageResponseDto<CafeResponseDto> response = service.searchCafe(searchCondition);
 

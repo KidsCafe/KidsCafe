@@ -1,5 +1,6 @@
 package com.sparta.kidscafe.domain.cafe.service;
 
+import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.PageResponseDto;
 import com.sparta.kidscafe.common.dto.ResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
@@ -19,6 +20,9 @@ import com.sparta.kidscafe.domain.pricepolicy.repository.PricePolicyRepository;
 import com.sparta.kidscafe.domain.room.entity.Room;
 import com.sparta.kidscafe.domain.room.repository.RoomRepository;
 import com.sparta.kidscafe.domain.user.entity.User;
+import com.sparta.kidscafe.domain.user.repository.UserRepository;
+import com.sparta.kidscafe.exception.BusinessException;
+import com.sparta.kidscafe.exception.ErrorCode;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -36,11 +40,13 @@ public class CafeService {
   private final RoomRepository roomRepository;
   private final FeeRepository feeRepository;
   private final PricePolicyRepository pricePolicyRepository;
+  private final UserRepository userRepository;
   private final FileUtil fileUtil;
 
   @Transactional
-  public StatusDto createCafe(User user, CafeCreateRequestDto requestDto,
+  public StatusDto createCafe(AuthUser authUser, CafeCreateRequestDto requestDto,
       List<MultipartFile> cafeImages) {
+    User user = findByUserId(authUser.getId());
     Cafe cafe = saveCafe(requestDto, user);
     saveCafeImage(cafe, cafeImages);
     saveCafeDetailInfo(requestDto, cafe);
@@ -48,6 +54,11 @@ public class CafeService {
         HttpStatus.CREATED,
         "[" + cafe.getName() + "] 등록 성공"
     );
+  }
+
+  private User findByUserId(Long userId) {
+    return userRepository.findById(userId)
+        .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
   }
 
   public PageResponseDto<CafeResponseDto> searchCafe(SearchCondition condition) {

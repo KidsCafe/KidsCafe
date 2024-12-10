@@ -4,5 +4,6 @@ import com.sparta.kidscafe.domain.cafe.entity.Cafe;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CafeRepository extends JpaRepository<Cafe, Long>, CafeDslRepository {
+
   boolean existsByIdAndUserId(Long id, Long userId);
 }

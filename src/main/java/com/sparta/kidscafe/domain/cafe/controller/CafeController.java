@@ -1,5 +1,7 @@
 package com.sparta.kidscafe.domain.cafe.controller;
 
+import com.sparta.kidscafe.common.annotation.Auth;
+import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.PageResponseDto;
 import com.sparta.kidscafe.common.dto.ResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
@@ -32,15 +34,13 @@ public class CafeController {
 
   @PostMapping("/owners/cafes")
   public ResponseEntity<StatusDto> createCafe(
-      // TODO khj [인증/인가] 완료되면 교체할 것.
+      @Auth AuthUser authUser,
       @Valid @RequestPart CafeCreateRequestDto requestDto,
       @RequestPart List<MultipartFile> cafeImages
   ) {
-    // TODO khj [인증/인가] 완료되면 교체할 것.
-    User user = User.builder().id(15L).build();
     return ResponseEntity
         .status(HttpStatus.CREATED)
-        .body(cafeService.createCafe(user, requestDto, cafeImages));
+        .body(cafeService.createCafe(authUser, requestDto, cafeImages));
   }
 
   @GetMapping("/cafes")
