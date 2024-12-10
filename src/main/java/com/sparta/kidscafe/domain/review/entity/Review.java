@@ -41,15 +41,14 @@ public class Review extends Timestamped {
   @JoinColumn(name = "cafe_id")
   private Cafe cafe;
 
-  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-  @JoinColumn(name = "report_id")
-  private Report report;
-
   @Column(nullable = false)
   private double star;
 
   @Column(nullable = false)
   private String content;
+
+  @OneToMany(mappedBy = "review", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+  private List<Report> report = new ArrayList<>();
 
   @Builder.Default
   @OneToMany(mappedBy = "review", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})

@@ -4,6 +4,7 @@ import com.sparta.kidscafe.common.entity.Timestamped;
 import com.sparta.kidscafe.common.enums.ReportType;
 import com.sparta.kidscafe.domain.review.entity.Review;
 import com.sparta.kidscafe.domain.user.entity.User;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -43,5 +44,5 @@ public class Report extends Timestamped {
   private String content;
 
   @Enumerated(value = EnumType.STRING)
-  private ReportType status;
+  private ReportType status = ReportType.PENDING;
 }
