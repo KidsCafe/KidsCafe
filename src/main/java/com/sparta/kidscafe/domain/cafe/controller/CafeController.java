@@ -8,6 +8,7 @@ import com.sparta.kidscafe.common.dto.StatusDto;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeCreateRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeModifyRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeSearchRequestDto;
+import com.sparta.kidscafe.domain.cafe.dto.request.CafesSimpleCreateRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeDetailResponseDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeResponseDto;
 import com.sparta.kidscafe.domain.cafe.service.CafeService;
@@ -42,6 +43,16 @@ public class CafeController {
     return ResponseEntity
         .status(HttpStatus.CREATED)
         .body(cafeService.createCafe(authUser, requestDto, cafeImages));
+  }
+
+  @PostMapping("/admin/cafes")
+  public ResponseEntity<StatusDto> createCafe(
+      @Auth AuthUser authUser,
+      @Valid @RequestBody CafesSimpleCreateRequestDto requestDto
+  ) {
+    return ResponseEntity
+        .status(HttpStatus.CREATED)
+        .body(cafeService.creatCafe(authUser, requestDto));
   }
 
   @GetMapping("/cafes")

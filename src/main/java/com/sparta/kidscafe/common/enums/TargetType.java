@@ -20,7 +20,8 @@ public enum TargetType {
                 return targetType;
             }
         }
-        return FEE; // 기본값 설정
+        return ROOM; // 기본값 설정
+
     }
 
     @JsonValue
