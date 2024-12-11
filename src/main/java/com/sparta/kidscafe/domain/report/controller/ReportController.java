@@ -60,7 +60,7 @@ public class ReportController {
         .body(reportService.getReports(PageRequest.of(page,size)));
   }
 
-  @PatchMapping("/reports/{reportId)")
+  @PatchMapping("/reports/{reportId}")
   public ResponseEntity<StatusDto> updateReport (
       @Valid @RequestBody ReportUpdateDto request,
       @PathVariable Long reportId

@@ -59,7 +59,10 @@ class ReportServiceTest {
     Long reviewId = 2L;
     Long cafeId = 3L;
     AuthUser authUser = new AuthUser(userId, "test@example.com", RoleType.OWNER);
-    Cafe cafe = new Cafe(cafeId, "cafe");
+    Cafe cafe = Cafe.builder()
+        .id(cafeId)
+        .name("cafe")
+        .build();
     ReportRequestDto request = new ReportRequestDto("신고 내용");
 
     User user = new User(userId, "testUser",RoleType.OWNER);

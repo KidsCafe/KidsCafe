@@ -32,4 +32,8 @@ public class CafeImage  extends Timestamped {
 
   @Column(nullable = false)
   private String imagePath;
+
+  public void update(String newImagePath) {
+    imagePath = newImagePath;
+  }
 }

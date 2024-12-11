@@ -73,7 +73,10 @@ public class BookmarkServiceTest {
     Long cafeId = 1L;
 
     User user = new User(userId, "Test@Example.com", RoleType.USER);
-    Cafe cafe = new Cafe(cafeId, "Test Cafe");
+    Cafe cafe = Cafe.builder()
+        .id(cafeId)
+        .name("Test Cafe")
+        .build();
 
     when(userRepository.findById(userId)).thenReturn(Optional.of(user));
     when(cafeRepository.findById(cafeId)).thenReturn(Optional.of(cafe));
@@ -96,7 +99,10 @@ public class BookmarkServiceTest {
     Long cafeId = 1L;
 
     User user = new User(userId, "Test@Example.com", RoleType.USER);
-    Cafe cafe = new Cafe(cafeId, "Test Cafe");
+    Cafe cafe = Cafe.builder()
+        .id(cafeId)
+        .name("Test Cafe")
+        .build();
     Bookmark bookmark = new Bookmark(1L, user, cafe);
 
     when(userRepository.findById(userId)).thenReturn(Optional.of(user));

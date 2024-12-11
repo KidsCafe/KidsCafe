@@ -2,6 +2,7 @@ package com.sparta.kidscafe.domain.cafe.entity;
 
 import com.sparta.kidscafe.common.entity.Timestamped;
 import com.sparta.kidscafe.domain.bookmark.entity.Bookmark;
+import com.sparta.kidscafe.domain.cafe.dto.request.CafeModifyRequestDto;
 import com.sparta.kidscafe.domain.fee.entity.Fee;
 import com.sparta.kidscafe.domain.pricepolicy.entity.PricePolicy;
 import com.sparta.kidscafe.domain.room.entity.Room;
@@ -74,28 +75,51 @@ public class Cafe extends Timestamped {
   private LocalTime closedAt;
 
   @Builder.Default
-  @OneToMany(mappedBy = "cafe", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+  @OneToMany(
+      mappedBy = "cafe",
+      cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+      orphanRemoval = true)
   private List<Bookmark> bookmarks = new ArrayList<>();
 
   @Builder.Default
-  @OneToMany(mappedBy = "cafe", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+  @OneToMany(
+      mappedBy = "cafe",
+      cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+      orphanRemoval = true)
   private List<CafeImage> cafeImages = new ArrayList<>();
 
   // TODO khj 한방 쿼리가 된다면 밑에 항목들 제거
   @Builder.Default
-  @OneToMany(mappedBy = "cafe", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+  @OneToMany(
+      mappedBy = "cafe",
+      cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+      orphanRemoval = true)
   private List<Room> rooms = new ArrayList<>();
 
   @Builder.Default
-  @OneToMany(mappedBy = "cafe", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+  @OneToMany(
+      mappedBy = "cafe",
+      cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+      orphanRemoval = true)
   private List<Fee> fees = new ArrayList<>();
 
   @Builder.Default
-  @OneToMany(mappedBy = "cafe", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+  @OneToMany(
+      mappedBy = "cafe",
+      cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+      orphanRemoval = true)
   private List<PricePolicy> pricePolicies = new ArrayList<>();
 
-  public Cafe(Long id, String name) {
-    this.id = id;
-    this.name = name;
+  public void update(CafeModifyRequestDto requestDto) {
+    name = requestDto.getName();
+    region = requestDto.getRegion();
+    address = requestDto.getAddress();
+    size = requestDto.getSize();
+    multiFamily = requestDto.isMultiFamily();
+    dayOff = requestDto.getDayOff();
+    parking = requestDto.isParking();
+    hyperlink = requestDto.getHyperlink();
+    openedAt = requestDto.getOpenedAt();
+    closedAt = requestDto.getClosedAt();
   }
 }
