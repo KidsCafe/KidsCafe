@@ -6,7 +6,9 @@ import com.sparta.kidscafe.common.dto.PageResponseDto;
 import com.sparta.kidscafe.common.dto.ResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeCreateRequestDto;
+import com.sparta.kidscafe.domain.cafe.dto.request.CafeModifyRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeSearchRequestDto;
+import com.sparta.kidscafe.domain.cafe.dto.request.CafesSimpleCreateRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeDetailResponseDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeResponseDto;
 import com.sparta.kidscafe.domain.cafe.service.CafeService;
@@ -16,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,12 +37,22 @@ public class CafeController {
   @PostMapping("/owners/cafes")
   public ResponseEntity<StatusDto> createCafe(
       @Auth AuthUser authUser,
-      @Valid @RequestPart CafeCreateRequestDto requestDto,
-      @RequestPart List<MultipartFile> cafeImages
+      @RequestPart List<MultipartFile> cafeImages,
+      @Valid @RequestPart CafeCreateRequestDto requestDto
   ) {
     return ResponseEntity
         .status(HttpStatus.CREATED)
         .body(cafeService.createCafe(authUser, requestDto, cafeImages));
+  }
+
+  @PostMapping("/admin/cafes")
+  public ResponseEntity<StatusDto> createCafe(
+      @Auth AuthUser authUser,
+      @Valid @RequestBody CafesSimpleCreateRequestDto requestDto
+  ) {
+    return ResponseEntity
+        .status(HttpStatus.CREATED)
+        .body(cafeService.creatCafe(authUser, requestDto));
   }
 
   @GetMapping("/cafes")
@@ -52,11 +65,23 @@ public class CafeController {
   }
 
   @GetMapping("/cafes/{cafeId}")
-  public ResponseEntity<ResponseDto<CafeDetailResponseDto>> getCafe(
+  public ResponseEntity<ResponseDto<CafeDetailResponseDto>> findCafe(
       @PathVariable Long cafeId
   ) {
     return ResponseEntity
         .status(HttpStatus.OK)
         .body(cafeService.findCafe(cafeId));
+  }
+
+  @PatchMapping("/cafes/{cafeId}")
+  public ResponseEntity<StatusDto> updateCafe(
+      @Auth AuthUser authUser,
+      @PathVariable Long cafeId,
+      @RequestPart List<MultipartFile> cafeImages,
+      @Valid @RequestPart CafeModifyRequestDto requestDto
+      ) {
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(cafeService.updateCafe(authUser, cafeId, cafeImages, requestDto));
   }
 }
