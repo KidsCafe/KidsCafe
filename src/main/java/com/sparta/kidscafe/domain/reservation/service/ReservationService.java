@@ -90,7 +90,6 @@ public class ReservationService {
     Pageable pageable = PageRequest.of(page, size, Sort.by(Direction.DESC, "createdAt"));
     Page<Reservation> reservationsForUser = reservationRepository.findByUserId(authUser.getId(), pageable);
 
-
     Page<ReservationResponseDto> responseDto = reservationsForUser.map(reservation ->
         ReservationResponseDto.builder()
             .reservationId(reservation.getId())
@@ -110,10 +109,11 @@ public class ReservationService {
     if (!authUser.getRoleType().equals(RoleType.OWNER)) {
       throw new BusinessException(ErrorCode.FORBIDDEN);
     }
-    Boolean isOwner = cafeRepository.existsByIdAndUserId(cafeId, authUser.getId());
-    if (!isOwner) {
-      throw new BusinessException(ErrorCode.FORBIDDEN);
+    boolean roomExists = roomRepository.existsById(cafeId);
+    if (!roomExists) {
+      throw new BusinessException(ErrorCode.ROOM_NOT_FOUND);
     }
+
     Pageable pageable = PageRequest.of(page, size, Sort.by(Direction.DESC, "createdAt"));
     Page<Reservation> reservationsForOwner = reservationRepository.findByCafeId(cafeId, pageable);
 
