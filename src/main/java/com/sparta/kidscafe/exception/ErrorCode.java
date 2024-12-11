@@ -35,6 +35,9 @@ public enum ErrorCode {
     PRICE_POLICY_NOT_FOUND("PRICE_POLICY_NOT_FOUND", "가격 정책을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     PRICE_POLICY_MISMATCH("PRICE_POLICY_MISMATCH", "카페에 해당하지 않는 가격 정책입니다.", HttpStatus.BAD_REQUEST),
 
+    // Fee 관련 에러
+    INVALID_FEE_ID("INVALID_FEE_ID", "유효하지 않은 입장료입니다.", HttpStatus.BAD_REQUEST),
+    UNSUPPORTED_TARGET_TYPE("UNSUPPORTED_TARGET_TYPE", "지원하지 않는 유형입니다.", HttpStatus.BAD_REQUEST),
     // 신고 관련 에러
     REPORT_NOT_FOUND("REPORT_NOT_FOUND","신고를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     INVALID_REPORT_STATUS("INVALID_REPORT_STATUS", "잘못된 신고 상태입니다.", HttpStatus.BAD_REQUEST),
