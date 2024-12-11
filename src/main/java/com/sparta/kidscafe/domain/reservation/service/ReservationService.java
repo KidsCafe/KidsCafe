@@ -84,8 +84,12 @@ public class ReservationService {
   // 예약 내역 조회(User용)
   @Transactional(readOnly = true)
   public PageResponseDto<ReservationResponseDto> getReservationsByUser(AuthUser authUser, int page, int size) {
+    if (!authUser.getRoleType().equals(RoleType.USER)) {
+      throw new BusinessException(ErrorCode.UNAUTHORIZED);
+    }
     Pageable pageable = PageRequest.of(page, size, Sort.by(Direction.DESC, "createdAt"));
     Page<Reservation> reservationsForUser = reservationRepository.findByUserId(authUser.getId(), pageable);
+
 
     Page<ReservationResponseDto> responseDtos = reservationsForUser.map(reservation ->
         ReservationResponseDto.builder()
