@@ -1,12 +1,14 @@
 package com.sparta.kidscafe.domain.reservation.service;
 
 import com.sparta.kidscafe.common.dto.AuthUser;
+import com.sparta.kidscafe.common.dto.PageResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
 import com.sparta.kidscafe.common.enums.RoleType;
 import com.sparta.kidscafe.common.enums.TargetType;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
 import com.sparta.kidscafe.domain.cafe.repository.CafeRepository;
 import com.sparta.kidscafe.domain.reservation.dto.request.ReservationCreateRequestDto;
+import com.sparta.kidscafe.domain.reservation.dto.response.ReservationResponseDto;
 import com.sparta.kidscafe.domain.reservation.entity.Reservation;
 import com.sparta.kidscafe.domain.reservation.repository.ReservationRepository;
 import com.sparta.kidscafe.domain.room.entity.Room;
@@ -16,6 +18,11 @@ import com.sparta.kidscafe.domain.user.repository.UserRepository;
 import com.sparta.kidscafe.exception.BusinessException;
 import com.sparta.kidscafe.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -72,5 +79,24 @@ public class ReservationService {
         .status(HttpStatus.CREATED.value())
         .message("예약 완료")
         .build();
+  }
+
+  // 예약 내역 조회(User용)
+  @Transactional(readOnly = true)
+  public PageResponseDto<ReservationResponseDto> getReservationsByUser(AuthUser authUser, int page, int size) {
+    Pageable pageable = PageRequest.of(page, size, Sort.by(Direction.DESC, "createdAt"));
+    Page<Reservation> reservationsForUser = reservationRepository.findByUserId(authUser.getId(), pageable);
+
+    Page<ReservationResponseDto> responseDtos = reservationsForUser.map(reservation ->
+        ReservationResponseDto.builder()
+            .reservationId(reservation.getId())
+            .cafeId(reservation.getCafe().getId())
+            .cafeName(reservation.getCafe().getName())
+            .startedAt(reservation.getStartedAt())
+            .finishedAt(reservation.getFinishedAt())
+            .totalPrice(reservation.getTotalPrice())
+            .build()
+    );
+    return PageResponseDto.success(responseDtos, HttpStatus.OK, "예약 내역 조회(사용자용) 성공");
   }
 }
