@@ -1,9 +1,11 @@
 package com.sparta.kidscafe.domain.cafe.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.anyList;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -15,6 +17,7 @@ import com.sparta.kidscafe.common.dto.StatusDto;
 import com.sparta.kidscafe.common.enums.RoleType;
 import com.sparta.kidscafe.domain.cafe.dto.SearchCondition;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeCreateRequestDto;
+import com.sparta.kidscafe.domain.cafe.dto.request.CafesSimpleCreateRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeDetailResponseDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeResponseDto;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
@@ -28,6 +31,8 @@ import com.sparta.kidscafe.domain.room.entity.Room;
 import com.sparta.kidscafe.domain.room.repository.RoomRepository;
 import com.sparta.kidscafe.domain.user.entity.User;
 import com.sparta.kidscafe.domain.user.repository.UserRepository;
+import com.sparta.kidscafe.exception.BusinessException;
+import com.sparta.kidscafe.exception.ErrorCode;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -65,16 +70,30 @@ public class CafeServiceTest {
   @Mock
   private CafeImageService cafeImageService;
 
+  private CafeService cafeService;
   private AuthUser authUser;
+  private AuthUser adminAuthUser;
   private User user;
+  private User adminUser;
   private CafeCreateRequestDto requestDto;
   private List<MultipartFile> cafeImages;
 
   @BeforeEach
   void setUp() {
-    // 테스트를 위한 기본 User 및 Request DTO 생성
+    cafeService = new CafeService(
+        cafeRepository,
+        roomRepository,
+        feeRepository,
+        pricePolicyRepository,
+        userRepository,
+        cafeImageService);
+
     authUser = new AuthUser(15L, "test@email.com", RoleType.OWNER);
+    adminAuthUser = new AuthUser(15L, "test@email.com", RoleType.ADMIN);
+
     user = User.builder().id(authUser.getId()).build();
+    adminUser = User.builder().id(adminAuthUser.getId()).role(RoleType.ADMIN).build();
+
     requestDto = mock(CafeCreateRequestDto.class);
     cafeImages = Arrays.asList(mock(MultipartFile.class), mock(MultipartFile.class));
   }
@@ -95,20 +114,11 @@ public class CafeServiceTest {
     when(cafe.getName())
         .thenReturn("Test Cafe");
 
-    // when: createCafe 메서드 호출
-    CafeService service = new CafeService(
-        cafeRepository,
-        roomRepository,
-        feeRepository,
-        pricePolicyRepository,
-        userRepository,
-        cafeImageService);
-
     // Mock 동작 설정: Repository 호출 시 Mock 결과 반환
     when(userRepository.findById(authUser.getId())).thenReturn(Optional.of(user));
 
     // when: 실행
-    StatusDto result = service.createCafe(authUser, requestDto, cafeImages);
+    StatusDto result = cafeService.createCafe(authUser, requestDto, cafeImages);
 
     // then: 결과 확인
     assert (result.getStatus() == HttpStatus.CREATED.value());
@@ -172,14 +182,7 @@ public class CafeServiceTest {
     when(cafeRepository.findAllByCafe(any(SearchCondition.class))).thenReturn(mockPage);
 
     // Act: 테스트 대상 메서드 호출
-    CafeService service = new CafeService(
-        cafeRepository,
-        roomRepository,
-        feeRepository,
-        pricePolicyRepository,
-        userRepository,
-        cafeImageService);
-    PageResponseDto<CafeResponseDto> response = service.searchCafe(searchCondition);
+    PageResponseDto<CafeResponseDto> response = cafeService.searchCafe(searchCondition);
 
     // Assert: 반환값 검증
     assertThat(response.getData()).hasSize(2); // 반환된 데이터 크기 확인
@@ -219,14 +222,7 @@ public class CafeServiceTest {
     when(pricePolicyRepository.findAllByCafeId(cafeId)).thenReturn(pricePolicies);
 
     // when
-    CafeService service = new CafeService(
-        cafeRepository,
-        roomRepository,
-        feeRepository,
-        pricePolicyRepository,
-        userRepository,
-        cafeImageService);
-    ResponseDto<CafeDetailResponseDto> response = service.findCafe(cafeId);
+    ResponseDto<CafeDetailResponseDto> response = cafeService.findCafe(cafeId);
 
     // then
     assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
@@ -242,18 +238,67 @@ public class CafeServiceTest {
     when(cafeRepository.findCafeById(cafeId)).thenReturn(null);
 
     // when
-    CafeService service = new CafeService(
-        cafeRepository,
-        roomRepository,
-        feeRepository,
-        pricePolicyRepository,
-        userRepository,
-        cafeImageService);
-    ResponseDto<CafeDetailResponseDto> response = service.findCafe(cafeId);
+    ResponseDto<CafeDetailResponseDto> response = cafeService.findCafe(cafeId);
 
     // then
     assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
     assertThat(response.getData()).isNull();
     assertThat(response.getMessage()).isEqualTo("조회 결과가 없습니다.");
+  }
+
+  @Test
+  @DisplayName("관리자 카페 등록 성공")
+  void createCafe_admin_success() {
+    // given: Mock 데이터와 의존성 설정
+    Cafe cafe1 = mock(Cafe.class);
+    Cafe cafe2 = mock(Cafe.class);
+    List<Cafe> cafes = Arrays.asList(cafe1, cafe2);
+
+    CafesSimpleCreateRequestDto requestDto = mock(CafesSimpleCreateRequestDto.class);
+    when(userRepository.findById(adminUser.getId())).thenReturn(Optional.of(adminUser));
+    when(requestDto.convertDtoToEntity(adminUser)).thenReturn(cafes);
+
+    // when: 서비스 호출
+    StatusDto result = cafeService.creatCafe(adminAuthUser, requestDto);
+
+    // then: 결과 검증
+    assertThat(result.getStatus()).isEqualTo(HttpStatus.CREATED.value());
+    assertThat(result.getMessage()).isEqualTo("카페 [" + cafes.size() + "]개 등록 성공");
+
+    // verify: 레포지토리 호출 검증
+    verify(cafeRepository, times(1)).saveAll(cafes);
+  }
+
+  @Test
+  @DisplayName("관리자 카페 등록 실패 - 유저를 찾을 수 없음")
+  void createCafe_admin_userNotFound() {
+    // given: Mock 데이터 설정
+    CafesSimpleCreateRequestDto requestDto = mock(CafesSimpleCreateRequestDto.class);
+    when(userRepository.findById(adminUser.getId())).thenReturn(Optional.empty());
+
+    // when & then: 예외 검증
+    BusinessException exception = assertThrows(BusinessException.class, () ->
+        cafeService.creatCafe(adminAuthUser, requestDto)
+    );
+    assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.USER_NOT_FOUND);
+
+    // verify: 레포지토리가 호출되지 않았는지 검증
+    verify(cafeRepository, never()).saveAll(anyList());
+  }
+
+  @Test
+  @DisplayName("관리자 카페 등록 실패 - 관리자 권한 없음")
+  void createCafe_admin_forbidden() {
+    // given: Mock 데이터 설정
+    CafesSimpleCreateRequestDto requestDto = mock(CafesSimpleCreateRequestDto.class);
+
+    // when & then: 예외 검증
+    BusinessException exception = assertThrows(BusinessException.class, () ->
+        cafeService.creatCafe(authUser, requestDto)
+    );
+    assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.FORBIDDEN);
+
+    // verify: 레포지토리가 호출되지 않았는지 검증
+    verify(cafeRepository, never()).saveAll(anyList());
   }
 }

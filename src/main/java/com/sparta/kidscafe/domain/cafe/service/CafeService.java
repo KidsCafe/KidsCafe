@@ -7,6 +7,7 @@ import com.sparta.kidscafe.common.dto.StatusDto;
 import com.sparta.kidscafe.domain.cafe.dto.SearchCondition;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeCreateRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeModifyRequestDto;
+import com.sparta.kidscafe.domain.cafe.dto.request.CafesSimpleCreateRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeDetailResponseDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeResponseDto;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
@@ -51,6 +52,17 @@ public class CafeService {
     return createStatusDto(
         HttpStatus.CREATED,
         "[" + cafe.getName() + "] 등록 성공"
+    );
+  }
+
+  public StatusDto creatCafe(AuthUser authUser, CafesSimpleCreateRequestDto requestDto) {
+    CafeValidationCheck.validCreateCafeByAdmin(authUser);
+    User user = findByUserId(authUser.getId());
+    List<Cafe> cafes = requestDto.convertDtoToEntity(user);
+    cafeRepository.saveAll(cafes);
+    return createStatusDto(
+        HttpStatus.CREATED,
+        "카페 ["+ cafes.size() +"]개 등록 성공"
     );
   }
 
