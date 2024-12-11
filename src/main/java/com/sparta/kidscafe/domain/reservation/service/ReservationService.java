@@ -1,5 +1,6 @@
 package com.sparta.kidscafe.domain.reservation.service;
 
+import com.sparta.kidscafe.common.annotation.Auth;
 import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.PageResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
@@ -85,13 +86,13 @@ public class ReservationService {
   @Transactional(readOnly = true)
   public PageResponseDto<ReservationResponseDto> getReservationsByUser(AuthUser authUser, int page, int size) {
     if (!authUser.getRoleType().equals(RoleType.USER)) {
-      throw new BusinessException(ErrorCode.UNAUTHORIZED);
+      throw new BusinessException(ErrorCode.FORBIDDEN);
     }
     Pageable pageable = PageRequest.of(page, size, Sort.by(Direction.DESC, "createdAt"));
     Page<Reservation> reservationsForUser = reservationRepository.findByUserId(authUser.getId(), pageable);
 
 
-    Page<ReservationResponseDto> responseDtos = reservationsForUser.map(reservation ->
+    Page<ReservationResponseDto> responseDto = reservationsForUser.map(reservation ->
         ReservationResponseDto.builder()
             .reservationId(reservation.getId())
             .cafeId(reservation.getCafe().getId())
@@ -101,6 +102,33 @@ public class ReservationService {
             .totalPrice(reservation.getTotalPrice())
             .build()
     );
-    return PageResponseDto.success(responseDtos, HttpStatus.OK, "예약 내역 조회(사용자용) 성공");
+    return PageResponseDto.success(responseDto, HttpStatus.OK, "예약 내역 조회(사용자용) 성공");
+  }
+
+  // 예약 내역 조회(Owner용)
+  @Transactional(readOnly = true)
+  public PageResponseDto<ReservationResponseDto> getReservationsByOwner(AuthUser authUser, Long cafeId, int page, int size) {
+    if (!authUser.getRoleType().equals(RoleType.OWNER)) {
+      throw new BusinessException(ErrorCode.FORBIDDEN);
+    }
+    Boolean isOwner = cafeRepository.existsByIdAndUserId(cafeId, authUser.getId());
+    if (!isOwner) {
+      throw new BusinessException(ErrorCode.FORBIDDEN);
+    }
+    Pageable pageable = PageRequest.of(page, size, Sort.by(Direction.DESC, "createdAt"));
+    Page<Reservation> reservationsForOwner = reservationRepository.findByCafeId(cafeId, pageable);
+
+    Page<ReservationResponseDto> responseDto = reservationsForOwner.map(reservation ->
+        ReservationResponseDto.builder()
+            .reservationId(reservation.getId())
+            .userId(reservation.getUser().getId())
+            .userName(reservation.getUser().getName())
+            .cafeName(reservation.getCafe().getName())
+            .startedAt(reservation.getStartedAt())
+            .finishedAt(reservation.getFinishedAt())
+            .totalPrice(reservation.getTotalPrice())
+            .build()
+    );
+    return PageResponseDto.success(responseDto, HttpStatus.OK, "예약 내역 조회(카페용) 성공");
   }
 }
