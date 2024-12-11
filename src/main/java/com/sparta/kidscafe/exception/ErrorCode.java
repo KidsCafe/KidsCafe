@@ -33,6 +33,11 @@ public enum ErrorCode {
     PRICE_POLICY_NOT_FOUND("PRICE_POLICY_NOT_FOUND", "가격 정책을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     PRICE_POLICY_MISMATCH("PRICE_POLICY_MISMATCH", "카페에 해당하지 않는 가격 정책입니다.", HttpStatus.BAD_REQUEST),
 
+    // FEE 관련 에러
+    FEE_TABLE_UNAUTHORIZED("FEE_TABLE_UNAUTHORIZED", "일반유저는 가격책정의 권한이 없습니다.", HttpStatus.FORBIDDEN),
+    FEE_TABLE_OWN_CREATE("FEE_TABLE_OWN_CREATE", "사장님 본인 가게에만 가격책정이 가능합니다.", HttpStatus.FORBIDDEN),
+    FEE_NOT_FOUND("FEE_NOT_FOUND", "해당 요금을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+
     // 신고 관련 에러
     REPORT_NOT_FOUND("REPORT_NOT_FOUND","신고를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     INVALID_REPORT_STATUS("INVALID_REPORT_STATUS", "잘못된 신고 상태입니다.", HttpStatus.BAD_REQUEST),
