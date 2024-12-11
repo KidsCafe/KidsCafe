@@ -9,6 +9,6 @@ public class OAuthSigninResponseDto {
 
 	private String oAuthId;
 	private String email;
-	private String nickname;
+	private String name;
 	private String accessToken;
 }

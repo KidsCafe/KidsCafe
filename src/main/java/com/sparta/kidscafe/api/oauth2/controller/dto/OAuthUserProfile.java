@@ -7,7 +7,7 @@ import lombok.Getter;
 @Builder
 public class OAuthUserProfile {
 
-	private String oAuthId;
+	private String oauthId;
 	private String email;
-	private String nickname;
+	private String name;
 }

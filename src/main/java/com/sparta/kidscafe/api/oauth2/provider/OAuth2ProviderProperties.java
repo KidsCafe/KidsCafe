@@ -15,7 +15,7 @@ public class OAuth2ProviderProperties {
 	private final String userInfoUrl;
 
 	public OAuth2ProviderProperties(OAuth2Properties.User user, OAuth2Properties.Provider provider){
-		this(user.getClientId(), user.getClientSecret(), user.getRedirectUrl(), provider.getTokenUrl(), provider.getUserInfoUrl());
+		this(user.getClientId(), user.getClientSecret(), user.getRedirectUri(), provider.getTokenUri(), provider.getUserInfoUri());
 	}
 
 	@Builder

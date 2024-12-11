@@ -3,6 +3,7 @@ package com.sparta.kidscafe.domain.user.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sparta.kidscafe.api.oauth2.controller.dto.OAuthUserProfile;
 import com.sparta.kidscafe.common.entity.Timestamped;
 import com.sparta.kidscafe.common.enums.LoginType;
 import com.sparta.kidscafe.common.enums.RoleType;
@@ -31,7 +32,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name = "user")
-public class User extends Timestamped {
+public class User extends Timestamped implements OAuthMember {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -57,6 +58,9 @@ public class User extends Timestamped {
   @Enumerated(value = EnumType.STRING)
   private LoginType loginType;
 
+  @Column
+  private String oauthId;
+
   @Builder.Default
   @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
   private List<Bookmark> bookmarks = new ArrayList<>();
@@ -73,5 +77,19 @@ public class User extends Timestamped {
     this.id = id;
     this.email = email;
     this.role = role;
+  }
+
+  // 소셜 로그인 회원가입 생성자
+  public User(OAuthUserProfile oAuthUserProfile, String password){
+    this.name = oAuthUserProfile.getName();
+    this.email = oAuthUserProfile.getEmail();
+    this.oauthId = oAuthUserProfile.getOauthId();
+    this.password = password;
+    this.loginType = LoginType.OAUTH;
+    this.role = RoleType.USER;
+  }
+
+  public void udpateOAuthId(String oauthId) {
+    this.oauthId = oauthId;
   }
 }

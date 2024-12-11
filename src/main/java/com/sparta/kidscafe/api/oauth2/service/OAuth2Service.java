@@ -27,12 +27,12 @@ public class OAuth2Service {
 		String oAuthAccessToken = oAuth2ClientService.requestAccessToken(authorizationCode, provider);
 		OAuthUserProfile oAuthUserProfile = oAuth2ClientService.requestUserProfile(oAuthAccessToken, providerName, provider);
 
-		if(!userRepository.existsByOAuthId(oAuthUserProfile.getOAuthId())){
-			String oAuthId = oAuthUserProfile.getOAuthId();
+		if(!userRepository.existsByOauthId(oAuthUserProfile.getOauthId())){
+			String oauthId = oAuthUserProfile.getOauthId();
 			String email = oAuthUserProfile.getEmail();
-			String nickname = oAuthUserProfile.getNickname();
+			String name = oAuthUserProfile.getName();
 
-			authService.signupWithOAuth(oAuthId, email, nickname);
+			authService.signupWithOAuth(oauthId, email, name);
 		}
 		return authService.signinWithOAuth(oAuthUserProfile.getEmail());
 	}

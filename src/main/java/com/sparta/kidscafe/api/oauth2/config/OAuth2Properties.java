@@ -23,14 +23,14 @@ public class OAuth2Properties {
 	public static class User {
 		private String clientId;
 		private String clientSecret;
-		private String redirectUrl;
+		private String redirectUri;
 	}
 
 	@Getter
 	@Setter
 	public static class Provider{
-		private String tokenUrl;
-		private String userInfoUrl;
+		private String tokenUri;
+		private String userInfoUri;
 		private String userNameAttribute;
 	}
 }

@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.sparta.kidscafe.domain.user.entity.OAuthMember;
 import com.sparta.kidscafe.domain.user.entity.User;
 
 import io.jsonwebtoken.Claims;
@@ -47,6 +48,19 @@ public class JwtUtil {
            .compact();
    }
 
+   // Oauth 전용 토큰 생성
+   //  public String generateAccessTokenForOauth(OAuthMember oAuthMember){
+   //     return Jwts.builder()
+   //         .setSubject(oAuthMember.getId().toString())
+   //         .claim("email",oAuthMember.getEmail())
+   //         .claim("loginType", oAuthMember.getLoginType().toString())
+   //         .claim("oauthId", oAuthMember.getOauthId())
+   //         .setIssuedAt(new Date(System.currentTimeMillis()))
+   //         .setExpiration(new Date(System.currentTimeMillis() + tokenExpiresIn))
+   //         .signWith(key, SignatureAlgorithm.HS256)
+   //         .compact();
+   //  }
+
    // 토큰 검증
    public void validate(String accessToken){
        try{
@@ -75,7 +89,11 @@ public class JwtUtil {
        return getClaims(accessToken).get("roleType", String.class);
    }
 
-    private Claims getClaims(String token) {
+   public String extractLoginType(String accessToken){
+       return getClaims(accessToken).get("loginType", String.class);
+   }
+
+    public Claims getClaims(String token) {
        try{
            return Jwts.parserBuilder()
                .setSigningKey(key)
