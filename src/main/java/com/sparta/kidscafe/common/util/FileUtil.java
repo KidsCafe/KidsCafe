@@ -4,11 +4,8 @@ import com.sparta.kidscafe.exception.BusinessException;
 import com.sparta.kidscafe.exception.ErrorCode;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,70 +17,49 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class FileUtil {
 
-  @Value("${filePath.cafe}")
-  private String defaultImagePath;
+  public String makeDirectory(String dirPath, Long id) {
+    StringBuilder dirDetailPath = new StringBuilder(dirPath);
+    dirDetailPath.append(id);
+    dirDetailPath.append("/");
+    File directory = new File(dirDetailPath.toString());
+    if (!directory.exists()) {
+      directory.mkdirs();
+    }
+    return dirDetailPath.toString();
+  }
 
-  public String uploadCafeImage(Long cafeId, MultipartFile image) {
+  public String makeFileName(String dirPath, Long id, MultipartFile image) {
+    StringBuilder imagePath = new StringBuilder(dirPath);
+    imagePath.append("cafeImage");
+    imagePath.append("_");
+    imagePath.append(id);
+    imagePath.append("_");
+    imagePath.append(image.getOriginalFilename());
+    return imagePath.toString();
+  }
+
+  public void uploadImage(String uploadPath, MultipartFile image) {
     try {
-      StringBuilder imagePath = new StringBuilder(defaultImagePath);
-      imagePath.append(cafeId);
-      imagePath.append("/");
-      File directory = new File(imagePath.toString());
-      if (!directory.exists()) {
-        directory.mkdirs();
-      }
-
-      imagePath.append(cafeId);
-      imagePath.append("_");
-      imagePath.append(image.getOriginalFilename());
-      image.transferTo(new File(imagePath.toString()));
-      return imagePath.toString();
+      image.transferTo(new File(uploadPath));
     } catch (IOException ex) {
       ex.printStackTrace();
       throw new BusinessException(ErrorCode.CAFE_IMAGE_UPLOAD_FAILED);
     }
   }
 
-  public List<String> uploadCafeImage(Long cafeId, List<MultipartFile> images) {
-    List<String> imagePaths = new ArrayList<>();
-    try {
-      StringBuilder dirPath = new StringBuilder(defaultImagePath);
-      dirPath.append(cafeId);
-      dirPath.append("/");
-      File directory = new File(dirPath.toString());
-      if (!directory.exists()) {
-        directory.mkdirs();
-      }
-
-      for (MultipartFile image : images) {
-        StringBuilder imagePath = new StringBuilder(dirPath.toString());
-        imagePath.append(cafeId);
-        imagePath.append("_");
-        imagePath.append(image.getOriginalFilename());
-        image.transferTo(new File(imagePath.toString()));
-        imagePaths.add(imagePath.toString());
-      }
-
-      return imagePaths;
-    } catch (IOException ex) {
-      ex.printStackTrace();
-      throw new BusinessException(ErrorCode.CAFE_IMAGE_UPLOAD_FAILED);
-    }
-  }
-
-  public void deleteFile(String deleteImagePath) {
+  public void deleteImage(String deleteImagePath) {
     File file = new File(deleteImagePath);
     if (file.exists()) {
       if (!file.delete()) {
-        throw new BusinessException(ErrorCode.CAFE_IMAGE_REMOVE_FAILED);
+        throw new BusinessException(ErrorCode.IMAGE_REMOVE_FAILED);
       }
     } else {
-      throw new BusinessException(ErrorCode.CAFE_IMAGE_NOT_EXIST);
+      throw new BusinessException(ErrorCode.IMAGE_NOT_EXIST);
     }
   }
 
-  public String updateCafeImage(Long cafeId, String oriImagePath, MultipartFile image) {
-    deleteFile(oriImagePath);
-    return uploadCafeImage(cafeId, image);
+  public void updateImage(String oriImagePath, String newImagePath, MultipartFile image) {
+    deleteImage(oriImagePath);
+    uploadImage(newImagePath, image);
   }
 }

@@ -19,18 +19,18 @@ public class CafeImageRequestDto {
   private Long id; // 기존 이미지 id
   private String newImagePath; // 업로드할 이미지 path
 
-  public boolean isCreated() {
+  public boolean isCreate() {
     return id == null;
   }
 
-  public boolean isUpdated() {
+  public boolean isUpdate() {
     if(id == null)
       return false;
 
     return StringUtils.hasText(newImagePath);
   }
 
-  public MultipartFile getMatchImageByMultipartFile(List<MultipartFile> images) {
+  public MultipartFile getMatchImageByFile(List<MultipartFile> images) {
     for(MultipartFile image : images) {
       int lastIndex = newImagePath.lastIndexOf("\\");
       String fileName = newImagePath.substring(lastIndex + 1);
@@ -42,7 +42,7 @@ public class CafeImageRequestDto {
     return null;
   }
 
-  public CafeImage getMatchImageFromCafeImage(List<CafeImage> images) {
+  public CafeImage getMatchImageByEntity(List<CafeImage> images) {
     for(CafeImage image : images) {
       if(id.equals(image.getId())) {
         return image;
@@ -50,12 +50,5 @@ public class CafeImageRequestDto {
     }
 
     return null;
-  }
-
-  public CafeImage convertDtoToEntity(Cafe cafe, String imagePath) {
-    return CafeImage.builder()
-        .cafe(cafe)
-        .imagePath(imagePath)
-        .build();
   }
 }

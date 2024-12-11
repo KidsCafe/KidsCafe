@@ -14,8 +14,8 @@ public enum ErrorCode {
     CAFE_NOT_FOUND("CAFE_NOT_FOUND", "카페를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     INVALID_CAFE_DATA("INVALID_CAFE_DATA", "카페 데이터가 유효하지 않습니다.", HttpStatus.BAD_REQUEST),
     CAFE_IMAGE_UPLOAD_FAILED("CAFE_IMAGE_UPLOAD_FAILED", "카페 이미지 업로드에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
-    CAFE_IMAGE_REMOVE_FAILED("CAFE_IMAGE_UPLOAD_FAILED", "카페 이미지 삭제에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
-    CAFE_IMAGE_NOT_EXIST("", "카페 이미지가 존재하지 않습니다.",HttpStatus.INTERNAL_SERVER_ERROR),
+    IMAGE_REMOVE_FAILED("CAFE_IMAGE_UPLOAD_FAILED", "카페 이미지 삭제에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
+    IMAGE_NOT_EXIST("", "카페 이미지가 존재하지 않습니다.",HttpStatus.INTERNAL_SERVER_ERROR),
 
     // Review 관련 에러
     REVIEW_NOT_FOUND("REVIEW_NOT_FOUND", "리뷰를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
