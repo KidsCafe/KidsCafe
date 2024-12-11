@@ -47,5 +47,17 @@ public class ReservationController {
     return ResponseEntity.ok(response);
   }
 
+  // 예약 내역 조회(Owner용)
+  @GetMapping("owners/reservations/cafes/{cafeId}")
+  public ResponseEntity<PageResponseDto<ReservationResponseDto>> getReservationsByOwner(
+      @Auth AuthUser authUser,
+      @PathVariable Long cafeId,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size) {
+    PageResponseDto<ReservationResponseDto> response = reservationService.getReservationsByOwner(
+        authUser, cafeId, page, size);
+    return ResponseEntity.ok(response);
+  }
+
 
 }
