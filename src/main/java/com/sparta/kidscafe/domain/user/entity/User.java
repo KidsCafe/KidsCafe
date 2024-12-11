@@ -36,7 +36,7 @@ public class User extends Timestamped {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(nullable = false, length = 50)
+  @Column(nullable = false, length = 50, unique = true)
   private String email;
 
   @Column(nullable = false)
@@ -51,27 +51,44 @@ public class User extends Timestamped {
   @Column(nullable = false)
   private String address;
 
+  @Column
+  private String imagePath;
+
   @Enumerated(value = EnumType.STRING)
+  @Column(nullable = false)
   private RoleType role;
 
   @Enumerated(value = EnumType.STRING)
+  @Column(nullable = false)
   private LoginType loginType;
 
   @Builder.Default
-  @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+  @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
   private List<Bookmark> bookmarks = new ArrayList<>();
 
   @Builder.Default
-  @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+  @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
   private List<Review> reviews = new ArrayList<>();
 
   @Builder.Default
-  @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+  @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
   private List<Reservation> reservations = new ArrayList<>();
 
   public User (Long id, String email, RoleType role) {
     this.id = id;
     this.email = email;
     this.role = role;
+  }
+
+  public void updateProfile(String name, String nickname, String address) {
+    if (name != null) {
+      this.name = name;
+    }
+    if (nickname != null) {
+      this.nickname = nickname;
+    }
+    if (address != null) {
+      this.address = address;
+    }
   }
 }
