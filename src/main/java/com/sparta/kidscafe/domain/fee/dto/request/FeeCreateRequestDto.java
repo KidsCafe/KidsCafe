@@ -12,12 +12,12 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class FeeRequestCreateDto {
+public class FeeCreateRequestDto {
 
-  @NotNull(message = "연령대가 비어있습니다.")
+  @NotNull(message = "연령대가 비어있습니다. 연령대를 선택해주세요.")
   private AgeGroup ageGroup;
 
-  @Positive(message = "방 입장료는 0원 이상입니다.")
+  @Positive(message = "요금는 0원 이상이어야 합니다.")
   private int fee;
 
   public Fee convertDtoToEntity(Cafe cafe) {

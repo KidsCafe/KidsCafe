@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface FeeRepository extends JpaRepository<Fee, Long> {
 
   List<Fee> findAllByCafeId(Long cafeId);
+
+  List<Fee> findByCafeId(Long cafeId);
 }
