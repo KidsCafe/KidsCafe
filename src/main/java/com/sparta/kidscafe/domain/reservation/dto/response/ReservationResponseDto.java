@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 public class ReservationResponseDto {
 
   private Long reservationId;
+  private Long cafeId;
   private String cafeName;
   private String roomName;
   private LocalDateTime startedAt;
