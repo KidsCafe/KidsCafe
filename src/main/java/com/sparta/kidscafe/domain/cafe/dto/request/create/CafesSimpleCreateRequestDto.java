@@ -1,4 +1,4 @@
-package com.sparta.kidscafe.domain.cafe.dto.request;
+package com.sparta.kidscafe.domain.cafe.dto.request.create;
 
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
 import com.sparta.kidscafe.domain.user.entity.User;

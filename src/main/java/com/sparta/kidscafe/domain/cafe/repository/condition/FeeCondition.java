@@ -4,7 +4,7 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.sparta.kidscafe.common.enums.AgeGroup;
-import com.sparta.kidscafe.domain.cafe.dto.SearchCondition;
+import com.sparta.kidscafe.domain.cafe.dto.searchCondition.SearchCondition;
 import com.sparta.kidscafe.domain.fee.entity.QFee;
 import java.util.Arrays;
 import org.springframework.stereotype.Component;
@@ -35,12 +35,15 @@ public class FeeCondition {
     return fee.ageGroup.eq(AgeGroup.getAgeGroup(ageGroup));
   }
 
-  public BooleanExpression betweenPrice(int minPrice, int maxPrice) {
+  public BooleanExpression betweenPrice(Integer minPrice, Integer maxPrice) {
+    if (minPrice == null || maxPrice == null) {
+      return null;
+    }
     return fee.fee.between(minPrice, maxPrice);
   }
 
-  public BooleanExpression adultPrice(boolean isAdultPrice) {
-    if (!isAdultPrice) {
+  public BooleanExpression adultPrice(Boolean isAdultPrice) {
+    if (isAdultPrice == null || !isAdultPrice) {
       return null;
     }
     return fee.ageGroup.notIn(Arrays.asList(AgeGroup.BABY, AgeGroup.TEENAGER));

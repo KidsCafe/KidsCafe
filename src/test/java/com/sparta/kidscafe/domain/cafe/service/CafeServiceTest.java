@@ -1,6 +1,8 @@
 package com.sparta.kidscafe.domain.cafe.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.anyList;
@@ -15,9 +17,9 @@ import com.sparta.kidscafe.common.dto.PageResponseDto;
 import com.sparta.kidscafe.common.dto.ResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
 import com.sparta.kidscafe.common.enums.RoleType;
-import com.sparta.kidscafe.domain.cafe.dto.SearchCondition;
-import com.sparta.kidscafe.domain.cafe.dto.request.CafeCreateRequestDto;
-import com.sparta.kidscafe.domain.cafe.dto.request.CafesSimpleCreateRequestDto;
+import com.sparta.kidscafe.domain.cafe.dto.searchCondition.SearchCondition;
+import com.sparta.kidscafe.domain.cafe.dto.request.create.CafeCreateRequestDto;
+import com.sparta.kidscafe.domain.cafe.dto.request.create.CafesSimpleCreateRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeDetailResponseDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeResponseDto;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
@@ -33,6 +35,7 @@ import com.sparta.kidscafe.domain.user.entity.User;
 import com.sparta.kidscafe.domain.user.repository.UserRepository;
 import com.sparta.kidscafe.exception.BusinessException;
 import com.sparta.kidscafe.exception.ErrorCode;
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -71,10 +74,15 @@ public class CafeServiceTest {
   private CafeImageService cafeImageService;
 
   private CafeService cafeService;
+
   private AuthUser authUser;
+  private AuthUser ownerAuthUser;
   private AuthUser adminAuthUser;
+
   private User user;
+  private User ownerUser;
   private User adminUser;
+
   private CafeCreateRequestDto requestDto;
   private List<MultipartFile> cafeImages;
 
@@ -88,14 +96,42 @@ public class CafeServiceTest {
         userRepository,
         cafeImageService);
 
-    authUser = new AuthUser(15L, "test@email.com", RoleType.OWNER);
+    authUser = new AuthUser(15L, "test@email.com", RoleType.USER);
+    ownerAuthUser = new AuthUser(15L, "test@email.com", RoleType.OWNER);
     adminAuthUser = new AuthUser(15L, "test@email.com", RoleType.ADMIN);
 
     user = User.builder().id(authUser.getId()).build();
+    ownerUser = User.builder().id(ownerAuthUser.getId()).build();
     adminUser = User.builder().id(adminAuthUser.getId()).role(RoleType.ADMIN).build();
 
     requestDto = mock(CafeCreateRequestDto.class);
     cafeImages = Arrays.asList(mock(MultipartFile.class), mock(MultipartFile.class));
+  }
+
+  private PageRequest createPageRequest(int page, int size) {
+    return PageRequest.of(page, size);
+  }
+
+  private SearchCondition createSearchCondition() {
+    return SearchCondition.createBuilder()
+        .name("Test Cafe")
+        .region("Seoul")
+        .size(100)
+        .ageGroup("3-5")
+        .minPrice(1000)
+        .maxPrice(5000)
+        .minStar(3.0)
+        .maxStar(5.0)
+        .parking(true)
+        .opening(true)
+        .existRestaurant(false)
+        .existRoom(true)
+        .adultPrice(false)
+        .multiFamily(true)
+        .openedAt(LocalTime.of(9, 0))
+        .closedAt(LocalTime.of(21, 0))
+        .userId(1L)
+        .build();
   }
 
   @Test
@@ -103,7 +139,7 @@ public class CafeServiceTest {
   void createCafeByOwner_success() {
     // given: CafeCreateRequestDto의 메서드들 mock 처리
     Cafe cafe = mock(Cafe.class);
-    when(requestDto.convertDtoToEntityByCafe(user))
+    when(requestDto.convertDtoToEntityByCafe(ownerUser))
         .thenReturn(cafe);
     when(requestDto.convertDtoToEntityByRoom(cafe))
         .thenReturn(Collections.singletonList(mock(Room.class)));
@@ -115,10 +151,10 @@ public class CafeServiceTest {
         .thenReturn("Test Cafe");
 
     // Mock 동작 설정: Repository 호출 시 Mock 결과 반환
-    when(userRepository.findById(authUser.getId())).thenReturn(Optional.of(user));
+    when(userRepository.findById(ownerAuthUser.getId())).thenReturn(Optional.of(ownerUser));
 
     // when: 실행
-    StatusDto result = cafeService.createCafe(authUser, requestDto, cafeImages);
+    StatusDto result = cafeService.createCafe(ownerAuthUser, requestDto, cafeImages);
 
     // then: 결과 확인
     assert (result.getStatus() == HttpStatus.CREATED.value());
@@ -136,7 +172,7 @@ public class CafeServiceTest {
   @DisplayName("카페 목록 조회 성공 - 사용자가 검색한")
   void searchCafe_success() {
     // Arrange: 테스트 입력값 및 Mock 동작 정의
-    SearchCondition searchCondition = SearchCondition.builder()
+    SearchCondition searchCondition = SearchCondition.createBuilder()
         .name("Test Cafe")
         .region("Seoul")
         .pageable(PageRequest.of(0, 10))
@@ -294,11 +330,77 @@ public class CafeServiceTest {
 
     // when & then: 예외 검증
     BusinessException exception = assertThrows(BusinessException.class, () ->
-        cafeService.creatCafe(authUser, requestDto)
+        cafeService.creatCafe(ownerAuthUser, requestDto)
     );
     assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.FORBIDDEN);
 
     // verify: 레포지토리가 호출되지 않았는지 검증
     verify(cafeRepository, never()).saveAll(anyList());
+  }
+
+  @Test
+  @DisplayName("관리자 카페 조회 성공")
+  void searchCafeByAdmin_success() {
+    // given
+    SearchCondition condition = createSearchCondition();
+    PageRequest pageRequest = createPageRequest(0, 10);
+    Page<CafeResponseDto> mockPage = new PageImpl<>(Collections.emptyList(), pageRequest, 0);
+
+    when(cafeRepository.findAllByCafe(any(SearchCondition.class))).thenReturn(mockPage);
+
+    // when
+    PageResponseDto<CafeResponseDto> result = cafeService.searchCafeByAdmin(adminAuthUser, condition);
+
+    // then
+    assertNotNull(result);
+    assertThat(result.getStatus()).isEqualTo(HttpStatus.OK.value());
+    verify(cafeRepository, times(1)).findAllByCafe(any(SearchCondition.class));
+  }
+
+  @Test
+  @DisplayName("관리자 카페 조회 실패 - 권한 없음")
+  void searchCafeByAdmin_forbidden() {
+    // given
+    SearchCondition condition = createSearchCondition();
+
+    // when
+    BusinessException exception = assertThrows(BusinessException.class,
+        () -> cafeService.searchCafeByAdmin(ownerAuthUser, condition));
+
+    // then
+    assertEquals(ErrorCode.FORBIDDEN, exception.getErrorCode());
+  }
+
+  @Test
+  @DisplayName("사장님 카페 조회 성공")
+  void searchCafeByOwner_success() {
+    // given
+    SearchCondition condition = createSearchCondition();
+    PageRequest pageRequest = createPageRequest(0, 10);
+    Page<CafeResponseDto> mockPage = new PageImpl<>(Collections.emptyList(), pageRequest, 0);
+
+    when(cafeRepository.findAllByCafe(any(SearchCondition.class))).thenReturn(mockPage);
+
+    // when
+    PageResponseDto<CafeResponseDto> result = cafeService.searchCafeByOwner(ownerAuthUser, condition);
+
+    // then
+    assertNotNull(result);
+    assertThat(result.getStatus()).isEqualTo(HttpStatus.OK.value());
+    verify(cafeRepository, times(1)).findAllByCafe(any(SearchCondition.class));
+  }
+
+  @Test
+  @DisplayName("사장님 카페 조회 실패 - 권한 없음")
+  void searchCafeByOwner_forbidden() {
+    // given
+    SearchCondition condition = createSearchCondition();
+
+    // when
+    BusinessException exception = assertThrows(BusinessException.class,
+        () -> cafeService.searchCafeByOwner(authUser, condition));
+
+    // then
+    assertEquals(ErrorCode.FORBIDDEN, exception.getErrorCode());
   }
 }
