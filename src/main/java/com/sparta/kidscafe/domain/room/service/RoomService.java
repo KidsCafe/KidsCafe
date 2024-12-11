@@ -69,6 +69,7 @@ public class RoomService {
 
     Room room = roomRepository.findById(roomId).orElseThrow(()-> new BusinessException(ROOM_NOT_FOUND));
 
+    //캐싱적용 가능 부분
     if (!id.equals(room.getCafe().getUser().getId())) {
       throw new BusinessException(FORBIDDEN);
     }
@@ -79,5 +80,19 @@ public class RoomService {
         .status(HttpStatus.OK.value())
         .message("룸 수정완료")
         .build();
+  }
+
+  public void deleteRoom(AuthUser authUser, Long roomId) {
+
+    Long id = authUser.getId();
+
+    Room room = roomRepository.findById(roomId).orElseThrow(()-> new BusinessException(ROOM_NOT_FOUND));
+
+    //캐싱적용 가능 부분
+    if (!id.equals(room.getCafe().getUser().getId())) {
+      throw new BusinessException(FORBIDDEN);
+    }
+
+    roomRepository.delete(room);
   }
 }
