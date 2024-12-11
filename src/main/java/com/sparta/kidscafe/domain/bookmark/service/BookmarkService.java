@@ -1,7 +1,9 @@
 package com.sparta.kidscafe.domain.bookmark.service;
 
+import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.PageResponseDto;
 import com.sparta.kidscafe.common.enums.RoleType;
+import com.sparta.kidscafe.domain.bookmark.dto.response.BookmarkOwnerRetreiveResponseDto;
 import com.sparta.kidscafe.domain.bookmark.dto.response.BookmarkUserRetreiveResponseDto;
 import com.sparta.kidscafe.domain.bookmark.entity.Bookmark;
 import com.sparta.kidscafe.domain.bookmark.repository.BookmarkRepository;
@@ -54,26 +56,44 @@ public class BookmarkService {
   }
 
   // 즐겨찾기 조회(사용자용)
-  public PageResponseDto<BookmarkUserRetreiveResponseDto> getBookmark(Long userId, int page,
+  public PageResponseDto<BookmarkUserRetreiveResponseDto> getBookmarkByUser(AuthUser authUser,
+      int page,
       int size) {
-    User user = userRepository.findById(userId)
-        .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
-    if (!user.getRole().equals(RoleType.USER)) {
+    if (!authUser.getRoleType().equals(RoleType.USER)) {
       throw new BusinessException(ErrorCode.UNAUTHORIZED);
     }
     Pageable pageable = PageRequest.of(page, size, Sort.by(Direction.DESC, "createdAt"));
-    Page<Bookmark> bookmarks = bookmarkRepository.findAllByUserId(userId, pageable);
+    Page<Bookmark> bookmarksForUser = bookmarkRepository.findAllByUserId(authUser.getId(),
+        pageable);
 
-    if (bookmarks.isEmpty()) {
+    if (bookmarksForUser.isEmpty()) {
       throw new BusinessException(ErrorCode.NO_BOOKMARKS_FOUND);
     }
 
-    Page<BookmarkUserRetreiveResponseDto> bookmarkDtos = bookmarks.map(bookmark ->
+    Page<BookmarkUserRetreiveResponseDto> bookmarkDtoForUser = bookmarksForUser.map(bookmark ->
         new BookmarkUserRetreiveResponseDto(
             bookmark.getCafe().getId(),
             bookmark.getCafe().getName()
         )
     );
-    return PageResponseDto.success(bookmarkDtos, HttpStatus.OK, "즐겨찾기 조회(사용자용) 성공");
+    return PageResponseDto.success(bookmarkDtoForUser, HttpStatus.OK, "즐겨찾기 조회(사용자용) 성공");
+  }
+
+  // 즐겨찾기 조회(카페용)
+  public PageResponseDto<BookmarkOwnerRetreiveResponseDto> getBookmarkByOwner(AuthUser authUser,
+      Long cafeId, int page, int size) {
+    if (!authUser.getRoleType().equals(RoleType.OWNER)) {
+      throw new BusinessException(ErrorCode.UNAUTHORIZED);
+    }
+    Pageable pageable = PageRequest.of(page, size, Sort.by(Direction.DESC, "createdAt"));
+    Page<Bookmark> bookmarksForCafe = bookmarkRepository.findAllByCafeId(cafeId, pageable);
+
+    Page<BookmarkOwnerRetreiveResponseDto> bookmarkDtoForCafe = bookmarksForCafe.map(
+        bookmark -> new BookmarkOwnerRetreiveResponseDto(
+            bookmark.getUser().getId(),
+            bookmark.getUser().getName()
+        )
+    );
+    return PageResponseDto.success(bookmarkDtoForCafe, HttpStatus.OK, "즐겨찾기 조회(카페용) 성공");
   }
 }

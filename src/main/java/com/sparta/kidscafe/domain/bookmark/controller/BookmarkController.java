@@ -4,9 +4,9 @@ import com.sparta.kidscafe.common.annotation.Auth;
 import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.PageResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
+import com.sparta.kidscafe.domain.bookmark.dto.response.BookmarkOwnerRetreiveResponseDto;
 import com.sparta.kidscafe.domain.bookmark.dto.response.BookmarkUserRetreiveResponseDto;
 import com.sparta.kidscafe.domain.bookmark.service.BookmarkService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +28,7 @@ public class BookmarkController {
   @PostMapping("/cafes/{cafeId}/bookmarks")
   public ResponseEntity<StatusDto> toggleBookmark(
       @Auth AuthUser authUser,
-      @Valid @PathVariable(value = "cafeId") Long cafeId) {
+      @PathVariable(value = "cafeId") Long cafeId) {
 
     boolean isBookmarked = bookmarkService.toggleBookmark(authUser.getId(), cafeId);
 
@@ -42,12 +42,25 @@ public class BookmarkController {
 
   // 즐겨찾기 조회(User용)
   @GetMapping("/users/bookmarks")
-  public ResponseEntity<PageResponseDto<BookmarkUserRetreiveResponseDto>> getBookmarks(
+  public ResponseEntity<PageResponseDto<BookmarkUserRetreiveResponseDto>> getBookmarksByUser(
       @Auth AuthUser authUser,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size) {
-    PageResponseDto<BookmarkUserRetreiveResponseDto> response = bookmarkService.getBookmark(
-        authUser.getId(), page, size);
+    PageResponseDto<BookmarkUserRetreiveResponseDto> response = bookmarkService.getBookmarkByUser(
+        authUser, page, size);
     return ResponseEntity.ok(response);
   }
+
+  // 즐겨찾기 조회(Owner용)
+  @GetMapping("/owners/bookmarks/{cafeId}")
+  public ResponseEntity<PageResponseDto<BookmarkOwnerRetreiveResponseDto>> getBookmarksByOwner(
+      @Auth AuthUser authUser,
+      @PathVariable Long cafeId,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size) {
+    PageResponseDto<BookmarkOwnerRetreiveResponseDto> response = bookmarkService.getBookmarkByOwner(
+        authUser, cafeId, page, size);
+    return ResponseEntity.ok(response);
+  }
+
 }

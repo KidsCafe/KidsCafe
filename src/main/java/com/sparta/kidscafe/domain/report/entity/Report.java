@@ -45,4 +45,8 @@ public class Report extends Timestamped {
 
   @Enumerated(value = EnumType.STRING)
   private ReportType status = ReportType.PENDING;
+
+  public void UpdateReportType (ReportType status) {
+    this.status = status;
+  }
 }

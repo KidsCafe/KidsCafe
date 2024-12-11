@@ -10,6 +10,7 @@ import com.sparta.kidscafe.domain.room.entity.Room;
 import com.sparta.kidscafe.domain.user.entity.User;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -38,6 +39,11 @@ public class CafeCreateRequestDto {
   private int size;
 
   private boolean multiFamily;
+
+  @Pattern(
+      regexp = "^(월|화|수|목|금|토|일)(,\\s*(월|화|수|목|금|토|일))*$",
+      message = "DayType은 요일을 쉼표로 구분하여 입력해야 합니다. (예: '월, 화, 수')"
+  )
   private String dayOff;
   private boolean parking;
   private boolean restaurant;

@@ -53,7 +53,7 @@ public class PricePolicyService {
 
         // 정책 조회 및 변환
         return pricePolicyRepository.findAllByCafeId(cafeId).stream()
-                .map(policy -> PricePolicyResponseDto.fromEntity(policy, policy.getTargetName()))
+                .map(PricePolicyResponseDto::from)
                 .collect(Collectors.toList());
     }
 
@@ -74,5 +74,24 @@ public class PricePolicyService {
 
         // 4. 업데이트
         pricePolicy.updateDetails(requestDto.getTargetId(), requestDto.getDayType(), requestDto.getRate());
+    }
+
+    @Transactional
+    public void deletePricePolicy(Long cafeId, Long pricePolicyId) {
+        // 1. Cafe 조회
+        Cafe cafe = cafeRepository.findById(cafeId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.CAFE_NOT_FOUND));
+
+        // 2. PricePolicy 조회
+        PricePolicy pricePolicy = pricePolicyRepository.findById(pricePolicyId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.PRICE_POLICY_NOT_FOUND));
+
+        // 3. 동일 Cafe 소속인지 검증
+        if (!pricePolicy.getCafe().equals(cafe)) {
+            throw new BusinessException(ErrorCode.PRICE_POLICY_MISMATCH);
+        }
+
+        // 4. 삭제
+        pricePolicyRepository.delete(pricePolicy);
     }
 }

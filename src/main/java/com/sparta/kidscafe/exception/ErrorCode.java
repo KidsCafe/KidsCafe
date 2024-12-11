@@ -18,6 +18,9 @@ public enum ErrorCode {
     // Review 관련 에러
     REVIEW_NOT_FOUND("REVIEW_NOT_FOUND", "리뷰를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 
+    // Room 관련에러
+    ROOM_NOT_FOUND("ROOM_NOT_FOUND","룸을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+
     // Reservation 관련 에러
     RESERVATION_NOT_FOUND("RESERVATION_NOT_FOUND", "예약을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 
@@ -27,6 +30,11 @@ public enum ErrorCode {
     // PricePolicy 관련 에러
     PRICE_POLICY_NOT_FOUND("PRICE_POLICY_NOT_FOUND", "가격 정책을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     PRICE_POLICY_MISMATCH("PRICE_POLICY_MISMATCH", "카페에 해당하지 않는 가격 정책입니다.", HttpStatus.BAD_REQUEST),
+
+    // 신고 관련 에러
+    REPORT_NOT_FOUND("REPORT_NOT_FOUND","신고를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+    INVALID_REPORT_STATUS("INVALID_REPORT_STATUS", "잘못된 신고 상태입니다.", HttpStatus.BAD_REQUEST),
+    REPORT_STATUS_NOT_CHANGEABLE("REPORT_STATUS_NOT_CHANGEABLE", "현재 상태에서 요청된 상태로 변경할 수 없습니다.", HttpStatus.BAD_REQUEST),
 
     // 공통 에러
     BAD_REQUEST("BAD_REQUEST", "잘못된 요청입니다.", HttpStatus.BAD_REQUEST),
