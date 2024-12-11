@@ -4,10 +4,10 @@ import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.PageResponseDto;
 import com.sparta.kidscafe.common.dto.ResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
-import com.sparta.kidscafe.domain.cafe.dto.SearchCondition;
-import com.sparta.kidscafe.domain.cafe.dto.request.CafeCreateRequestDto;
-import com.sparta.kidscafe.domain.cafe.dto.request.CafeModifyRequestDto;
-import com.sparta.kidscafe.domain.cafe.dto.request.CafesSimpleCreateRequestDto;
+import com.sparta.kidscafe.domain.cafe.dto.searchCondition.SearchCondition;
+import com.sparta.kidscafe.domain.cafe.dto.request.create.CafeCreateRequestDto;
+import com.sparta.kidscafe.domain.cafe.dto.request.modify.CafeModifyRequestDto;
+import com.sparta.kidscafe.domain.cafe.dto.request.create.CafesSimpleCreateRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeDetailResponseDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeResponseDto;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
@@ -45,6 +45,7 @@ public class CafeService {
   @Transactional
   public StatusDto createCafe(AuthUser authUser, CafeCreateRequestDto requestDto,
       List<MultipartFile> cafeImages) {
+    CafeValidationCheck.validOwner(authUser);
     User user = findByUserId(authUser.getId());
     Cafe cafe = saveCafe(requestDto, user);
     cafeImageService.saveCafeImages(cafe, cafeImages);
@@ -56,7 +57,7 @@ public class CafeService {
   }
 
   public StatusDto creatCafe(AuthUser authUser, CafesSimpleCreateRequestDto requestDto) {
-    CafeValidationCheck.validCreateCafeByAdmin(authUser);
+    CafeValidationCheck.validAdmin(authUser);
     User user = findByUserId(authUser.getId());
     List<Cafe> cafes = requestDto.convertDtoToEntity(user);
     cafeRepository.saveAll(cafes);
@@ -69,6 +70,16 @@ public class CafeService {
   private User findByUserId(Long userId) {
     return userRepository.findById(userId)
         .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+  }
+
+  public PageResponseDto<CafeResponseDto> searchCafeByAdmin(AuthUser authUser, SearchCondition condition) {
+    CafeValidationCheck.validAdmin(authUser);
+    return searchCafe(condition);
+  }
+
+  public PageResponseDto<CafeResponseDto> searchCafeByOwner(AuthUser authUser, SearchCondition condition) {
+    CafeValidationCheck.validOwner(authUser);
+    return searchCafe(condition);
   }
 
   public PageResponseDto<CafeResponseDto> searchCafe(SearchCondition condition) {
@@ -94,8 +105,11 @@ public class CafeService {
   @Transactional
   public StatusDto updateCafe(AuthUser authUser, Long cafeId,
       List<MultipartFile> cafeImages, CafeModifyRequestDto requestDto) {
+    CafeValidationCheck.validUpdateCafe(authUser);
     Cafe cafe = cafeRepository.findByIdAndUserId(cafeId, authUser.getId())
         .orElseThrow(() -> new BusinessException(ErrorCode.CAFE_NOT_FOUND));
+    CafeValidationCheck.validMyCafe(authUser, cafe);
+
     cafe.update(requestDto);
     cafeImageService.updateCafeImage(cafe, cafeImages, requestDto);
     return createStatusDto(

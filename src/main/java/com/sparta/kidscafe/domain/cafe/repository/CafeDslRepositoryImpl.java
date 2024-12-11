@@ -5,9 +5,10 @@ import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.ComparableExpressionBase;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.sparta.kidscafe.domain.cafe.dto.SearchCondition;
+import com.sparta.kidscafe.domain.cafe.dto.searchCondition.SearchCondition;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeResponseDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.QCafeResponseDto;
 import com.sparta.kidscafe.domain.cafe.entity.QCafe;
@@ -52,14 +53,14 @@ public class CafeDslRepositoryImpl implements CafeDslRepository {
       return Page.empty();
     }
 
-    List<CafeResponseDto> cafes = baseCafeQuery()
+    JPAQuery<CafeResponseDto> query = baseCafeQuery()
         .leftJoin(fee).on(fee.cafe.eq(cafe))
         .where(makeWhere(condition))
         .groupBy(cafe.id)
         .having(makeHaving(condition))
-        .limit(condition.getPageable().getPageSize())
-        .offset(condition.getPageable().getOffset())
-        .fetch();
+        .orderBy(makeOrderBy(condition));
+
+    List<CafeResponseDto> cafes = makePaging(query, condition).fetch();
     return new PageImpl<>(cafes, condition.getPageable(), cntTotal);
   }
 
@@ -73,7 +74,7 @@ public class CafeDslRepositoryImpl implements CafeDslRepository {
         .where(makeWhere(condition))
         .groupBy(cafe.id)
         .having(makeHaving(condition))
-        .orderBy(makeOrderBy(condition)).fetchFirst();
+        .fetchFirst();
     return cntTotal == null ? 0 : cntTotal;
   }
 
@@ -104,19 +105,20 @@ public class CafeDslRepositoryImpl implements CafeDslRepository {
         .and(cafeCondition.eqRegion(condition.getRegion()))
         .and(cafeCondition.loeSize(condition.getSize()))
         .and(feeCondition.ageGroup(condition))
-        .and(cafeCondition.parking(condition.isParking()))
-        .and(cafeCondition.isOpening(condition.isOpening()))
-        .and(cafeCondition.restaurantExists(condition.isExistRestaurant()))
-        .and(feeCondition.adultPrice(condition.isAdultPrice()))
-        .and(cafeCondition.multiFamily(condition.isMultiFamily()))
+        .and(cafeCondition.parking(condition.getParking()))
+        .and(cafeCondition.isOpening(condition.getOpening()))
+        .and(cafeCondition.restaurantExists(condition.getExistRestaurant()))
+        .and(feeCondition.adultPrice(condition.getAdultPrice()))
+        .and(cafeCondition.multiFamily(condition.getMultiFamily()))
         .and(cafeCondition.goeOpenedAt(condition.getOpenedAt()))
-        .and(cafeCondition.loeClosedAt(condition.getClosedAt()));
+        .and(cafeCondition.loeClosedAt(condition.getClosedAt()))
+        .and(cafeCondition.eqUserId(condition.getUserId()));
   }
 
   private BooleanBuilder makeHaving(SearchCondition condition) {
     BooleanBuilder builder = new BooleanBuilder();
     builder.and(reviewCondition.betweenAvgStar(condition));
-    builder.and(roomCondition.existRoom(condition.isExistRoom()));
+    builder.and(roomCondition.existRoom(condition.getExistRoom()));
     return builder;
   }
 
@@ -125,9 +127,9 @@ public class CafeDslRepositoryImpl implements CafeDslRepository {
     Expression<?> expression = makeOrderBy(condition.getSortBy());
     if (expression instanceof ComparableExpressionBase<?> orderExpression) {
       return new OrderSpecifier<>(order, orderExpression);
-    } else {
-      return new OrderSpecifier<>(order, cafe.name);
     }
+
+    return new OrderSpecifier<>(Order.ASC, Expressions.constant(1));
   }
 
   private Expression<?> makeOrderBy(SearchSortBy sortBy) {
@@ -137,5 +139,14 @@ public class CafeDslRepositoryImpl implements CafeDslRepository {
       case ROOM_EXIST -> roomCondition.existRoom();
       default -> cafe.name;
     };
+  }
+
+  private JPAQuery<CafeResponseDto> makePaging(JPAQuery<CafeResponseDto> query, SearchCondition condition) {
+    if(condition.getPageable() != null) {
+      query
+          .limit(condition.getPageable().getPageSize())
+          .offset(condition.getPageable().getOffset());
+    }
+    return query;
   }
 }

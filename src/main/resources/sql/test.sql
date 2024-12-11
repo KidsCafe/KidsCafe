@@ -85,4 +85,31 @@ where c.size <= 500000
   and c.closed_at <= '23:59'
 group by c.id
 having avg(re.star) between 0.0 and 5.0
-order by avg(re.star)
+order by avg(re.star);
+
+select
+    c.id,
+    c.name,
+    c.address,
+    c.size,
+    avg(re.star),
+    count(distinct re.id),
+    c.day_off,
+    c.multi_family,
+    case
+        when (count(distinct ro.cafe_id)>=1)
+            then abs(sign(1))
+        else 0
+    end,
+    c.parking,
+    c.restaurant,
+    c.hyperlink,
+    c.opened_at,
+    c.closed_at
+from
+    cafe c left join review re on re.cafe_id=c.id
+           left join room ro on ro.cafe_id= c.id
+           left join fee f on f.cafe_id=c.id
+where c.user_id = 2
+group by c.id
+order by c.name asc;

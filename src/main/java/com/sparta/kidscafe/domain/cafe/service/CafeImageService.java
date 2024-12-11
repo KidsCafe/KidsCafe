@@ -1,8 +1,8 @@
 package com.sparta.kidscafe.domain.cafe.service;
 
 import com.sparta.kidscafe.common.util.FileUtil;
-import com.sparta.kidscafe.domain.cafe.dto.request.CafeImageRequestDto;
-import com.sparta.kidscafe.domain.cafe.dto.request.CafeModifyRequestDto;
+import com.sparta.kidscafe.domain.cafe.dto.request.modify.CafeImageRequestDto;
+import com.sparta.kidscafe.domain.cafe.dto.request.modify.CafeModifyRequestDto;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
 import com.sparta.kidscafe.domain.cafe.entity.CafeImage;
 import com.sparta.kidscafe.domain.cafe.repository.CafeImageRepository;

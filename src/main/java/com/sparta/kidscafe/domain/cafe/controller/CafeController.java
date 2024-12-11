@@ -5,10 +5,10 @@ import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.PageResponseDto;
 import com.sparta.kidscafe.common.dto.ResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
-import com.sparta.kidscafe.domain.cafe.dto.request.CafeCreateRequestDto;
-import com.sparta.kidscafe.domain.cafe.dto.request.CafeModifyRequestDto;
-import com.sparta.kidscafe.domain.cafe.dto.request.CafeSearchRequestDto;
-import com.sparta.kidscafe.domain.cafe.dto.request.CafesSimpleCreateRequestDto;
+import com.sparta.kidscafe.domain.cafe.dto.request.create.CafeCreateRequestDto;
+import com.sparta.kidscafe.domain.cafe.dto.request.modify.CafeModifyRequestDto;
+import com.sparta.kidscafe.domain.cafe.dto.request.search.CafeSearchRequestDto;
+import com.sparta.kidscafe.domain.cafe.dto.request.create.CafesSimpleCreateRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeDetailResponseDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeResponseDto;
 import com.sparta.kidscafe.domain.cafe.service.CafeService;
@@ -37,8 +37,8 @@ public class CafeController {
   @PostMapping("/owners/cafes")
   public ResponseEntity<StatusDto> createCafe(
       @Auth AuthUser authUser,
-      @RequestPart List<MultipartFile> cafeImages,
-      @Valid @RequestPart CafeCreateRequestDto requestDto
+      @RequestPart("cafeImages") List<MultipartFile> cafeImages,
+      @Valid @RequestPart("requestDto") CafeCreateRequestDto requestDto
   ) {
     return ResponseEntity
         .status(HttpStatus.CREATED)
@@ -57,11 +57,31 @@ public class CafeController {
 
   @GetMapping("/cafes")
   public ResponseEntity<PageResponseDto<CafeResponseDto>> searchCafe(
-      @Valid @RequestBody CafeSearchRequestDto requestDto
+      @RequestBody CafeSearchRequestDto requestDto
   ) {
     return ResponseEntity
         .status(HttpStatus.OK)
         .body(cafeService.searchCafe(requestDto.getSearchCondition()));
+  }
+
+  @GetMapping("owners/cafes")
+  public ResponseEntity<PageResponseDto<CafeResponseDto>> searchCafeByOwner(
+      @Auth AuthUser authUser,
+      @RequestBody CafeSearchRequestDto requestDto
+  ) {
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(cafeService.searchCafeByOwner(authUser, requestDto.getSearchCondition()));
+  }
+
+  @GetMapping("admin/cafes")
+  public ResponseEntity<PageResponseDto<CafeResponseDto>> searchCafeByAdmin(
+      @Auth AuthUser authUser,
+      @RequestBody CafeSearchRequestDto requestDto
+  ) {
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(cafeService.searchCafeByAdmin(authUser, requestDto.getSearchCondition()));
   }
 
   @GetMapping("/cafes/{cafeId}")
@@ -76,10 +96,10 @@ public class CafeController {
   @PatchMapping("/cafes/{cafeId}")
   public ResponseEntity<StatusDto> updateCafe(
       @Auth AuthUser authUser,
-      @PathVariable Long cafeId,
-      @RequestPart List<MultipartFile> cafeImages,
-      @Valid @RequestPart CafeModifyRequestDto requestDto
-      ) {
+      @PathVariable("cafeId") Long cafeId,
+      @RequestPart("cafeImages") List<MultipartFile> cafeImages,
+      @Valid @RequestPart("requestDto") CafeModifyRequestDto requestDto
+  ) {
     return ResponseEntity
         .status(HttpStatus.OK)
         .body(cafeService.updateCafe(authUser, cafeId, cafeImages, requestDto));

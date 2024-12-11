@@ -20,8 +20,14 @@ public class CafeCondition {
     if (!StringUtils.hasText(name)) {
       return null;
     }
-
     return cafe.name.contains(name);
+  }
+
+  public BooleanExpression eqUserId(Long userId) {
+    if(userId == null || userId <= 0) {
+      return null;
+    }
+    return cafe.user.id.eq(userId);
   }
 
   public BooleanExpression eqRegion(String region) {
@@ -31,14 +37,18 @@ public class CafeCondition {
     return cafe.region.eq(region);
   }
 
-  public BooleanExpression loeSize(int size) {
-    if (size < 0) {
+  public BooleanExpression loeSize(Integer size) {
+    if (size == null || size < 0) {
       return null;
     }
     return cafe.size.loe(size);
   }
 
-  public BooleanExpression parking(boolean parking) {
+  public BooleanExpression parking(Boolean parking) {
+    if (parking == null) {
+      return null;
+    }
+
     if (parking) {
       return cafe.parking.isTrue();
     } else {
@@ -46,8 +56,8 @@ public class CafeCondition {
     }
   }
 
-  public Predicate isOpening(boolean opening) {
-    if (!opening) {
+  public Predicate isOpening(Boolean opening) {
+    if (opening == null || !opening) {
       return null;
     }
 
@@ -73,7 +83,11 @@ public class CafeCondition {
     return innerBuilder.getValue();
   }
 
-  public BooleanExpression restaurantExists(boolean restaurant) {
+  public BooleanExpression restaurantExists(Boolean restaurant) {
+    if (restaurant == null) {
+      return null;
+    }
+
     if (restaurant) {
       return cafe.restaurant.isTrue();
     } else {
@@ -81,7 +95,11 @@ public class CafeCondition {
     }
   }
 
-  public BooleanExpression multiFamily(boolean multiFamily) {
+  public BooleanExpression multiFamily(Boolean multiFamily) {
+    if (multiFamily == null) {
+      return null;
+    }
+
     if (multiFamily) {
       return cafe.multiFamily.isTrue();
     } else {

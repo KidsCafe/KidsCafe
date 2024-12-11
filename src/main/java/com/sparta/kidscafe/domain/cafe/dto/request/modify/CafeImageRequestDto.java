@@ -1,6 +1,5 @@
-package com.sparta.kidscafe.domain.cafe.dto.request;
+package com.sparta.kidscafe.domain.cafe.dto.request.modify;
 
-import com.sparta.kidscafe.domain.cafe.entity.Cafe;
 import com.sparta.kidscafe.domain.cafe.entity.CafeImage;
 import java.util.List;
 import lombok.AllArgsConstructor;

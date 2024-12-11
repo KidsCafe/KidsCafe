@@ -17,8 +17,8 @@ public class RoomCondition {
         .otherwise(false);
   }
 
-  public BooleanExpression existRoom(boolean existRoom) {
-    if (!existRoom) {
+  public BooleanExpression existRoom(Boolean existRoom) {
+    if (existRoom == null || !existRoom) {
       return null;
     }
 

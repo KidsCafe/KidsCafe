@@ -2,7 +2,7 @@ package com.sparta.kidscafe.domain.cafe.entity;
 
 import com.sparta.kidscafe.common.entity.Timestamped;
 import com.sparta.kidscafe.domain.bookmark.entity.Bookmark;
-import com.sparta.kidscafe.domain.cafe.dto.request.CafeModifyRequestDto;
+import com.sparta.kidscafe.domain.cafe.dto.request.modify.CafeModifyRequestDto;
 import com.sparta.kidscafe.domain.fee.entity.Fee;
 import com.sparta.kidscafe.domain.pricepolicy.entity.PricePolicy;
 import com.sparta.kidscafe.domain.room.entity.Room;
@@ -40,6 +40,9 @@ public class Cafe extends Timestamped {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
   private User user;
+
+  @Column(nullable = false)
+  private String imageList;
 
   @Column(nullable = false, length = 50)
   private String name;

@@ -1,20 +1,19 @@
-package com.sparta.kidscafe.domain.cafe.dto.request;
+package com.sparta.kidscafe.domain.cafe.dto.request.create;
 
+import com.sparta.kidscafe.domain.cafe.entity.Cafe;
+import com.sparta.kidscafe.domain.user.entity.User;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import java.time.LocalTime;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Data
-@Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CafeModifyRequestDto {
+public class CafeSimpleCreateRequestDto {
   @NotBlank(message = "카페 이름을 입력해주세요.")
   private String name;
 
@@ -28,19 +27,32 @@ public class CafeModifyRequestDto {
   private int size;
 
   private boolean multiFamily;
-  private boolean existRoom;
 
   @Pattern(
       regexp = "^(월|화|수|목|금|토|일)(,\\s*(월|화|수|목|금|토|일))*$",
-      message = "요일을 쉼표로 구분하여 입력해야 합니다. (예: '월, 화, 수')"
+      message = "DayType은 요일을 쉼표로 구분하여 입력해야 합니다. (예: '월, 화, 수')"
   )
   private String dayOff;
-
   private boolean parking;
-  private boolean existRestaurant;
-  private String hyperlink;
+  private boolean restaurant;
+  private String hyperLink;
   private LocalTime openedAt;
   private LocalTime closedAt;
 
-  private List<CafeImageRequestDto> images;
+  public Cafe convertDtoToEntityByCafe(User user) {
+    return Cafe.builder()
+        .user(user)
+        .name(name)
+        .region(region)
+        .address(address)
+        .size(size)
+        .multiFamily(multiFamily)
+        .dayOff(dayOff)
+        .parking(parking)
+        .restaurant(restaurant)
+        .hyperlink(hyperLink)
+        .openedAt(openedAt)
+        .closedAt(closedAt)
+        .build();
+  }
 }
