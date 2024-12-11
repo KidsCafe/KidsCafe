@@ -16,7 +16,9 @@ import lombok.NoArgsConstructor;
 public class ReservationResponseDto {
 
   private Long reservationId;
+  private Long userId;
   private Long cafeId;
+  private String userName;
   private String cafeName;
   private String roomName;
   private LocalDateTime startedAt;
@@ -31,6 +33,7 @@ public class ReservationResponseDto {
   @AllArgsConstructor
   public static class ReservationDetailResponseDto {
     private TargetType targetType;
+    private Long targetId;
     private String targetName;
     private int price;
     private Long count;
