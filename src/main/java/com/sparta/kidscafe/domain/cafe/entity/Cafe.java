@@ -41,6 +41,9 @@ public class Cafe extends Timestamped {
   @JoinColumn(name = "user_id")
   private User user;
 
+  @Column(nullable = false)
+  private String imageList;
+
   @Column(nullable = false, length = 50)
   private String name;
 
