@@ -30,7 +30,7 @@ public class FileUtil {
 
   public String makeFileName(String dirPath, Long id, MultipartFile image) {
     StringBuilder imagePath = new StringBuilder(dirPath);
-    imagePath.append("cafeImage");
+    imagePath.append("image");
     imagePath.append("_");
     imagePath.append(id);
     imagePath.append("_");
@@ -43,7 +43,7 @@ public class FileUtil {
       image.transferTo(new File(uploadPath));
     } catch (IOException ex) {
       ex.printStackTrace();
-      throw new BusinessException(ErrorCode.CAFE_IMAGE_UPLOAD_FAILED);
+      throw new BusinessException(ErrorCode.IMAGE_UPLOAD_FAILED);
     }
   }
 

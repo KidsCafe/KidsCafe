@@ -11,4 +11,6 @@ public interface PricePolicyRepository extends JpaRepository<PricePolicy, Long> 
   List<PricePolicy> findAllByCafeIdAndTargetId(Long cafeId, Long targetId);
 
   boolean existsByCafeId(Long cafeId);
+
+  List<PricePolicy> findByCafeIdAndDayTypeContains(Long cafeId, String dayType);
 }
