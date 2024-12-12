@@ -1,7 +1,5 @@
 package com.sparta.kidscafe.domain.fee.controller;
 
-import java.util.List;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sparta.kidscafe.common.annotation.Auth;
 import com.sparta.kidscafe.common.dto.AuthUser;
+import com.sparta.kidscafe.common.dto.ListResponseDto;
+import com.sparta.kidscafe.common.dto.StatusDto;
 import com.sparta.kidscafe.domain.fee.dto.request.FeeCreateRequestDto;
 import com.sparta.kidscafe.domain.fee.dto.request.FeeUpdateRequestDto;
 import com.sparta.kidscafe.domain.fee.dto.response.FeeResponseDto;
@@ -30,33 +30,30 @@ public class FeeController {
   private final FeeService feeService;
 
   @PostMapping("/{cafeId}/fees")
-  public ResponseEntity<FeeResponseDto> createFee(
+  public ResponseEntity<StatusDto> createFee(
       @Auth AuthUser authUser,
       @PathVariable Long cafeId,
       @Valid @RequestBody FeeCreateRequestDto feeCreateRequestDto){
-    FeeResponseDto feeResponseDto = feeService.createFee(authUser, cafeId, feeCreateRequestDto);
     return ResponseEntity
         .status(HttpStatus.OK)
-        .body(feeResponseDto);
+        .body(feeService.createFee(authUser, cafeId, feeCreateRequestDto));
   }
 
   @GetMapping("/{cafeId}/fees")
-  public ResponseEntity<List<FeeResponseDto>> getFeesByCafe(@PathVariable Long cafeId){
-    List<FeeResponseDto> feeResponseDtoList = feeService.getFeesByCafe(cafeId);
+  public ResponseEntity<ListResponseDto<FeeResponseDto>> getFeesByCafe(@PathVariable Long cafeId){
     return ResponseEntity
         .status(HttpStatus.OK)
-        .body(feeResponseDtoList);
+        .body(feeService.getFeesByCafe(cafeId));
   }
 
   @PatchMapping("/{cafeId}/fees/{feeId}")
-  public ResponseEntity<FeeResponseDto> updateFee(
+  public ResponseEntity<StatusDto> updateFee(
       @Auth AuthUser authUser,
       @PathVariable Long cafeId,
       @PathVariable Long feeId,
       @Valid @RequestBody FeeUpdateRequestDto feeUpdateRequestDto){
-    FeeResponseDto feeResponseDto = feeService.updateFee(authUser, cafeId, feeId, feeUpdateRequestDto);
     return ResponseEntity
         .status(HttpStatus.OK)
-        .body(feeResponseDto);
+        .body(feeService.updateFee(authUser, cafeId, feeId, feeUpdateRequestDto));
   }
 }
