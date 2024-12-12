@@ -21,9 +21,9 @@ public class OAuth2Controller {
 
 	private final OAuth2Service oAuth2Service;
 
-	@GetMapping("/signin/{provider}")
+	@GetMapping("/{provider}/signin")
 	public ResponseEntity<SigninResponseDto> signin(@PathVariable String provider, @RequestParam String code) throws JsonProcessingException {
-		SigninResponseDto signinResponseDto = oAuth2Service.signinOrRegister(provider, code);
+		SigninResponseDto signinResponseDto = oAuth2Service.signin(provider, code);
 		return ResponseEntity
 			.status(HttpStatus.OK)
 			.body(signinResponseDto);
