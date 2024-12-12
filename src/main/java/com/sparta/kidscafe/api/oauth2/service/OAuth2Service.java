@@ -2,7 +2,9 @@ package com.sparta.kidscafe.api.oauth2.service;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
+import java.util.Map;
 
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -28,9 +30,9 @@ public class OAuth2Service {
 		OAuth2Provider provider = inMemoryProviderRepository.findByProviderName(providerName);
 
 		// accessToken
-		OAuth2TokenResponseDto responseDto = getToken(code, provider);
+		OAuth2TokenResponseDto tokenResponseDto = getToken(code, provider);
 		// OAuth2UserProfile -> 유저 정보
-		OAuth2UserProfile userProfile = getUserProfile(providerName, responseDto, provider);
+		OAuth2UserProfile userProfile = getUserProfile(providerName, tokenResponseDto, provider);
 
 		return null;
 	}
@@ -39,7 +41,7 @@ public class OAuth2Service {
 		return WebClient.create()
 			.post()
 			.uri(provider.getTokenUrl())
-			.header(header -> {
+			.headers(header -> {
 				header.setBasicAuth(provider.getClientId(), provider.getClientSecret());
 				header.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 				header.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
@@ -59,4 +61,24 @@ public class OAuth2Service {
 
 		return formData;
 	}
+
+	private OAuth2UserProfile getUserProfile(String providerName, OAuth2TokenResponseDto tokenResponseDto, OAuth2Provider provider){
+		Map<String, Object> userAttributes = getUserAttributes(provider, tokenResponseDto);
+
+		return OAuth2Attributes.extract(providerName, userAttributes);
+	}
+
+	// OAuth2 서버에서 유저 정보 Map 으로 받기
+	private Map<String, Object> getUserAttributes(OAuth2Provider provider, OAuth2TokenResponseDto tokenResponseDto){
+		return WebClient.create()
+			.get()
+			.uri(provider.getUserInfoUrl())
+			.headers(header -> header.setBearerAuth(tokenResponseDto.getAccessToken()))
+			.retrieve()
+			.bodyToMono(new ParameterizedTypeReference<Map<String, Object>>(){
+
+			})
+			.block();
+	}
+
 }
