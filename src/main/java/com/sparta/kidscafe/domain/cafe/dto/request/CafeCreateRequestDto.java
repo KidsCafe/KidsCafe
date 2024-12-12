@@ -52,6 +52,9 @@ public class CafeCreateRequestDto {
   private LocalTime closedAt;
 
   @Valid
+  private List<Long> images;
+
+  @Valid
   private List<RoomCreateRequestDto> rooms;
 
   @Valid

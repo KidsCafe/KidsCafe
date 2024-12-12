@@ -8,6 +8,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum SearchSortBy {
+  NONE,
   CAFE_NAME,
   REVIEW_COUNT,
   REVIEW_AVG,
@@ -16,17 +17,17 @@ public enum SearchSortBy {
   CLOSED_AT;
 
   @JsonCreator
-  public static SearchSortBy getAgeGroup(String name) {
+  public static SearchSortBy getSortBy(String name) {
     for (SearchSortBy sortBy : SearchSortBy.values()) {
       if (sortBy.toString().equals(name)) {
         return sortBy;
       }
     }
-    return CAFE_NAME;
+    return NONE;
   }
 
   @JsonValue
-  public String getName() {
+  public String getSortBy() {
     return toString();
   }
 }

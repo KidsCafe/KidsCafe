@@ -7,6 +7,7 @@ import com.sparta.kidscafe.api.auth.service.AuthService;
 import com.sparta.kidscafe.common.annotation.Auth;
 import com.sparta.kidscafe.common.dto.AuthUser;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -29,8 +30,8 @@ public class AuthController {
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<SigninResponseDto> signin(@Valid @RequestBody SigninRequestDto requestDto){
-        SigninResponseDto responseDto = authService.signin(requestDto);
+    public ResponseEntity<SigninResponseDto> signin(HttpServletResponse res, @Valid @RequestBody SigninRequestDto requestDto){
+        SigninResponseDto responseDto = authService.signin(res, requestDto);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(responseDto);
