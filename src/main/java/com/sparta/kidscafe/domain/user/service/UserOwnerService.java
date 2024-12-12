@@ -28,7 +28,7 @@ public class UserOwnerService {
         PageRequest pageRequest = PageRequest.of(page - 1, size);
 
         // 사장님의 가게를 즐겨찾기한 사용자 조회 및 페이징 처리
-        Page<User> userPage = userRepository.findUsersByBookmarks_OwnerId(ownerId, pageRequest);
+        Page<User> userPage = userRepository.findUsersByBookmarks_UserId(ownerId, pageRequest);
 
         // 사용자 목록을 DTO로 변환
         List<UserResponseDto> users = userPage.getContent().stream()

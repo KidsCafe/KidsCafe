@@ -1,10 +1,5 @@
 package com.sparta.kidscafe.api.auth.service;
 
-import jakarta.servlet.http.HttpServletResponse;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import org.springframework.stereotype.Service;
-
 import com.sparta.kidscafe.api.auth.controller.dto.SigninRequestDto;
 import com.sparta.kidscafe.api.auth.controller.dto.SigninResponseDto;
 import com.sparta.kidscafe.api.auth.controller.dto.SignupRequestDto;
@@ -16,8 +11,9 @@ import com.sparta.kidscafe.domain.user.entity.User;
 import com.sparta.kidscafe.domain.user.repository.UserRepository;
 import com.sparta.kidscafe.exception.BusinessException;
 import com.sparta.kidscafe.exception.ErrorCode;
-
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
