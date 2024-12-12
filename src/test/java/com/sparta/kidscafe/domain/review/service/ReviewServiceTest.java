@@ -63,7 +63,7 @@ class ReviewServiceTest {
     Long userId = 1L;
     Long cafeId = 100L;
     AuthUser authUser = new AuthUser(userId, "testUser", RoleType.USER);
-    ReviewCreateRequestDto request = new ReviewCreateRequestDto(5, "Great cafe!");
+    ReviewCreateRequestDto request = new ReviewCreateRequestDto(5, "Great cafe!",List.of(1L, 2L, 3L));
     List<MultipartFile> mockFiles = List.of(
         new MockMultipartFile("image1.jpg", new byte[]{1, 2, 3}),
         new MockMultipartFile("image2.jpg", new byte[]{4, 5, 6})
@@ -130,7 +130,7 @@ class ReviewServiceTest {
     Long userId = 1L;
     Long reviewId = 100L;
     AuthUser authUser = new AuthUser(userId, "testUser", RoleType.USER);
-    ReviewCreateRequestDto request = new ReviewCreateRequestDto(4, "Updated content");
+    ReviewCreateRequestDto request = new ReviewCreateRequestDto(4, "Updated content",List.of(1L, 2L, 3L));
 
     User mockUser = User.builder().id(userId).build();
     Review mockReview = Review.builder()

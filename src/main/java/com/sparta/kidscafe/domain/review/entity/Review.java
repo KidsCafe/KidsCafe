@@ -50,10 +50,6 @@ public class Review extends Timestamped {
   @OneToMany(mappedBy = "review", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
   private List<Report> report = new ArrayList<>();
 
-  @Builder.Default
-  @OneToMany(mappedBy = "review", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
-  private List<ReviewImage> reviewImages = new ArrayList<>();
-
   public Review(Long id, User user, Cafe cafe, double star, String content) {
     this.id = id;
     this.user = user;
