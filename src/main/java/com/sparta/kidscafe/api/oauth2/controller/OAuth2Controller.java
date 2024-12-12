@@ -22,17 +22,10 @@ public class OAuth2Controller {
 	private final OAuth2Service oAuth2Service;
 
 	@GetMapping("/signin/{provider}")
-	public ResponseEntity<SigninResponseDto> signin(@PathVariable String provider, @RequestParam String code) throws
-		JsonProcessingException {
+	public ResponseEntity<SigninResponseDto> signin(@PathVariable String provider, @RequestParam String code) throws JsonProcessingException {
 		SigninResponseDto signinResponseDto = oAuth2Service.signinOrRegister(provider, code);
 		return ResponseEntity
 			.status(HttpStatus.OK)
 			.body(signinResponseDto);
-	}
-
-	@GetMapping("/signin/google")
-	public ResponseEntity<String> handleGoogleCallback(@RequestParam("code") String authorizationCode){
-		System.out.println("AUTH_CODE : " + authorizationCode);
-		return ResponseEntity.ok("AUTH_CODE : " + authorizationCode);
 	}
 }

@@ -1,6 +1,7 @@
 package com.sparta.kidscafe.common.dto;
 
 import com.sparta.kidscafe.common.enums.RoleType;
+import com.sparta.kidscafe.domain.user.entity.User;
 
 import lombok.Getter;
 
@@ -15,5 +16,13 @@ public class AuthUser {
 		this.id = id;
 		this.email = email;
 		this.roleType = roleType;
+	}
+
+	public User toUser() {
+		return User.builder()
+			.id(this.id)
+			.email(this.email)
+			.role(this.roleType)
+			.build();
 	}
 }

@@ -1,10 +1,9 @@
-package com.sparta.kidscafe.domain.cafe.dto.request.modify;
+package com.sparta.kidscafe.domain.cafe.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import java.time.LocalTime;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -15,6 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CafeModifyRequestDto {
+
   @NotBlank(message = "카페 이름을 입력해주세요.")
   private String name;
 
@@ -41,6 +41,4 @@ public class CafeModifyRequestDto {
   private String hyperlink;
   private LocalTime openedAt;
   private LocalTime closedAt;
-
-  private List<CafeImageRequestDto> images;
 }
