@@ -2,6 +2,7 @@ package com.sparta.kidscafe.domain.reservation.service;
 
 import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.PageResponseDto;
+import com.sparta.kidscafe.common.dto.ResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
 import com.sparta.kidscafe.common.enums.RoleType;
 import com.sparta.kidscafe.common.enums.TargetType;
@@ -13,6 +14,7 @@ import com.sparta.kidscafe.domain.reservation.dto.request.ReservationCreateReque
 import com.sparta.kidscafe.domain.reservation.dto.response.ReservationResponseDto;
 import com.sparta.kidscafe.domain.reservation.entity.Reservation;
 import com.sparta.kidscafe.domain.reservation.entity.ReservationDetail;
+import com.sparta.kidscafe.domain.reservation.enums.ReservationStatus;
 import com.sparta.kidscafe.domain.reservation.repository.ReservationDetailRepository;
 import com.sparta.kidscafe.domain.reservation.repository.ReservationRepository;
 import com.sparta.kidscafe.domain.room.entity.Room;
@@ -190,4 +192,26 @@ public class ReservationService {
     );
     return PageResponseDto.success(responseDto, HttpStatus.OK, "예약 내역 조회(카페용) 성공");
   }
+
+  // 예약 승인
+  @Transactional
+  public StatusDto approveReservation (AuthUser authUser, Long reservationId) {
+    if (!authUser.getRoleType().equals(RoleType.OWNER)) {
+      throw new BusinessException(ErrorCode.FORBIDDEN);
+    }
+    Reservation reservation = reservationRepository.findById(reservationId)
+        .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
+    if (reservation.getStatus() != ReservationStatus.PENDING) {
+      throw new BusinessException(ErrorCode.INVALID_STATUS_CHANGE);
+    }
+    reservation.approve();
+    reservationRepository.save(reservation);
+
+    return StatusDto.builder()
+        .status(HttpStatus.CREATED.value())
+        .message("예약 승인")
+        .build();
+  }
+  // 예약 취소
+
 }
