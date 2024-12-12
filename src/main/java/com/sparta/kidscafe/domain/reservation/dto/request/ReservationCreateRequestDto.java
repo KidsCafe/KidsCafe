@@ -1,8 +1,10 @@
 package com.sparta.kidscafe.domain.reservation.dto.request;
 
 import com.sparta.kidscafe.common.enums.TargetType;
+import com.sparta.kidscafe.domain.cafe.entity.Cafe;
 import com.sparta.kidscafe.domain.reservation.entity.Reservation;
 import com.sparta.kidscafe.domain.reservation.entity.ReservationDetail;
+import com.sparta.kidscafe.domain.user.entity.User;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,25 +30,31 @@ public class ReservationCreateRequestDto {
 
     private TargetType targetType;
     private Long targetId;
-    private int count;
+    private Long count;
 
-    public ReservationDetail convertDtoToEntity() {
-      // Todo. JS 값 세팅 필요
-      ReservationDetail reservationDetail = new ReservationDetail();
-      return reservationDetail;
+    public ReservationDetail convertDtoToEntity(Reservation reservation) {
+      return ReservationDetail.builder()
+          .reservation(reservation)
+          .targetType(targetType)
+          .targetId(targetId)
+          .count(count)
+          .build();
     }
   }
 
-  public Reservation convertDtoToEntity(){
-    // Todo. JS 값 세팅 필요
-    Reservation reservation = new Reservation();
-    return reservation;
+  public Reservation convertDtoToEntity(Cafe cafe, User user) {
+    return Reservation.builder()
+        .user(user)
+        .cafe(cafe)
+        .startedAt(startedAt)
+        .finishedAt(finishedAt)
+        .build();
   }
 
-  public List<ReservationDetail> convertEntityToDtoByReservationDetail(){
+  public List<ReservationDetail> convertEntityToDtoByReservationDetail(Reservation reservation) {
     List<ReservationDetail> reservationDetails = new ArrayList<>();
-    for(ReservationDetailRequestDto detail : details){
-      reservationDetails.add(detail.convertDtoToEntity());
+    for (ReservationDetailRequestDto detail : details) {
+      reservationDetails.add(detail.convertDtoToEntity(reservation));
     }
     return reservationDetails;
   }

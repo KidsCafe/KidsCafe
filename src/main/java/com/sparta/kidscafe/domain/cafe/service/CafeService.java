@@ -4,6 +4,7 @@ import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.PageResponseDto;
 import com.sparta.kidscafe.common.dto.ResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
+import com.sparta.kidscafe.common.util.ValidationCheck;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeCreateRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeSimpleRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafesSimpleCreateRequestDto;
@@ -44,7 +45,6 @@ public class CafeService {
 
   @Transactional
   public StatusDto createCafe(AuthUser authUser, CafeCreateRequestDto requestDto) {
-    CafeValidationCheck.validOwner(authUser);
     User user = findByUserId(authUser.getId());
     Cafe cafe = saveCafe(requestDto, user);
     saveCafeImage(cafe, requestDto.getImages());
@@ -56,7 +56,6 @@ public class CafeService {
   }
 
   public StatusDto creatCafe(AuthUser authUser, CafesSimpleCreateRequestDto requestDto) {
-    CafeValidationCheck.validAdmin(authUser);
     User user = findByUserId(authUser.getId());
     List<Cafe> cafes = requestDto.convertDtoToEntity(user);
     cafeRepository.saveAll(cafes);
@@ -64,18 +63,6 @@ public class CafeService {
         HttpStatus.CREATED,
         "카페 [" + cafes.size() + "]개 등록 성공"
     );
-  }
-
-  public PageResponseDto<CafeResponseDto> searchCafeByAdmin(AuthUser authUser,
-      SearchCondition condition) {
-    CafeValidationCheck.validAdmin(authUser);
-    return searchCafe(condition);
-  }
-
-  public PageResponseDto<CafeResponseDto> searchCafeByOwner(AuthUser authUser,
-      SearchCondition condition) {
-    CafeValidationCheck.validOwner(authUser);
-    return searchCafe(condition);
   }
 
   public PageResponseDto<CafeResponseDto> searchCafe(SearchCondition condition) {
@@ -100,9 +87,8 @@ public class CafeService {
 
   @Transactional
   public StatusDto updateCafe(AuthUser authUser, Long cafeId, CafeSimpleRequestDto requestDto) {
-    CafeValidationCheck.validOwner(authUser);
     Cafe cafe = findByCafe(cafeId, authUser.getId());
-    CafeValidationCheck.validMyCafe(authUser, cafe);
+    ValidationCheck.validMyCafe(authUser, cafe);
     cafe.update(requestDto);
     return createStatusDto(
         HttpStatus.OK,
@@ -112,10 +98,8 @@ public class CafeService {
 
   @Transactional
   public void deleteCafe(AuthUser authUser, Long cafeId) {
-    CafeValidationCheck.validOwner(authUser);
     Cafe cafe = findByCafe(cafeId, authUser.getId());
     cafeRepository.delete(cafe);
-
     List<CafeImage> cafeImages = cafeImageRepository.findAllByCafeId(cafeId);
     for (CafeImage cafeImage : cafeImages) {
       cafeImage.delete();
@@ -124,7 +108,6 @@ public class CafeService {
 
   @Transactional
   public void deleteCafe(AuthUser authUser, List<Long> cafeIds) {
-    CafeValidationCheck.validAdmin(authUser);
     List<Cafe> cafes = cafeRepository.findAllByUserIdAndIdIn(authUser.getId(), cafeIds);
     cafeRepository.deleteAll(cafes);
   }

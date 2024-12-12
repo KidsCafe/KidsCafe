@@ -1,4 +1,4 @@
-package com.sparta.kidscafe.domain.cafe.repository.condition;
+package com.sparta.kidscafe.common.entity.condition;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.sparta.kidscafe.domain.cafe.dto.searchCondition.SearchCondition;

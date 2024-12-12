@@ -135,40 +135,6 @@
 //  }
 //
 //  @Test
-//  @DisplayName("카페 등록 성공 - 사장님")
-//  void createCafeByOwner_success() {
-//    // given: CafeCreateRequestDto의 메서드들 mock 처리
-//    Cafe cafe = mock(Cafe.class);
-//    when(requestDto.convertDtoToEntityByCafe(ownerUser))
-//        .thenReturn(cafe);
-//    when(requestDto.convertDtoToEntityByRoom(cafe))
-//        .thenReturn(Collections.singletonList(mock(Room.class)));
-//    when(requestDto.convertDtoToEntityByFee(cafe))
-//        .thenReturn(Collections.singletonList(mock(Fee.class)));
-//    when(requestDto.convertDtoToEntityByPricePolicy(cafe))
-//        .thenReturn(Collections.singletonList(mock(PricePolicy.class)));
-//    when(cafe.getName())
-//        .thenReturn("Test Cafe");
-//
-//    // Mock 동작 설정: Repository 호출 시 Mock 결과 반환
-//    when(userRepository.findById(ownerAuthUser.getId())).thenReturn(Optional.of(ownerUser));
-//
-//    // when: 실행
-//    StatusDto result = cafeService.createCafe(ownerAuthUser, requestDto);
-//
-//    // then: 결과 확인
-//    assert (result.getStatus() == HttpStatus.CREATED.value());
-//    assert (result.getMessage().equals("[Test Cafe] 등록 성공"));
-//
-//    // cafeRepository, roomRepository, feeRepository, pricePolicyRepository, fileUtil이 각각 호출되었는지 검증
-//    verify(cafeRepository, times(1)).save(cafe);
-//    verify(roomRepository, times(1)).saveAll(anyList());
-//    verify(feeRepository, times(1)).saveAll(anyList());
-//    verify(pricePolicyRepository, times(1)).saveAll(anyList());
-//    verify(cafeImageService, times(1)).saveCafeImages(cafe, cafeImages);
-//  }
-//
-//  @Test
 //  @DisplayName("카페 목록 조회 성공 - 사용자가 검색한")
 //  void searchCafe_success() {
 //    // Arrange: 테스트 입력값 및 Mock 동작 정의
@@ -405,109 +371,125 @@
 //  }
 //}
 
-//package com.sparta.kidscafe.domain.cafe.service;
-//
-//import com.sparta.kidscafe.common.dto.AuthUser;
-//import com.sparta.kidscafe.common.dto.StatusDto;
-//import com.sparta.kidscafe.common.enums.RoleType;
-//import com.sparta.kidscafe.domain.cafe.dto.request.CafeCreateRequestDto;
-//import com.sparta.kidscafe.domain.cafe.entity.Cafe;
-//import com.sparta.kidscafe.domain.cafe.repository.CafeImageRepository;
-//import com.sparta.kidscafe.domain.cafe.repository.CafeRepository;
-//import com.sparta.kidscafe.domain.fee.entity.Fee;
-//import com.sparta.kidscafe.domain.fee.repository.FeeRepository;
-//import com.sparta.kidscafe.domain.pricepolicy.entity.PricePolicy;
-//import com.sparta.kidscafe.domain.pricepolicy.repository.PricePolicyRepository;
-//import com.sparta.kidscafe.domain.room.entity.Room;
-//import com.sparta.kidscafe.domain.room.repository.RoomRepository;
-//import com.sparta.kidscafe.domain.user.entity.User;
-//import com.sparta.kidscafe.domain.user.repository.UserRepository;
-//import com.sparta.kidscafe.domain.user.service.UserService;
-//import com.sparta.kidscafe.dummy.DummyCafe;
-//import com.sparta.kidscafe.dummy.DummyUser;
-//import java.util.Collections;
-//import java.util.List;
-//import java.util.Optional;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.Test;
-//import org.mockito.InjectMocks;
-//import org.mockito.Mock;
-//import org.mockito.MockitoAnnotations;
-//import org.springframework.http.HttpStatus;
-//
-//import static org.junit.jupiter.api.Assertions.assertEquals;
-//import static org.mockito.Mockito.*;
-//
-//class CafeServiceTest {
-//
-//  @InjectMocks
-//  private CafeService cafeService;
-//
-//  @Mock
-//  private UserRepository userRepository;
-//
-//  @Mock
-//  private CafeRepository cafeRepository;
-//
-//  @Mock
-//  private CafeImageRepository cafeImageRepository;
-//
-//  @Mock
-//  private RoomRepository roomRepository;
-//
-//  @Mock
-//  private FeeRepository feeRepository;
-//
-//  @Mock
-//  private PricePolicyRepository pricePolicyRepository;
-//
-//  @Mock
-//  private CafeCreateRequestDto requestDto;
-//
-////  @BeforeEach
-////  void setUp() {
-////    MockitoAnnotations.openMocks(this);
-////  }
-//
-//  private AuthUser createAuthUser(RoleType role) {
-//    return new AuthUser(1L, "hong@email.com", role);
-//  }
-//
-//  private CafeCreateRequestDto createCafeRequestDto() {
-//    CafeCreateRequestDto requestDto = new CafeCreateRequestDto();
-//    requestDto.setName("Test Cafe");
-//    requestDto.setImages(List.of(1L, 2L, 3L));
-//    return requestDto;
-//  }
-//
+package com.sparta.kidscafe.domain.cafe.service;
+
+import com.sparta.kidscafe.common.dto.AuthUser;
+import com.sparta.kidscafe.common.dto.StatusDto;
+import com.sparta.kidscafe.common.enums.RoleType;
+import com.sparta.kidscafe.domain.cafe.dto.request.CafeCreateRequestDto;
+import com.sparta.kidscafe.domain.cafe.entity.Cafe;
+import com.sparta.kidscafe.domain.cafe.repository.CafeImageRepository;
+import com.sparta.kidscafe.domain.cafe.repository.CafeRepository;
+import com.sparta.kidscafe.domain.fee.entity.Fee;
+import com.sparta.kidscafe.domain.fee.repository.FeeRepository;
+import com.sparta.kidscafe.domain.pricepolicy.entity.PricePolicy;
+import com.sparta.kidscafe.domain.pricepolicy.repository.PricePolicyRepository;
+import com.sparta.kidscafe.domain.room.entity.Room;
+import com.sparta.kidscafe.domain.room.repository.RoomRepository;
+import com.sparta.kidscafe.domain.user.entity.User;
+import com.sparta.kidscafe.domain.user.repository.UserRepository;
+import com.sparta.kidscafe.domain.user.service.UserService;
+import com.sparta.kidscafe.dummy.DummyCafe;
+import com.sparta.kidscafe.dummy.DummyUser;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
+
+class CafeServiceTest {
+
+  @InjectMocks
+  private CafeService cafeService;
+
+  @Mock
+  private UserRepository userRepository;
+
+  @Mock
+  private CafeRepository cafeRepository;
+
+  @Mock
+  private CafeImageRepository cafeImageRepository;
+
+  @Mock
+  private RoomRepository roomRepository;
+
+  @Mock
+  private FeeRepository feeRepository;
+
+  @Mock
+  private PricePolicyRepository pricePolicyRepository;
+
+  @Mock
+  private CafeCreateRequestDto requestDto;
+
+  @BeforeEach
+  void setUp() {
+    MockitoAnnotations.openMocks(this);
+  }
+
+  private AuthUser createAuthUser(RoleType role) {
+    return new AuthUser(1L, "hong@email.com", role);
+  }
+
+  @Test
+  @DisplayName("카페 등록 성공 - 사장님")
+  void createCafeOwner_Success() {
+    // given
+    AuthUser authUser = createAuthUser(RoleType.OWNER);
+    User user = DummyUser.createDummyUser(RoleType.USER);
+    Cafe cafe = DummyCafe.createDummyCafe(user);
+
+    when(requestDto.convertDtoToEntityByCafe(user)).thenReturn(cafe);
+    when(requestDto.convertDtoToEntityByRoom(cafe)).thenReturn(Collections.singletonList(mock(Room.class)));
+    when(requestDto.convertDtoToEntityByFee(cafe)).thenReturn(Collections.singletonList(mock(Fee.class)));
+    when(requestDto.convertDtoToEntityByPricePolicy(cafe)).thenReturn(Collections.singletonList(mock(PricePolicy.class)));
+
+    when(userRepository.findById(authUser.getId())).thenReturn(Optional.of(user));
+    when(cafeRepository.save(any(Cafe.class))).thenReturn(cafe);
+
+    // when
+    StatusDto result = cafeService.createCafe(authUser, requestDto);
+
+    // then
+    assertEquals(HttpStatus.CREATED.value(), result.getStatus());
+    assertEquals("["+ cafe.getName() +"] 등록 성공", result.getMessage());
+
+    verify(userRepository).findById(authUser.getId());
+    verify(cafeRepository).save(any(Cafe.class));
+    verify(cafeImageRepository).findAllById(requestDto.getImages());
+    verify(roomRepository).saveAll(any());
+    verify(feeRepository).saveAll(any());
+    verify(pricePolicyRepository).saveAll(any());
+  }
+
 //  @Test
-//  void createCafe_Success() {
-//    // given
-//    AuthUser authUser = createAuthUser(RoleType.OWNER);
-//    CafeCreateRequestDto requestDto = createCafeRequestDto();
-//    User user = DummyUser.createDummyUser(RoleType.USER);
-//    Cafe cafe = DummyCafe.createDummyCafe(user);
+//  void creatCafe_MultipleCafes_Success() {
+//    // Arrange
+//    AuthUser authUser = createAuthUser(RoleType.ADMIN);
+//    User user = DummyUser.createDummyUser(RoleType.ADMIN);
+//    List<Cafe> cafes = DummyCafe.createDummyCafes(user, 2);
 //
-//    when(requestDto.convertDtoToEntityByCafe(user)).thenReturn(cafe);
-//    when(requestDto.convertDtoToEntityByRoom(cafe)).thenReturn(Collections.singletonList(mock(Room.class)));
-//    when(requestDto.convertDtoToEntityByFee(cafe)).thenReturn(Collections.singletonList(mock(Fee.class)));
-//    when(requestDto.convertDtoToEntityByPricePolicy(cafe)).thenReturn(Collections.singletonList(mock(PricePolicy.class)));
+//    when(userRepository.findById(authUser.getId())).thenReturn(java.util.Optional.of(user));
+//    when(cafesSimpleCreateRequestDto.convertDtoToEntity(user)).thenReturn(cafes);
 //
-//    when(userRepository.findById(authUser.getId())).thenReturn(Optional.of(user));
-//    when(cafeRepository.save(any(Cafe.class))).thenReturn(cafe);
+//    // Act
+//    StatusDto result = cafeService.creatCafe(authUser, cafesSimpleCreateRequestDto);
 //
-//    // when
-//    StatusDto result = cafeService.createCafe(authUser, requestDto);
-//
-//    // then
+//    // Assert
 //    assertEquals(HttpStatus.CREATED.value(), result.getStatus());
-//    assertEquals("[Test Cafe] 등록 성공", result.getMessage());
+//    assertEquals("카페 [2]개 등록 성공", result.getMessage());
 //
 //    verify(userRepository).findById(authUser.getId());
-//    verify(cafeRepository).save(any(Cafe.class));
-//    verify(cafeImageRepository).findAllById(requestDto.getImages());
-//    verify(roomRepository).saveAll(any());
-//    verify(feeRepository).saveAll(any());
-//    verify(pricePolicyRepository).saveAll(any());
+//    verify(cafesSimpleCreateRequestDto).convertDtoToEntity(user);
+//    verify(cafeRepository).saveAll(cafes);
 //  }
-//}
+}

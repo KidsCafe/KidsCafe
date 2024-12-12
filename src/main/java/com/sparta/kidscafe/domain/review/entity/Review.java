@@ -50,6 +50,7 @@ public class Review extends Timestamped {
   @Column(nullable = false)
   private String content;
 
+  @Builder.Default
   @OneToMany(mappedBy = "review", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
   private List<Report> report = new ArrayList<>();
 

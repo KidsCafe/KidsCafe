@@ -3,6 +3,7 @@ package com.sparta.kidscafe.domain.cafe.service;
 import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.ListResponseDto;
 import com.sparta.kidscafe.common.enums.ImageType;
+import com.sparta.kidscafe.common.util.ValidationCheck;
 import com.sparta.kidscafe.common.util.FileUtil;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeImageDeleteRequestDto;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
@@ -32,7 +33,7 @@ public class CafeImageService {
   @Transactional
   public ListResponseDto<ImageResponseDto> uploadCafeImage(AuthUser authUser,
       Long cafeId, List<MultipartFile> images) {
-    List<ImageResponseDto> responseImages = saveCafeImage(authUser.getId(), cafeId, images);
+    List<ImageResponseDto> responseImages = uploadCafeImage(authUser.getId(), cafeId, images);
     return ListResponseDto.success(
         responseImages,
         HttpStatus.CREATED,
@@ -43,10 +44,8 @@ public class CafeImageService {
   public void deleteImage(AuthUser authUser, CafeImageDeleteRequestDto requestDto) {
     Long cafeId = requestDto.getCafeId();
     Long userId = authUser.getId();
-
-    CafeValidationCheck.validNotUser(authUser);
     Cafe cafe = cafeRepository.findByIdAndUserId(cafeId, userId).orElse(null);
-    CafeValidationCheck.validMyCafe(authUser, cafe);
+    ValidationCheck.validMyCafe(authUser, cafe);
 
     List<CafeImage> deleteImages = cafeImageRepository.findAllById(requestDto.getImages());
     for (CafeImage deleteImage : deleteImages) {
@@ -54,7 +53,7 @@ public class CafeImageService {
     }
   }
 
-  private List<ImageResponseDto> saveCafeImage(Long userId, Long cafeId,
+  private List<ImageResponseDto> uploadCafeImage(Long userId, Long cafeId,
       List<MultipartFile> images) {
     List<ImageResponseDto> responseImages = new ArrayList<>();
     for (MultipartFile image : images) {

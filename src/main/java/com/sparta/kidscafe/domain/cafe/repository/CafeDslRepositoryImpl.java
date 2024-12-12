@@ -12,11 +12,11 @@ import com.sparta.kidscafe.domain.cafe.dto.searchCondition.SearchCondition;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeResponseDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.QCafeResponseDto;
 import com.sparta.kidscafe.domain.cafe.entity.QCafe;
-import com.sparta.kidscafe.domain.cafe.enums.SearchSortBy;
-import com.sparta.kidscafe.domain.cafe.repository.condition.CafeCondition;
-import com.sparta.kidscafe.domain.cafe.repository.condition.FeeCondition;
-import com.sparta.kidscafe.domain.cafe.repository.condition.ReviewCondition;
-import com.sparta.kidscafe.domain.cafe.repository.condition.RoomCondition;
+import com.sparta.kidscafe.common.entity.sort.CafeSearchSortBy;
+import com.sparta.kidscafe.common.entity.condition.CafeCondition;
+import com.sparta.kidscafe.common.entity.condition.FeeCondition;
+import com.sparta.kidscafe.common.entity.condition.ReviewCondition;
+import com.sparta.kidscafe.common.entity.condition.RoomCondition;
 import com.sparta.kidscafe.domain.fee.entity.QFee;
 import com.sparta.kidscafe.domain.review.entity.QReview;
 import com.sparta.kidscafe.domain.room.entity.QRoom;
@@ -132,7 +132,7 @@ public class CafeDslRepositoryImpl implements CafeDslRepository {
     return new OrderSpecifier<>(Order.ASC, Expressions.constant(1));
   }
 
-  private Expression<?> makeOrderBy(SearchSortBy sortBy) {
+  private Expression<?> makeOrderBy(CafeSearchSortBy sortBy) {
     return switch (sortBy) {
       case REVIEW_COUNT -> review.id.count();
       case REVIEW_AVG -> review.star.avg();

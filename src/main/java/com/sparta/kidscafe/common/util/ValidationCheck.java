@@ -1,4 +1,4 @@
-package com.sparta.kidscafe.domain.cafe.service;
+package com.sparta.kidscafe.common.util;
 
 import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.enums.RoleType;
@@ -6,7 +6,7 @@ import com.sparta.kidscafe.domain.cafe.entity.Cafe;
 import com.sparta.kidscafe.exception.BusinessException;
 import com.sparta.kidscafe.exception.ErrorCode;
 
-public class CafeValidationCheck {
+public class ValidationCheck {
 
   public static void validNotUser(AuthUser authUser) {
     if (authUser.getRoleType() == RoleType.USER) {

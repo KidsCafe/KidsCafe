@@ -1,6 +1,6 @@
 package com.sparta.kidscafe.domain.cafe.dto.request;
 
-import com.sparta.kidscafe.domain.cafe.enums.SearchSortBy;
+import com.sparta.kidscafe.common.entity.sort.CafeSearchSortBy;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +14,7 @@ public class CafeSearchPageRequestDto {
 
   private int page;
   private int pageSize;
-  private SearchSortBy sortBy;
+  private CafeSearchSortBy sortBy;
   private boolean asc;
 
   public Pageable getPageable() {

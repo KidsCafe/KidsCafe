@@ -7,9 +7,11 @@ import com.sparta.kidscafe.common.enums.RoleType;
 import com.sparta.kidscafe.common.enums.TargetType;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
 import com.sparta.kidscafe.domain.cafe.repository.CafeRepository;
+import com.sparta.kidscafe.domain.fee.entity.Fee;
 import com.sparta.kidscafe.domain.pricepolicy.entity.PricePolicy;
 import com.sparta.kidscafe.domain.pricepolicy.repository.PricePolicyRepository;
 import com.sparta.kidscafe.domain.reservation.dto.request.ReservationCreateRequestDto;
+import com.sparta.kidscafe.domain.reservation.dto.request.ReservationCreateRequestDto.ReservationDetailRequestDto;
 import com.sparta.kidscafe.domain.reservation.dto.response.ReservationResponseDto;
 import com.sparta.kidscafe.domain.reservation.entity.Reservation;
 import com.sparta.kidscafe.domain.reservation.entity.ReservationDetail;
@@ -21,6 +23,7 @@ import com.sparta.kidscafe.domain.user.entity.User;
 import com.sparta.kidscafe.domain.user.repository.UserRepository;
 import com.sparta.kidscafe.exception.BusinessException;
 import com.sparta.kidscafe.exception.ErrorCode;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -106,15 +109,7 @@ public class ReservationService {
     // TODO. JS dsl이나 JPQL로 어쩌구 저쩌구
 
     // 4. 예약이 가능하다면 예약 생성
-    Reservation reservation = requestDto.convertDtoToEntity();
-    List<ReservationDetail> details = requestDto.convertEntityToDtoByReservationDetail();
-
-    // 5. 정책을 이용하여 일치하는것은 가격을 계산하여 업데이트
-    calcReservation(cafeId, reservation, details);
-
-    // 6. 저장한다.
-    reservationRepository.save(reservation);
-    reservationDetailRepository.saveAll(details);
+    calcReservation(cafe, user, requestDto);
 
     // 7. 반환
     return StatusDto.builder()
@@ -123,33 +118,77 @@ public class ReservationService {
         .build();
   }
 
-  private void calcReservation(Long cafeId, Reservation reservation,
-      List<ReservationDetail> details) {
+  private void calcReservation(Cafe cafe, User user, ReservationCreateRequestDto requestDto) {
     // TODO. JS 값 계산을 위한 오늘날짜에 적용되는 가격정책 불러오기
-    List<PricePolicy> pricePolies = pricePolicyRepository.findAllByCafeId(cafeId);
+    List<PricePolicy> pricePolies = pricePolicyRepository.findAllByCafeId(cafe.getId());
+    List<Room> rooms = cafe.getRooms();
+    List<Fee> fees = cafe.getFees();
 
-    int totalPrice = 0;
-    for(PricePolicy pricePolicy : pricePolies) {
-      for(ReservationDetail detail : details) {
-        // 타겟이(ROOM, FEE)같다면
-        if(pricePolicy.getTargetType().equals(detail.getTargetType())) {
-          detail.updatePrice(pricePolicy.getRate()); // 가격 적용
-          totalPrice += detail.getPrice();
-        }
+    double totalPrice = 0;
+    Reservation reservation = requestDto.convertDtoToEntity(cafe, user);
+    List<ReservationDetail> reservationDetails =
+        requestDto.convertEntityToDtoByReservationDetail(reservation);
+
+    for (ReservationDetail reservationdetail : reservationDetails) {
+      double price = 0;
+      PricePolicy pricePolicy = matchPricePolicy(reservationdetail, pricePolies);
+      if (pricePolicy.getTargetType().equals(TargetType.FEE)) {
+        Fee fee = matchFee(reservationdetail, fees);
+        price = (reservationdetail.getCount() * fee.getFee()) * pricePolicy.getRate();
+      } else {
+        Room room = matchRoom(reservationdetail, rooms);
+        price = room.getPrice();
+      }
+      reservationdetail.updatePrice((int) price);
+      reservationDetails.add(reservationdetail);
+      totalPrice += price;
+    }
+
+    reservation.updateTotalPrice((int) totalPrice);
+
+    // 6. 저장한다.
+    reservationRepository.save(reservation);
+    reservationDetailRepository.saveAll(reservationDetails);
+  }
+
+  public PricePolicy matchPricePolicy(ReservationDetail detail,
+      List<PricePolicy> pricePolies) {
+    for (PricePolicy pricePolicy : pricePolies) {
+      if (pricePolicy.getTargetType().equals(detail.getTargetType())) {
+        return pricePolicy;
       }
     }
-    reservation.updateTotalPrice(totalPrice);
+    return null;
+  }
+
+  public Room matchRoom(ReservationDetail detail, List<Room> rooms) {
+    for (Room room : rooms) {
+      if (detail.getTargetId().equals(room.getId())) {
+        return room;
+      }
+    }
+    return null;
+  }
+
+  public Fee matchFee(ReservationDetail detail, List<Fee> fees) {
+    for (Fee fee : fees) {
+      if (detail.getTargetId().equals(fee.getId())) {
+        return fee;
+      }
+    }
+    return null;
   }
 
   // 예약 내역 조회(User용)
   @Transactional(readOnly = true)
-  public PageResponseDto<ReservationResponseDto> getReservationsByUser(AuthUser authUser, int page, int size) {
+  public PageResponseDto<ReservationResponseDto> getReservationsByUser(AuthUser authUser, int page,
+      int size) {
     if (!authUser.getRoleType().equals(RoleType.USER)) {
       throw new BusinessException(ErrorCode.FORBIDDEN);
     }
     Pageable pageable = PageRequest.of(page, size, Sort.by(Direction.DESC, "createdAt"));
-    Page<Reservation> reservationsForUser = reservationRepository.findByUserId(authUser.getId(), pageable);
-
+    Page<Reservation> reservationsForUser = reservationRepository.findByUserId(authUser.getId(),
+        pageable);
 
     Page<ReservationResponseDto> responseDto = reservationsForUser.map(reservation ->
         ReservationResponseDto.builder()
@@ -166,7 +205,8 @@ public class ReservationService {
 
   // 예약 내역 조회(Owner용)
   @Transactional(readOnly = true)
-  public PageResponseDto<ReservationResponseDto> getReservationsByOwner(AuthUser authUser, Long cafeId, int page, int size) {
+  public PageResponseDto<ReservationResponseDto> getReservationsByOwner(AuthUser authUser,
+      Long cafeId, int page, int size) {
     if (!authUser.getRoleType().equals(RoleType.OWNER)) {
       throw new BusinessException(ErrorCode.FORBIDDEN);
     }
