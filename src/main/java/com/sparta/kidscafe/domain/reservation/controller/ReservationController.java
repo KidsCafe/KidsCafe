@@ -26,13 +26,22 @@ public class ReservationController {
 
   private final ReservationService reservationService;
 
+  @PostMapping("/temp/reservations/cafes/{cafeId}")
+  public ResponseEntity<StatusDto> tempCreateReservation(
+      @Auth AuthUser authUser,
+      @PathVariable Long cafeId,
+      @Valid @RequestBody ReservationCreateRequestDto requestDto) {
+    StatusDto response = reservationService.createReservation(authUser, cafeId, requestDto);
+    return ResponseEntity.status(HttpStatus.CREATED).body(response);
+  }
+
   // 예약 생성
   @PostMapping("/reservations/cafes/{cafeId}")
   public ResponseEntity<StatusDto> createReservation(
       @Auth AuthUser authUser,
       @PathVariable Long cafeId,
       @Valid @RequestBody ReservationCreateRequestDto requestDto) {
-    StatusDto response = reservationService.createReservation(authUser, cafeId, requestDto);
+    StatusDto response = reservationService.tempCreateReservation(authUser, cafeId, requestDto);
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 
