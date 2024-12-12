@@ -17,6 +17,7 @@ import com.sparta.kidscafe.domain.review.entity.Review;
 import com.sparta.kidscafe.domain.review.entity.ReviewImage;
 import com.sparta.kidscafe.domain.review.repository.ReviewImageRepository;
 import com.sparta.kidscafe.domain.review.repository.ReviewRepository;
+import com.sparta.kidscafe.domain.room.repository.RoomRepository;
 import com.sparta.kidscafe.domain.user.entity.User;
 import com.sparta.kidscafe.domain.user.repository.UserRepository;
 import com.sparta.kidscafe.exception.BusinessException;
@@ -42,6 +43,7 @@ public class ReviewService {
   private final S3FileUploader s3FileUploader;
   private final ReviewRepository reviewRepository;
   private final ReviewImageRepository reviewImageRepository;
+  private final RoomRepository roomRepository;
 
   public StatusDto createReview(AuthUser authUser, ReviewCreateRequestDto request,
       List<MultipartFile> reviewImages, Long cafeId) {

@@ -13,7 +13,11 @@ public enum ErrorCode {
     // Cafe 관련 에러
     CAFE_NOT_FOUND("CAFE_NOT_FOUND", "카페를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     INVALID_CAFE_DATA("INVALID_CAFE_DATA", "카페 데이터가 유효하지 않습니다.", HttpStatus.BAD_REQUEST),
-    CAFE_IMAGE_UPLOAD_FAILED("CAFE_IMAGE_UPLOAD_FAILED", "카페 이미지 업로드에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
+
+    // Image 관련 에러
+    IMAGE_UPLOAD_FAILED("IMAGE_UPLOAD_FAILED", "카페 이미지 업로드에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
+    IMAGE_REMOVE_FAILED("IMAGE_REMOVE_FAILED", "카페 이미지 삭제에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
+    IMAGE_NOT_EXIST("IMAGE_NOT_EXIST", "이미지가 존재하지 않습니다.",HttpStatus.INTERNAL_SERVER_ERROR),
 
     // Review 관련 에러
     REVIEW_NOT_FOUND("REVIEW_NOT_FOUND", "리뷰를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
@@ -30,6 +34,15 @@ public enum ErrorCode {
     // PricePolicy 관련 에러
     PRICE_POLICY_NOT_FOUND("PRICE_POLICY_NOT_FOUND", "가격 정책을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     PRICE_POLICY_MISMATCH("PRICE_POLICY_MISMATCH", "카페에 해당하지 않는 가격 정책입니다.", HttpStatus.BAD_REQUEST),
+
+    // FEE 관련 에러
+    FEE_TABLE_UNAUTHORIZED("FEE_TABLE_UNAUTHORIZED", "일반유저는 가격책정의 권한이 없습니다.", HttpStatus.FORBIDDEN),
+    FEE_TABLE_OWN_CREATE("FEE_TABLE_OWN_CREATE", "사장님 본인 가게에만 가격책정이 가능합니다.", HttpStatus.FORBIDDEN),
+    FEE_NOT_FOUND("FEE_NOT_FOUND", "해당 요금을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+
+    // Fee 관련 에러
+    INVALID_FEE_ID("INVALID_FEE_ID", "유효하지 않은 입장료입니다.", HttpStatus.BAD_REQUEST),
+    UNSUPPORTED_TARGET_TYPE("UNSUPPORTED_TARGET_TYPE", "지원하지 않는 유형입니다.", HttpStatus.BAD_REQUEST),
 
     // 신고 관련 에러
     REPORT_NOT_FOUND("REPORT_NOT_FOUND","신고를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),

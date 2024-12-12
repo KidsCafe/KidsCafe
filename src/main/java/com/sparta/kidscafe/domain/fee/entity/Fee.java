@@ -3,6 +3,8 @@ package com.sparta.kidscafe.domain.fee.entity;
 import com.sparta.kidscafe.common.entity.Timestamped;
 import com.sparta.kidscafe.common.enums.AgeGroup;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
+import com.sparta.kidscafe.domain.fee.dto.request.FeeUpdateRequestDto;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -31,7 +33,7 @@ public class Fee extends Timestamped {
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "cafe_id")
+  @JoinColumn(name = "cafe_id", nullable = false)
   private Cafe cafe;
 
   @Enumerated(value = EnumType.STRING)
@@ -39,4 +41,9 @@ public class Fee extends Timestamped {
 
   @Column(nullable = false, length = 50)
   private int fee;
+
+  public void update(FeeUpdateRequestDto feeUpdateRequestDto) {
+    this.ageGroup = feeUpdateRequestDto.getAgeGroup();
+    this.fee = feeUpdateRequestDto.getFee();
+  }
 }
