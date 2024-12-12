@@ -66,6 +66,9 @@ dependencies {
     // 직렬화 & 역직렬화
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
+    // WebClient(비동기 방식으로 OAuth 서버와의 통신)
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
     // Testing
     testImplementation 'org.springframework.boot:spring-boot-starter-test' // Spring Boot Test
     testImplementation 'org.mockito:mockito-core' // Mockito for mocking
