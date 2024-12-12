@@ -1,4 +1,4 @@
-package com.sparta.kidscafe.domain.cafe.dto.request.search;
+package com.sparta.kidscafe.domain.cafe.dto.request;
 
 import com.sparta.kidscafe.domain.cafe.dto.searchCondition.SearchCondition;
 import java.time.LocalTime;

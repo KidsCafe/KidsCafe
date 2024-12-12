@@ -8,6 +8,12 @@ import com.sparta.kidscafe.exception.ErrorCode;
 
 public class CafeValidationCheck {
 
+  public static void validNotUser(AuthUser authUser) {
+    if (authUser.getRoleType() == RoleType.USER) {
+      throw new BusinessException(ErrorCode.FORBIDDEN);
+    }
+  }
+
   public static void validAdmin(AuthUser authUser) {
     if (authUser.getRoleType() != RoleType.ADMIN) {
       throw new BusinessException(ErrorCode.FORBIDDEN);
@@ -20,13 +26,11 @@ public class CafeValidationCheck {
     }
   }
 
-  public static void validUpdateCafe(AuthUser authUser) {
-    if (authUser.getRoleType() == RoleType.ADMIN) {
-      throw new BusinessException(ErrorCode.FORBIDDEN);
-    }
-  }
-
   public static void validMyCafe(AuthUser authUser, Cafe cafe) {
+    if (cafe == null) {
+      throw new BusinessException(ErrorCode.CAFE_NOT_FOUND);
+    }
+
     if (!authUser.getId().equals(cafe.getUser().getId())) {
       throw new BusinessException(ErrorCode.FORBIDDEN);
     }
