@@ -5,8 +5,9 @@ import com.sparta.kidscafe.api.oauth2.config.OAuth2Properties;
 import lombok.Builder;
 import lombok.Getter;
 
+//
 @Getter
-public class OAuth2ProviderProperties {
+public class OAuth2Provider {
 
 	private final String clientId;
 	private final String clientSecret;
@@ -14,12 +15,12 @@ public class OAuth2ProviderProperties {
 	private final String tokenUrl;
 	private final String userInfoUrl;
 
-	public OAuth2ProviderProperties(OAuth2Properties.User user, OAuth2Properties.Provider provider){
+	public OAuth2Provider(OAuth2Properties.User user, OAuth2Properties.Provider provider){
 		this(user.getClientId(), user.getClientSecret(), user.getRedirectUri(), provider.getTokenUri(), provider.getUserInfoUri());
 	}
 
 	@Builder
-	public OAuth2ProviderProperties(String clientId, String clientSecret, String redirectUrl, String tokenUrl,
+	public OAuth2Provider(String clientId, String clientSecret, String redirectUrl, String tokenUrl,
 		String userInfoUrl) {
 		this.clientId = clientId;
 		this.clientSecret = clientSecret;

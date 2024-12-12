@@ -3,18 +3,18 @@ package com.sparta.kidscafe.api.oauth2.config;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.sparta.kidscafe.api.oauth2.provider.OAuth2ProviderProperties;
-import com.sparta.kidscafe.api.oauth2.service.OAuth2ProviderType;
+import com.sparta.kidscafe.api.oauth2.provider.OAuth2Provider;
 
+// OAuth2Provider 를 저장해주는 저장소
 public class InMemoryProviderRepository {
 
-	private final Map<OAuth2ProviderType, OAuth2ProviderProperties> providers;
+	private final Map<String, OAuth2Provider> providers;
 
-	public InMemoryProviderRepository(Map<OAuth2ProviderType, OAuth2ProviderProperties> providers) {
+	public InMemoryProviderRepository(Map<String, OAuth2Provider> providers) {
 		this.providers = new HashMap<>(providers);
 	}
 
-	public OAuth2ProviderProperties findProvider(OAuth2ProviderType name){
+	public OAuth2Provider findByProviderName(String name) {
 		return providers.get(name);
 	}
 }
