@@ -74,21 +74,30 @@ public class User extends Timestamped {
   @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
   private List<Reservation> reservations = new ArrayList<>();
 
+  // 최소 필드로 생성자를 추가
   public User (Long id, String email, RoleType role) {
     this.id = id;
     this.email = email;
     this.role = role;
   }
 
+  // 프로필 업데이트 메서드
   public void updateProfile(String name, String nickname, String address) {
-    if (name != null) {
+    if (name != null && !name.isBlank()) {
       this.name = name;
     }
-    if (nickname != null) {
+    if (nickname != null && !nickname.isBlank()) {
       this.nickname = nickname;
     }
-    if (address != null) {
+    if (address != null && !address.isBlank()) {
       this.address = address;
+    }
+  }
+
+  // 비밀번호 변경 메서드
+  public void changePassword(String newPassword) {
+    if (newPassword != null && !newPassword.isBlank()) {
+      this.password = newPassword;
     }
   }
 }
