@@ -44,4 +44,9 @@ public class ReservationDetail {
 
   @Column(nullable = false)
   private Long count;
+
+  public void updatePrice(double rate) {
+    double tempPrice = price * rate;
+    price *= (int) tempPrice;
+  }
 }
