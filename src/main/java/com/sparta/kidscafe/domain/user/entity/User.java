@@ -3,7 +3,7 @@ package com.sparta.kidscafe.domain.user.entity;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sparta.kidscafe.api.oauth2.controller.dto.OAuth2UserProfile;
+import com.sparta.kidscafe.api.oauth2.controller.dto.OAuth2UserProfileDto;
 import com.sparta.kidscafe.common.entity.Timestamped;
 import com.sparta.kidscafe.common.enums.LoginType;
 import com.sparta.kidscafe.common.enums.RoleType;
@@ -80,10 +80,10 @@ public class User extends Timestamped implements OAuthMember {
   }
 
   // 소셜 로그인 회원가입 생성자
-  public User(OAuth2UserProfile oAuth2UserProfile, String password){
-    this.name = oAuth2UserProfile.getName();
-    this.email = oAuth2UserProfile.getEmail();
-    this.oauthId = oAuth2UserProfile.getOauthId();
+  public User(OAuth2UserProfileDto oAuth2UserProfileDto, String password){
+    this.name = oAuth2UserProfileDto.getName();
+    this.email = oAuth2UserProfileDto.getEmail();
+    this.oauthId = oAuth2UserProfileDto.getOauthId();
     this.password = password;
     this.loginType = LoginType.OAUTH;
     this.role = RoleType.USER;

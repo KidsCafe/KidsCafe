@@ -14,7 +14,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import com.sparta.kidscafe.api.auth.controller.dto.SigninResponseDto;
 import com.sparta.kidscafe.api.oauth2.config.InMemoryProviderRepository;
 import com.sparta.kidscafe.api.oauth2.controller.dto.OAuth2TokenResponseDto;
-import com.sparta.kidscafe.api.oauth2.controller.dto.OAuth2UserProfile;
+import com.sparta.kidscafe.api.oauth2.controller.dto.OAuth2UserProfileDto;
 import com.sparta.kidscafe.api.oauth2.provider.OAuth2Provider;
 
 import lombok.RequiredArgsConstructor;
@@ -32,7 +32,7 @@ public class OAuth2Service {
 		// accessToken
 		OAuth2TokenResponseDto tokenResponseDto = getToken(code, provider);
 		// OAuth2UserProfile -> 유저 정보
-		OAuth2UserProfile userProfile = getUserProfile(providerName, tokenResponseDto, provider);
+		OAuth2UserProfileDto userProfile = getUserProfile(providerName, tokenResponseDto, provider);
 
 		return null;
 	}
@@ -62,7 +62,7 @@ public class OAuth2Service {
 		return formData;
 	}
 
-	private OAuth2UserProfile getUserProfile(String providerName, OAuth2TokenResponseDto tokenResponseDto, OAuth2Provider provider){
+	private OAuth2UserProfileDto getUserProfile(String providerName, OAuth2TokenResponseDto tokenResponseDto, OAuth2Provider provider){
 		Map<String, Object> userAttributes = getUserAttributes(provider, tokenResponseDto);
 
 		return OAuth2Attributes.extract(providerName, userAttributes);

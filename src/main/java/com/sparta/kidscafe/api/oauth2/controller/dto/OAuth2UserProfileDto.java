@@ -7,14 +7,14 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-public class OAuth2UserProfile {
+public class OAuth2UserProfileDto {
 
 	private final String oauthId;
 	private final String email;
 	private final String name;
 
 	@Builder
-	public OAuth2UserProfile(String oauthId, String email, String name) {
+	public OAuth2UserProfileDto(String oauthId, String email, String name) {
 		this.oauthId = oauthId;
 		this.email = email;
 		this.name = name;
