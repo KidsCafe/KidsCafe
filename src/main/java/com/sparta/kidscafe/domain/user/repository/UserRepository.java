@@ -18,4 +18,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     // 이메일로 사용자 정보 조회
     Optional<User> findByEmail(String email);
+
+    // 사장님의 가게를 즐겨찾기한 사용자 목록을 페이징 처리하여 반환
+    Page<User> findUsersByBookmarks_OwnerId(Long ownerId, Pageable pageable);
 }
