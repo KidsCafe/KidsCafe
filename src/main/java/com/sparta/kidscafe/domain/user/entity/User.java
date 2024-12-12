@@ -89,7 +89,9 @@ public class User extends Timestamped implements OAuthMember {
     this.role = RoleType.USER;
   }
 
-  public void udpateOAuthId(String oauthId) {
-    this.oauthId = oauthId;
+  public Object update(String email, String name) {
+    this.name = name;
+    this.email = email;
+    return this;
   }
 }
