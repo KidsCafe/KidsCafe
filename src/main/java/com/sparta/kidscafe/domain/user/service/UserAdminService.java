@@ -1,13 +1,14 @@
 package com.sparta.kidscafe.domain.user.service;
 
+import com.sparta.kidscafe.common.dto.ListResponseDto;
 import com.sparta.kidscafe.common.enums.RoleType;
-import com.sparta.kidscafe.domain.user.dto.response.UserAdminResponseDto;
 import com.sparta.kidscafe.domain.user.dto.response.UserResponseDto;
 import com.sparta.kidscafe.domain.user.entity.User;
 import com.sparta.kidscafe.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public class UserAdminService {
 
     private final UserRepository userRepository;
 
-    public UserAdminResponseDto getAdminUsers(int page, int size) {
+    public ListResponseDto<UserResponseDto> getAdminUsers(int page, int size) {
         // 입력값 유효성 검증
         if (page < 1 || size < 1) {
             throw new IllegalArgumentException("페이지 번호와 페이지 크기는 1 이상이어야 합니다.");
@@ -36,14 +37,11 @@ public class UserAdminService {
                 .map(UserResponseDto::fromEntity)
                 .collect(Collectors.toList());
 
-        // 응답 DTO 생성 및 반환
-        return UserAdminResponseDto.builder()
-                .status(200)
-                .message("회원 조회 성공")
-                .data(users)
-                .page(userPage.getNumber() + 1) // 1-based index 반환
-                .totalPage(userPage.getTotalPages())
-                .size(userPage.getSize())
-                .build();
+        // ListResponseDto로 감싸서 반환
+        return ListResponseDto.success(
+                users,
+                HttpStatus.OK,
+                "회원 조회 성공"
+        );
     }
 }
