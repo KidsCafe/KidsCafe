@@ -4,6 +4,7 @@ import static com.sparta.kidscafe.exception.ErrorCode.*;
 import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.mockito.Mockito.*;
 
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
@@ -34,6 +35,9 @@ class AuthServiceTest {
 	@Mock
 	private JwtUtil jwtUtil;
 
+	@Mock
+	private HttpServletResponse response; // HTTP 응답 객체 Mock
+
 	@InjectMocks
 	private AuthService authService;
 
@@ -47,7 +51,7 @@ class AuthServiceTest {
 			"test",
 			"test si test gu test dong",
 			"testNickname",
-			"default",
+			"BASIC",
 			"USER");
 
 		when(userRepository.existsByEmail(any())).thenReturn(true);
@@ -68,7 +72,7 @@ class AuthServiceTest {
 			"test1",
 			"test address",
 			"testNickname1",
-			"default",
+			"BASIC",
 			"USER"
 		);
 		when(userRepository.existsByEmail(any())).thenReturn(false);
@@ -91,7 +95,7 @@ class AuthServiceTest {
 		when(userRepository.findByEmail(any())).thenReturn(Optional.empty());
 
 		// when // then
-		assertThatThrownBy(() -> authService.signin(signinRequestDto))
+		assertThatThrownBy(() -> authService.signin(response, signinRequestDto))
 			.isInstanceOf(BusinessException.class)
 			.hasMessageContaining(String.valueOf(USER_NOT_FOUND));
 	}
@@ -109,7 +113,7 @@ class AuthServiceTest {
 		when(passwordEncoder.matches("1234", "encodedpassword")).thenReturn(false);
 
 		// when // then
-		assertThatThrownBy(() -> authService.signin(signinRequestDto))
+		assertThatThrownBy(() -> authService.signin(response, signinRequestDto))
 			.isInstanceOf(BusinessException.class)
 			.hasMessageContaining(String.valueOf(WRONG_PASSWORD));
 	}
@@ -128,7 +132,7 @@ class AuthServiceTest {
 		when(jwtUtil.generateAccessToken(any())).thenReturn("accessToken");
 
 		// when
-		SigninResponseDto signinResponseDto = authService.signin(signinRequestDto);
+		SigninResponseDto signinResponseDto = authService.signin(response, signinRequestDto);
 
 		// then
 		assertThat(signinResponseDto.accessToken()).isEqualTo("accessToken");

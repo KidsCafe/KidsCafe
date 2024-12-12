@@ -1,7 +1,7 @@
 package com.sparta.kidscafe.domain.cafe.dto.request;
 
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
-import com.sparta.kidscafe.domain.fee.dto.request.FeeRequestCreateDto;
+import com.sparta.kidscafe.domain.fee.dto.request.FeeCreateRequestDto;
 import com.sparta.kidscafe.domain.fee.entity.Fee;
 import com.sparta.kidscafe.domain.pricepolicy.dto.request.PricePolicyCreateRequestDto;
 import com.sparta.kidscafe.domain.pricepolicy.entity.PricePolicy;
@@ -10,6 +10,7 @@ import com.sparta.kidscafe.domain.room.entity.Room;
 import com.sparta.kidscafe.domain.user.entity.User;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -38,6 +39,11 @@ public class CafeCreateRequestDto {
   private int size;
 
   private boolean multiFamily;
+
+  @Pattern(
+      regexp = "^(월|화|수|목|금|토|일)(,\\s*(월|화|수|목|금|토|일))*$",
+      message = "DayType은 요일을 쉼표로 구분하여 입력해야 합니다. (예: '월, 화, 수')"
+  )
   private String dayOff;
   private boolean parking;
   private boolean restaurant;
@@ -46,10 +52,13 @@ public class CafeCreateRequestDto {
   private LocalTime closedAt;
 
   @Valid
+  private List<Long> images;
+
+  @Valid
   private List<RoomCreateRequestDto> rooms;
 
   @Valid
-  private List<FeeRequestCreateDto> fees;
+  private List<FeeCreateRequestDto> fees;
 
   @Valid
   private List<PricePolicyCreateRequestDto> pricePolicies;
@@ -80,7 +89,7 @@ public class CafeCreateRequestDto {
 
   public List<Fee> convertDtoToEntityByFee(Cafe cafe) {
     List<Fee> cafeFees = new ArrayList<>();
-    for(FeeRequestCreateDto dto : fees)
+    for(FeeCreateRequestDto dto : fees)
       cafeFees.add(dto.convertDtoToEntity(cafe));
     return cafeFees;
   }

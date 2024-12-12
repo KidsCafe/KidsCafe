@@ -53,7 +53,7 @@ public class PricePolicyService {
 
         // 정책 조회 및 변환
         return pricePolicyRepository.findAllByCafeId(cafeId).stream()
-                .map(policy -> PricePolicyResponseDto.fromEntity(policy, policy.getTargetName()))
+                .map(PricePolicyResponseDto::from)
                 .collect(Collectors.toList());
     }
 

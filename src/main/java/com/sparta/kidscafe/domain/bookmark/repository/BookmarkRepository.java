@@ -15,4 +15,6 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
   Optional<Bookmark> findByUserAndCafe(User user, Cafe cafe);
 
   Page<Bookmark> findAllByUserId(Long userId, Pageable pageable);
+
+  Page<Bookmark> findAllByCafeId(Long cafeId, Pageable pageable);
 }

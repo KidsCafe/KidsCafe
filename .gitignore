@@ -40,3 +40,5 @@ out/
 *.properties
 *.yaml
 *.yml
+
+**/generated

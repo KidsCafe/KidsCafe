@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class BookmarkUserRetreiveResponseDto {
+
   private Long cafeId;
   private String cafeName;
 
@@ -13,7 +14,6 @@ public class BookmarkUserRetreiveResponseDto {
     this.cafeId = cafeId;
     this.cafeName = cafeName;
   }
-
 
 
 }
