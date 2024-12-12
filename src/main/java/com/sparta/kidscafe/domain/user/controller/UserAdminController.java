@@ -6,6 +6,8 @@ import com.sparta.kidscafe.common.dto.ListResponseDto;
 import com.sparta.kidscafe.common.enums.RoleType;
 import com.sparta.kidscafe.domain.user.dto.response.UserResponseDto;
 import com.sparta.kidscafe.domain.user.service.UserAdminService;
+import com.sparta.kidscafe.exception.BusinessException;
+import com.sparta.kidscafe.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,7 +28,7 @@ public class UserAdminController {
     ) {
         // 인증된 사용자 정보 활용 (예: 관리자 권한 확인)
         if (authUser.getRoleType() != RoleType.ADMIN) {
-            throw new IllegalArgumentException("관리자 권한이 필요합니다.");
+            throw new BusinessException(ErrorCode.FORBIDDEN);
         }
 
         // UserAdminService에서 ListResponseDto 반환
