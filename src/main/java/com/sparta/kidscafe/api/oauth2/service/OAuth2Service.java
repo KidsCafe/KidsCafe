@@ -16,7 +16,11 @@ import com.sparta.kidscafe.api.oauth2.config.InMemoryProviderRepository;
 import com.sparta.kidscafe.api.oauth2.controller.dto.OAuth2TokenResponseDto;
 import com.sparta.kidscafe.api.oauth2.controller.dto.OAuth2UserProfileDto;
 import com.sparta.kidscafe.api.oauth2.provider.OAuth2Provider;
+import com.sparta.kidscafe.common.util.JwtUtil;
+import com.sparta.kidscafe.domain.user.entity.User;
+import com.sparta.kidscafe.domain.user.repository.UserRepository;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -24,17 +28,32 @@ import lombok.RequiredArgsConstructor;
 public class OAuth2Service {
 
 	private final InMemoryProviderRepository inMemoryProviderRepository;
+	private final JwtUtil jwtUtil;
+	private final UserRepository userRepository;
 
-	public SigninResponseDto signin(String providerName, String code){
+	public SigninResponseDto signin(HttpServletResponse res, String providerName, String code){
 		// 프론트에서 넘어온 provider 이름을 통해 InMemoryProviderRepository 에서 OAuth2Provider 가져온다
 		OAuth2Provider provider = inMemoryProviderRepository.findByProviderName(providerName);
 
 		// accessToken
 		OAuth2TokenResponseDto tokenResponseDto = getToken(code, provider);
 		// OAuth2UserProfile -> 유저 정보
-		OAuth2UserProfileDto userProfile = getUserProfile(providerName, tokenResponseDto, provider);
+		OAuth2UserProfileDto userProfileDto = getUserProfile(providerName, tokenResponseDto, provider);
+		// db 에 저장
+		User user = saveOrUpdate(userProfileDto);
 
-		return null;
+		// jwt 토큰 생성
+		String accessToken = jwtUtil.generateAccessTokenForOauth(user);
+		res.addHeader("Authorization", accessToken);
+
+		return new SigninResponseDto(accessToken);
+	}
+
+	private User saveOrUpdate(OAuth2UserProfileDto userProfileDto) {
+		User user = (User)userRepository.findById(userProfileDto.toUser().getId())
+			.map(entity -> entity.update(userProfileDto.getEmail(), userProfileDto.getName()))
+			.orElseGet(userProfileDto::toUser);
+		return userRepository.save(user);
 	}
 
 	private OAuth2TokenResponseDto getToken(String code, OAuth2Provider provider) {
