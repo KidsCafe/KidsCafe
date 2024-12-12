@@ -404,3 +404,110 @@
 //    assertEquals(ErrorCode.FORBIDDEN, exception.getErrorCode());
 //  }
 //}
+
+//package com.sparta.kidscafe.domain.cafe.service;
+//
+//import com.sparta.kidscafe.common.dto.AuthUser;
+//import com.sparta.kidscafe.common.dto.StatusDto;
+//import com.sparta.kidscafe.common.enums.RoleType;
+//import com.sparta.kidscafe.domain.cafe.dto.request.CafeCreateRequestDto;
+//import com.sparta.kidscafe.domain.cafe.entity.Cafe;
+//import com.sparta.kidscafe.domain.cafe.repository.CafeImageRepository;
+//import com.sparta.kidscafe.domain.cafe.repository.CafeRepository;
+//import com.sparta.kidscafe.domain.fee.entity.Fee;
+//import com.sparta.kidscafe.domain.fee.repository.FeeRepository;
+//import com.sparta.kidscafe.domain.pricepolicy.entity.PricePolicy;
+//import com.sparta.kidscafe.domain.pricepolicy.repository.PricePolicyRepository;
+//import com.sparta.kidscafe.domain.room.entity.Room;
+//import com.sparta.kidscafe.domain.room.repository.RoomRepository;
+//import com.sparta.kidscafe.domain.user.entity.User;
+//import com.sparta.kidscafe.domain.user.repository.UserRepository;
+//import com.sparta.kidscafe.domain.user.service.UserService;
+//import com.sparta.kidscafe.dummy.DummyCafe;
+//import com.sparta.kidscafe.dummy.DummyUser;
+//import java.util.Collections;
+//import java.util.List;
+//import java.util.Optional;
+//import org.junit.jupiter.api.BeforeEach;
+//import org.junit.jupiter.api.Test;
+//import org.mockito.InjectMocks;
+//import org.mockito.Mock;
+//import org.mockito.MockitoAnnotations;
+//import org.springframework.http.HttpStatus;
+//
+//import static org.junit.jupiter.api.Assertions.assertEquals;
+//import static org.mockito.Mockito.*;
+//
+//class CafeServiceTest {
+//
+//  @InjectMocks
+//  private CafeService cafeService;
+//
+//  @Mock
+//  private UserRepository userRepository;
+//
+//  @Mock
+//  private CafeRepository cafeRepository;
+//
+//  @Mock
+//  private CafeImageRepository cafeImageRepository;
+//
+//  @Mock
+//  private RoomRepository roomRepository;
+//
+//  @Mock
+//  private FeeRepository feeRepository;
+//
+//  @Mock
+//  private PricePolicyRepository pricePolicyRepository;
+//
+//  @Mock
+//  private CafeCreateRequestDto requestDto;
+//
+////  @BeforeEach
+////  void setUp() {
+////    MockitoAnnotations.openMocks(this);
+////  }
+//
+//  private AuthUser createAuthUser(RoleType role) {
+//    return new AuthUser(1L, "hong@email.com", role);
+//  }
+//
+//  private CafeCreateRequestDto createCafeRequestDto() {
+//    CafeCreateRequestDto requestDto = new CafeCreateRequestDto();
+//    requestDto.setName("Test Cafe");
+//    requestDto.setImages(List.of(1L, 2L, 3L));
+//    return requestDto;
+//  }
+//
+//  @Test
+//  void createCafe_Success() {
+//    // given
+//    AuthUser authUser = createAuthUser(RoleType.OWNER);
+//    CafeCreateRequestDto requestDto = createCafeRequestDto();
+//    User user = DummyUser.createDummyUser(RoleType.USER);
+//    Cafe cafe = DummyCafe.createDummyCafe(user);
+//
+//    when(requestDto.convertDtoToEntityByCafe(user)).thenReturn(cafe);
+//    when(requestDto.convertDtoToEntityByRoom(cafe)).thenReturn(Collections.singletonList(mock(Room.class)));
+//    when(requestDto.convertDtoToEntityByFee(cafe)).thenReturn(Collections.singletonList(mock(Fee.class)));
+//    when(requestDto.convertDtoToEntityByPricePolicy(cafe)).thenReturn(Collections.singletonList(mock(PricePolicy.class)));
+//
+//    when(userRepository.findById(authUser.getId())).thenReturn(Optional.of(user));
+//    when(cafeRepository.save(any(Cafe.class))).thenReturn(cafe);
+//
+//    // when
+//    StatusDto result = cafeService.createCafe(authUser, requestDto);
+//
+//    // then
+//    assertEquals(HttpStatus.CREATED.value(), result.getStatus());
+//    assertEquals("[Test Cafe] 등록 성공", result.getMessage());
+//
+//    verify(userRepository).findById(authUser.getId());
+//    verify(cafeRepository).save(any(Cafe.class));
+//    verify(cafeImageRepository).findAllById(requestDto.getImages());
+//    verify(roomRepository).saveAll(any());
+//    verify(feeRepository).saveAll(any());
+//    verify(pricePolicyRepository).saveAll(any());
+//  }
+//}
