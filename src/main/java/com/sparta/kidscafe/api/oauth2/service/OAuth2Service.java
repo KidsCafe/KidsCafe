@@ -1,14 +1,19 @@
 package com.sparta.kidscafe.api.oauth2.service;
 
-import org.springframework.stereotype.Service;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.reactive.function.client.WebClient;
+
 import com.sparta.kidscafe.api.auth.controller.dto.SigninResponseDto;
-import com.sparta.kidscafe.api.auth.service.AuthService;
 import com.sparta.kidscafe.api.oauth2.config.InMemoryProviderRepository;
-import com.sparta.kidscafe.api.oauth2.controller.dto.OAuthUserProfile;
-import com.sparta.kidscafe.api.oauth2.provider.OAuth2ProviderProperties;
-import com.sparta.kidscafe.domain.user.repository.UserRepository;
+import com.sparta.kidscafe.api.oauth2.controller.dto.OAuth2TokenResponseDto;
+import com.sparta.kidscafe.api.oauth2.controller.dto.OAuth2UserProfile;
+import com.sparta.kidscafe.api.oauth2.provider.OAuth2Provider;
 
 import lombok.RequiredArgsConstructor;
 
@@ -16,24 +21,42 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class OAuth2Service {
 
-	private final UserRepository userRepository;
 	private final InMemoryProviderRepository inMemoryProviderRepository;
-	private final OAuth2ClientService oAuth2ClientService;
-	private final AuthService authService;
 
-	public SigninResponseDto signinOrRegister(String providerName, String authorizationCode) throws JsonProcessingException {
-		OAuth2ProviderType providerType = OAuth2ProviderType.of(providerName);
-		OAuth2ProviderProperties provider = inMemoryProviderRepository.findProvider(providerType);
-		String oAuthAccessToken = oAuth2ClientService.requestAccessToken(authorizationCode, provider);
-		OAuthUserProfile oAuthUserProfile = oAuth2ClientService.requestUserProfile(oAuthAccessToken, providerName, provider);
+	public SigninResponseDto signin(String providerName, String code){
+		// 프론트에서 넘어온 provider 이름을 통해 InMemoryProviderRepository 에서 OAuth2Provider 가져온다
+		OAuth2Provider provider = inMemoryProviderRepository.findByProviderName(providerName);
 
-		if(!userRepository.existsByOauthId(oAuthUserProfile.getOauthId())){
-			String oauthId = oAuthUserProfile.getOauthId();
-			String email = oAuthUserProfile.getEmail();
-			String name = oAuthUserProfile.getName();
+		// accessToken
+		OAuth2TokenResponseDto responseDto = getToken(code, provider);
+		// OAuth2UserProfile -> 유저 정보
+		OAuth2UserProfile userProfile = getUserProfile(providerName, responseDto, provider);
 
-			authService.signupWithOAuth(oauthId, email, name);
-		}
-		return authService.signinWithOAuth(oAuthUserProfile.getEmail());
+		return null;
+	}
+
+	private OAuth2TokenResponseDto getToken(String code, OAuth2Provider provider) {
+		return WebClient.create()
+			.post()
+			.uri(provider.getTokenUrl())
+			.header(header -> {
+				header.setBasicAuth(provider.getClientId(), provider.getClientSecret());
+				header.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+				header.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+				header.setAcceptCharset(Collections.singletonList(StandardCharsets.UTF_8));
+			})
+			.bodyValue(tokenRequest(code, provider))
+			.retrieve()
+			.bodyToMono(OAuth2TokenResponseDto.class)
+			.block();
+	}
+
+	private MultiValueMap<String, String> tokenRequest(String code, OAuth2Provider provider) {
+		MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+		formData.add("code", code);
+		formData.add("grant_type", "authorization_code");
+		formData.add("redirect_uri", provider.getRedirectUrl());
+
+		return formData;
 	}
 }
