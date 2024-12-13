@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -66,6 +67,15 @@ public class ReservationController {
     PageResponseDto<ReservationResponseDto> response = reservationService.getReservationsByOwner(
         authUser, cafeId, page, size);
     return ResponseEntity.ok(response);
+  }
+
+  // 예약 승인
+  @PutMapping("owners/reservations/{reservationId}/approve")
+  public ResponseEntity<StatusDto> approveReservation(
+      @Auth AuthUser authUser,
+      @PathVariable Long reservationId) {
+    StatusDto response = reservationService.approveReservation(authUser, reservationId);
+    return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 
 
