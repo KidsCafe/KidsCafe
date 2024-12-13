@@ -9,23 +9,29 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.sparta.kidscafe.api.auth.controller.dto.SigninResponseDto;
+import com.sparta.kidscafe.api.oauth2.controller.dto.OAuthSigninResponseDto;
 import com.sparta.kidscafe.api.oauth2.service.OAuth2Service;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/oauth2")
+// @RequestMapping("")
 @RequiredArgsConstructor
 public class OAuth2Controller {
 
 	private final OAuth2Service oAuth2Service;
 
-	@GetMapping("/{provider}/signin")
-	public ResponseEntity<SigninResponseDto> signin(@PathVariable String provider, @RequestParam String code) throws JsonProcessingException {
-		SigninResponseDto signinResponseDto = oAuth2Service.signin(provider, code);
+	@GetMapping("/api/oauth2/{provider}/signin")
+	public ResponseEntity<OAuthSigninResponseDto> signin(HttpServletResponse res, @PathVariable String provider, @RequestParam String code) throws JsonProcessingException {
+		OAuthSigninResponseDto oAuthSigninResponseDto = oAuth2Service.signin(res, provider, code);
 		return ResponseEntity
 			.status(HttpStatus.OK)
-			.body(signinResponseDto);
+			.body(oAuthSigninResponseDto);
+	}
+
+	@GetMapping("/redirect/oauth")
+	public ResponseEntity<String> handleOauthRedirect(@RequestParam("code") String code){
+		return ResponseEntity.ok("인증 코드 : " + code);
 	}
 }

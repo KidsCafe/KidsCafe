@@ -11,11 +11,12 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.sparta.kidscafe.api.auth.controller.dto.SigninResponseDto;
 import com.sparta.kidscafe.api.oauth2.config.InMemoryProviderRepository;
 import com.sparta.kidscafe.api.oauth2.controller.dto.OAuth2TokenResponseDto;
 import com.sparta.kidscafe.api.oauth2.controller.dto.OAuth2UserProfileDto;
+import com.sparta.kidscafe.api.oauth2.controller.dto.OAuthSigninResponseDto;
 import com.sparta.kidscafe.api.oauth2.provider.OAuth2Provider;
+import com.sparta.kidscafe.api.oauth2.provider.OAuth2TokenProvider;
 import com.sparta.kidscafe.common.util.JwtUtil;
 import com.sparta.kidscafe.domain.user.entity.User;
 import com.sparta.kidscafe.domain.user.repository.UserRepository;
@@ -28,10 +29,11 @@ import lombok.RequiredArgsConstructor;
 public class OAuth2Service {
 
 	private final InMemoryProviderRepository inMemoryProviderRepository;
+	// private final OAuth2TokenProvider tokenProvider;
 	private final JwtUtil jwtUtil;
 	private final UserRepository userRepository;
 
-	public SigninResponseDto signin(HttpServletResponse res, String providerName, String code){
+	public OAuthSigninResponseDto signin(HttpServletResponse res, String providerName, String code){
 		// 프론트에서 넘어온 provider 이름을 통해 InMemoryProviderRepository 에서 OAuth2Provider 가져온다
 		OAuth2Provider provider = inMemoryProviderRepository.findByProviderName(providerName);
 
@@ -43,15 +45,22 @@ public class OAuth2Service {
 		User user = saveOrUpdate(userProfileDto);
 
 		// jwt 토큰 생성
-		String accessToken = jwtUtil.generateAccessTokenForOauth(user);
+		String accessToken = jwtUtil.generateAccessTokenForOauth(String.valueOf(user.getId()), user.getEmail(), user.getOauthId(),
+			String.valueOf(user.getLoginType()));
 		res.addHeader("Authorization", accessToken);
 
-		return new SigninResponseDto(accessToken);
+		return OAuthSigninResponseDto.builder()
+			.id(user.getId())
+			.name(user.getName())
+			.email(user.getEmail())
+			.roleType(user.getRole())
+			.accessToken(accessToken)
+			.build();
 	}
 
 	private User saveOrUpdate(OAuth2UserProfileDto userProfileDto) {
-		User user = (User)userRepository.findById(userProfileDto.toUser().getId())
-			.map(entity -> entity.update(userProfileDto.getEmail(), userProfileDto.getName()))
+		User user = userRepository.findByOauthId(userProfileDto.getOauthId())
+			.map(entity -> entity.update(userProfileDto.getName(), userProfileDto.getEmail()))
 			.orElseGet(userProfileDto::toUser);
 		return userRepository.save(user);
 	}
