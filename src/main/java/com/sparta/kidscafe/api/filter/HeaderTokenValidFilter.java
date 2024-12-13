@@ -40,7 +40,7 @@ public class HeaderTokenValidFilter extends OncePerRequestFilter {
 		if (!StringUtils.hasText(url))
 			return true;
 		return url.startsWith("/api/auth") ||
-				url.contains("api/cafes") ||
+//				url.contains("api/cafes") ||
 				url.startsWith("/css") ||
 				url.startsWith("/js");
 	}

@@ -37,9 +37,6 @@ public class Review extends Timestamped {
   @JoinColumn(name = "user_id")
   private User user;
 
-  @Column(nullable = false)
-  private String imageList;
-
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "cafe_id")
   private Cafe cafe;
