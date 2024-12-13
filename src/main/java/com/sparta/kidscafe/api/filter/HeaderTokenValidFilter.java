@@ -37,14 +37,24 @@ public class HeaderTokenValidFilter extends OncePerRequestFilter {
 	public boolean isApplicable(HttpServletRequest request) {
 		// 회원 가입, 로그인 관련 API 는 인증 필요 없이 요청 진행
 		String url = request.getRequestURI();
-		if (!StringUtils.hasText(url))
+		String queryString = request.getQueryString();
+
+		if (!StringUtils.hasText(url)) {
 			return true;
+		}
+		if (url.startsWith("/login/oauth/authorize") ||
+			(url.startsWith("/redirect/oauth") && queryString != null && queryString.contains("code="))) {
+			return true;
+		}
+
 		return url.startsWith("/api/auth") ||
 			url.startsWith("/api/oauth2") ||
 			url.startsWith("/oauth2") ||
 			url.startsWith("/error") ||
 			url.contains("api/cafes") ||
 			url.startsWith("/css") ||
+			url.startsWith("/index.html") ||
+			url.equals("/") ||
 			url.startsWith("/js");
 	}
 }

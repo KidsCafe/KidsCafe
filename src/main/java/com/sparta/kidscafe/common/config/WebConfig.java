@@ -27,6 +27,6 @@ public class WebConfig implements WebMvcConfigurer {
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(jwtValidInterceptor)
-			.excludePathPatterns("/api/oauth2/**", "/api/auth/**", "/favicon.ico", "/error", "/oauth2.html");
+			.excludePathPatterns("/api/oauth2/**", "/api/auth/**", "/favicon.ico", "/error", "/index.html", "/",  "/redirect/oauth/**");
 	}
 }
