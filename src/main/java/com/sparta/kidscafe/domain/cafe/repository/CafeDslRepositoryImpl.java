@@ -33,6 +33,7 @@ public class CafeDslRepositoryImpl implements CafeDslRepository {
   private final ReviewCondition reviewCondition;
   private final CafeCondition cafeCondition;
   private final FeeCondition feeCondition;
+
   private final QCafe cafe = QCafe.cafe;
   private final QRoom room = QRoom.room;
   private final QReview review = QReview.review;

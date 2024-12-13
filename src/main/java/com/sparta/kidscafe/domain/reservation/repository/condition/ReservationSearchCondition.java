@@ -8,6 +8,7 @@ import lombok.Getter;
 @Builder
 public class ReservationSearchCondition {
   private Long cafeId;
+  private Long roomId;
   private Integer userCount;
   private LocalDateTime startedAt;
   private LocalDateTime finishedAt;

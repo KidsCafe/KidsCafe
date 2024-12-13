@@ -62,10 +62,20 @@ public class ReservationCreateRequestDto {
   public ReservationSearchCondition createSearchCondition(Long cafeId) {
     return ReservationSearchCondition.builder()
         .cafeId(cafeId)
+        .roomId(getRoomId())
         .userCount(getCount())
         .startedAt(startedAt)
         .finishedAt(finishedAt)
         .build();
+  }
+
+  public Long getRoomId() {
+    for(ReservationDetailRequestDto detail : details) {
+      if(detail.getTargetType().equals(TargetType.ROOM)) {
+        return detail.getTargetId();
+      }
+    }
+    return null;
   }
 
   public int getCount() {

@@ -5,6 +5,7 @@ import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.sparta.kidscafe.domain.cafe.entity.QCafe;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.TextStyle;
 import java.util.Locale;
@@ -74,11 +75,21 @@ public class CafeCondition {
     return innerBuilder.getValue();
   }
 
+  public Predicate dayOff(LocalDateTime reservationDay) {
+    BooleanBuilder innerBuilder = new BooleanBuilder();
+    String reservationDayByKorean = LocalDate
+        .now()
+        .getDayOfWeek()
+        .getDisplayName(TextStyle.SHORT, Locale.KOREAN);
+    innerBuilder.and(cafe.dayOff.eq(reservationDayByKorean));
+    return innerBuilder.getValue();
+  }
+
   public Predicate dayOff(String dayOff) {
     BooleanBuilder innerBuilder = new BooleanBuilder();
     String[] days = dayOff.split(", ");
     for (String day : days) {
-      innerBuilder.and(cafe.dayOff.eq(day));
+      innerBuilder.and(cafe.dayOff.contains(day));
     }
     return innerBuilder.getValue();
   }
