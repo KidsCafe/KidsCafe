@@ -16,7 +16,7 @@ public class DummyUser {
     String randomName = TestUtil.getRandomString(10);
     String randomNickname = TestUtil.getRandomString(10);
     String randomEmail = randomNickname + "@email.com";
-    String randomPassword = passwordEncoder.encode(TestUtil.getRandomString(10));
+    String randomPassword = passwordEncoder.encode("1234");
     return User.builder()
         .email(randomEmail)
         .password(randomPassword)
