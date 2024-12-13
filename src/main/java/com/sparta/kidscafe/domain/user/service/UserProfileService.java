@@ -3,6 +3,7 @@ package com.sparta.kidscafe.domain.user.service;
 import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.ResponseDto;
 import com.sparta.kidscafe.common.util.PasswordEncoder;
+import com.sparta.kidscafe.domain.user.dto.request.UserDeleteRequestDto;
 import com.sparta.kidscafe.domain.user.dto.request.UserProfileUpdateRequestDto;
 import com.sparta.kidscafe.domain.user.dto.response.UserProfileResponseDto;
 import com.sparta.kidscafe.domain.user.entity.User;
@@ -54,5 +55,19 @@ public class UserProfileService {
                 HttpStatus.OK,
                 "프로필 수정 성공"
         );
+    }
+
+    @Transactional
+    public void deleteUser(AuthUser authUser, UserDeleteRequestDto requestDto) {
+        User user = userRepository.findById(authUser.getId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        // 비밀번호 검증
+        if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
+            throw new BusinessException(ErrorCode.INVALID_PASSWORD);
+        }
+
+        // 사용자 삭제
+        userRepository.delete(user);
     }
 }

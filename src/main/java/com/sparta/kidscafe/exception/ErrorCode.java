@@ -9,6 +9,7 @@ public enum ErrorCode {
     USER_NOT_FOUND("USER_NOT_FOUND", "사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     DUPLICATE_EMAIL("DUPLICATE_EMAIL", "이미 사용 중인 이메일입니다.", HttpStatus.BAD_REQUEST),
     WRONG_PASSWORD("WRONG_PASSWORD", "비밀번호가 틀립니다.", HttpStatus.BAD_REQUEST),
+    INVALID_PASSWORD("INVALID_PASSWORD", "잘못된 비밀번호입니다.", HttpStatus.BAD_REQUEST),
 
     // Cafe 관련 에러
     CAFE_NOT_FOUND("CAFE_NOT_FOUND", "카페를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
@@ -22,12 +23,14 @@ public enum ErrorCode {
     // Review 관련 에러
     REVIEW_NOT_FOUND("REVIEW_NOT_FOUND", "리뷰를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     IMAGE_NOT_FOUND("IMAGE_NOT_FOUND", "이미지를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+
     // Room 관련에러
     ROOM_NOT_FOUND("ROOM_NOT_FOUND","룸을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 
     // Reservation 관련 에러
     RESERVATION_NOT_FOUND("RESERVATION_NOT_FOUND", "예약을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     INVALID_STATUS_CHANGE("INVALID_STATUS_CHANGE", "유효하지 않은 상태입니다.", HttpStatus.BAD_REQUEST),
+
     // Bookmark 관련 에러
     NO_BOOKMARKS_FOUND("NO_BOOKMARKS_FOUND", "즐겨찾기 목록이 비어있습니다.", HttpStatus.NOT_FOUND),
 
