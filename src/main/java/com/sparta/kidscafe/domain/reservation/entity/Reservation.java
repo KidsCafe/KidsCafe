@@ -25,7 +25,6 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Where;
 
 @Getter
@@ -35,6 +34,7 @@ import org.hibernate.annotations.Where;
 @Entity
 @Table(name = "reservation")
 public class Reservation extends Timestamped {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -77,19 +77,26 @@ public class Reservation extends Timestamped {
     this.isDeleted = false;
     this.isPaymentConfirmed = false;
   }
+
   public void approve() {
     if (this.status != ReservationStatus.PENDING) {
       throw new BusinessException(ErrorCode.INVALID_STATUS_CHANGE);
-    } this.status = ReservationStatus.APPROVED;
+    }
+    this.status = ReservationStatus.APPROVED;
   }
 
   public void cancelByUser() {
     if (this.status != ReservationStatus.PENDING) {
       throw new BusinessException(ErrorCode.INVALID_STATUS_CHANGE);
-    } this.status = ReservationStatus.CANCELLED_BY_USER;
+    }
+    this.status = ReservationStatus.CANCELLED_BY_USER;
+    this.isDeleted = true;
   }
 
   public void cancelByOwner() {
+    if (this.status == ReservationStatus.COMPLETED) {
+      throw new BusinessException(ErrorCode.INVALID_STATUS_CHANGE);
+    }
     this.status = ReservationStatus.CANCELLED_BY_OWNER;
     this.isDeleted = true;
   }
