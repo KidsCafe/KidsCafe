@@ -28,6 +28,7 @@ public enum ErrorCode {
     // Reservation 관련 에러
     RESERVATION_NOT_FOUND("RESERVATION_NOT_FOUND", "예약을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     INVALID_STATUS_CHANGE("INVALID_STATUS_CHANGE", "유효하지 않은 상태입니다.", HttpStatus.BAD_REQUEST),
+    PAYMENT_NOT_CONFIRMED("PAYMENT_NOT_CONFIRMED", "결제가 필요합니다.", HttpStatus.BAD_REQUEST),
     // Bookmark 관련 에러
     NO_BOOKMARKS_FOUND("NO_BOOKMARKS_FOUND", "즐겨찾기 목록이 비어있습니다.", HttpStatus.NOT_FOUND),
 

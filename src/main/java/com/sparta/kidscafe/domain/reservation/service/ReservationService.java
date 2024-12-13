@@ -212,6 +212,22 @@ public class ReservationService {
         .message("예약 승인")
         .build();
   }
-  // 예약 취소
+  // 예약 상태 변경: Confirmed (결제 완료 상황 (결제 여부 확인 메서드 사용) -> Complete)
+  @Transactional
+  public StatusDto confirmPayment(AuthUser authUser, Long reservationId) {
+    if (!authUser.getRoleType().equals(RoleType.USER)) {
+      throw new BusinessException(ErrorCode.FORBIDDEN);
+    }
+    Reservation reservation = reservationRepository.findById(reservationId)
+        .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
+
+    Reservation updatedReservation = reservation.confirmPayment();
+    reservationRepository.save(updatedReservation);
+
+    return StatusDto.builder()
+        .status(HttpStatus.CREATED.value())
+        .message("결제 확인 -> 예약 완료")
+        .build();
+  }
 
 }
