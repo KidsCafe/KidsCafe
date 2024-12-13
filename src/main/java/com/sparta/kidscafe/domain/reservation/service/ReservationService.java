@@ -232,4 +232,54 @@ public class ReservationService {
         .build();
   }
 
+  // 예약 취소: 사용자용
+  @Transactional
+  public StatusDto cancelReservationByUser(AuthUser authUser, Long reservationId) {
+    Long userId = authUser.getId();
+    Reservation reservation = reservationRepository.findById(reservationId)
+        .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
+    if (!authUser.getRoleType().equals(RoleType.USER)) {
+      throw new BusinessException(ErrorCode.FORBIDDEN);
+    }
+    if (!reservation.getUser().getId().equals(userId)) {
+      throw new BusinessException(ErrorCode.UNAUTHORIZED);
+    }
+    reservation.cancelByUser();
+    ;
+    reservationRepository.save(reservation);
+
+    return StatusDto.builder()
+        .status(HttpStatus.CREATED.value())
+        .message("사용자가 예약을 취소했습니다.")
+        .build();
+  }
+
+  @Transactional
+  public StatusDto cancelReservationByOwner(AuthUser authUser, Long reservationId, Long cafeId) {
+    Reservation reservation = reservationRepository.findById(reservationId)
+        .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
+
+    Cafe cafe = reservation.getCafe();
+    // 요청한 카페와 예약한 카페가 일치하는지
+    if (!cafe.getId().equals(cafeId)) {
+      throw new BusinessException(ErrorCode.UNAUTHORIZED);
+    }
+    // 관리자가 해당 카페 소유자인지
+    if (!cafe.getUser().getId().equals(authUser.getId())) {
+      throw new BusinessException(ErrorCode.UNAUTHORIZED);
+    }
+    // 에약 상태 검증(Complete 상태는 취소 불가)
+    if (reservation.getStatus() == ReservationStatus.COMPLETED) {
+      throw new BusinessException(ErrorCode.INVALID_STATUS_CHANGE);
+    }
+    reservation.cancelByOwner();
+    reservationRepository.save(reservation);
+
+    return StatusDto.builder()
+        .status(HttpStatus.CREATED.value())
+        .message("사장님이 예약을 취소했습니다.")
+        .build();
+  }
+
+
 }
