@@ -12,7 +12,7 @@ public class DummyReviewImage {
   public static ReviewImage createDummyReviewImage(Review review) {
     String randomImagePath = "http://..." + TestUtil.getRandomString(10) + ".jpg";
     return ReviewImage.builder()
-        .review(review)
+        .reviewId(review.getId())
         .imagePath(randomImagePath)
         .build();
   }
