@@ -10,6 +10,13 @@ public class RoomCondition {
 
   private final QRoom room = QRoom.room;
 
+  public BooleanExpression eqId(Long id) {
+    if(id == null)
+      return null;
+
+    return room.id.eq(id);
+  }
+
   public BooleanExpression existRoom() {
     return new CaseBuilder()
         .when(room.cafe.id.countDistinct().goe(1))

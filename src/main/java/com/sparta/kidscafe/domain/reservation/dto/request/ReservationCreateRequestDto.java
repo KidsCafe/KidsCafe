@@ -4,6 +4,7 @@ import com.sparta.kidscafe.common.enums.TargetType;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
 import com.sparta.kidscafe.domain.reservation.entity.Reservation;
 import com.sparta.kidscafe.domain.reservation.entity.ReservationDetail;
+import com.sparta.kidscafe.domain.reservation.repository.condition.ReservationSearchCondition;
 import com.sparta.kidscafe.domain.user.entity.User;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -57,5 +58,21 @@ public class ReservationCreateRequestDto {
       reservationDetails.add(detail.convertDtoToEntity(reservation));
     }
     return reservationDetails;
+  }
+  public ReservationSearchCondition createSearchCondition(Long cafeId) {
+    return ReservationSearchCondition.builder()
+        .cafeId(cafeId)
+        .userCount(getCount())
+        .startedAt(startedAt)
+        .finishedAt(finishedAt)
+        .build();
+  }
+
+  public int getCount() {
+    int totalCount = 0;
+    for(ReservationDetailRequestDto detail : details) {
+      totalCount += detail.getCount();
+    }
+    return totalCount;
   }
 }

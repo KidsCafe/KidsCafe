@@ -113,3 +113,12 @@ from
 where c.user_id = 2
 group by c.id
 order by c.name asc;
+
+
+# 해당 시간대에
+# 해당 방에
+# 인원이 다찼는지 (지금 예약하는 사람 포함)
+select *
+from cafe c left join room ro on c.id = ro.cafe_id
+            left join reservation re on c.id = re.cafe_id
+where re.

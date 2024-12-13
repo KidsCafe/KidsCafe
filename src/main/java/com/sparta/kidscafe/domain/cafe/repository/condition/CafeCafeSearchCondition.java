@@ -1,4 +1,4 @@
-package com.sparta.kidscafe.domain.cafe.dto.searchCondition;
+package com.sparta.kidscafe.domain.cafe.repository.condition;
 
 import java.time.LocalTime;
 import lombok.Getter;
@@ -6,7 +6,7 @@ import lombok.experimental.SuperBuilder;
 
 @Getter
 @SuperBuilder(builderMethodName = "createBuilder")
-public class SearchCondition extends SearchPageCondition {
+public class CafeCafeSearchCondition extends CafeSearchPageCondition {
 
   private String name;
   private String region;

@@ -4,6 +4,7 @@ import com.sparta.kidscafe.common.annotation.Auth;
 import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.PageResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
+import com.sparta.kidscafe.common.util.ValidationCheck;
 import com.sparta.kidscafe.domain.reservation.dto.request.ReservationCreateRequestDto;
 import com.sparta.kidscafe.domain.reservation.dto.response.ReservationResponseDto;
 import com.sparta.kidscafe.domain.reservation.service.ReservationService;
@@ -26,22 +27,14 @@ public class ReservationController {
 
   private final ReservationService reservationService;
 
-  @PostMapping("/temp/reservations/cafes/{cafeId}")
-  public ResponseEntity<StatusDto> tempCreateReservation(
-      @Auth AuthUser authUser,
-      @PathVariable Long cafeId,
-      @Valid @RequestBody ReservationCreateRequestDto requestDto) {
-    StatusDto response = reservationService.createReservation(authUser, cafeId, requestDto);
-    return ResponseEntity.status(HttpStatus.CREATED).body(response);
-  }
-
   // 예약 생성
   @PostMapping("/reservations/cafes/{cafeId}")
   public ResponseEntity<StatusDto> createReservation(
       @Auth AuthUser authUser,
       @PathVariable Long cafeId,
       @Valid @RequestBody ReservationCreateRequestDto requestDto) {
-    StatusDto response = reservationService.tempCreateReservation(authUser, cafeId, requestDto);
+    ValidationCheck.validNotUser(authUser);
+    StatusDto response = reservationService.createReservation(authUser, cafeId, requestDto);
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 
