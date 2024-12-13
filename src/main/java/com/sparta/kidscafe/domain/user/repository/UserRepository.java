@@ -1,14 +1,12 @@
 package com.sparta.kidscafe.domain.user.repository;
 
-import com.sparta.kidscafe.common.enums.RoleType;
-import com.sparta.kidscafe.domain.user.entity.OAuthMember;
-import com.sparta.kidscafe.domain.user.entity.User;
 import java.util.List;
 import java.util.Optional;
 
-import javax.swing.text.html.Option;
-
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.sparta.kidscafe.common.enums.RoleType;
+import com.sparta.kidscafe.domain.user.entity.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
   List<User> findAllByRole(RoleType role);
@@ -19,5 +17,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
   boolean existsByOauthId(String oauthId);
 
-  Optional<OAuthMember> findByOauthId(String oauthId);
+  Optional<User> findByOauthId(String id);
 }

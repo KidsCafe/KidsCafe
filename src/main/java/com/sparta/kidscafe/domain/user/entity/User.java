@@ -32,7 +32,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name = "user")
-public class User extends Timestamped implements OAuthMember {
+public class User extends Timestamped {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -79,19 +79,17 @@ public class User extends Timestamped implements OAuthMember {
     this.role = role;
   }
 
-  // 소셜 로그인 회원가입 생성자
-  public User(OAuth2UserProfileDto oAuth2UserProfileDto, String password){
-    this.name = oAuth2UserProfileDto.getName();
-    this.email = oAuth2UserProfileDto.getEmail();
-    this.oauthId = oAuth2UserProfileDto.getOauthId();
-    this.password = password;
-    this.loginType = LoginType.OAUTH;
-    this.role = RoleType.USER;
-  }
-
-  public Object update(String email, String name) {
+  public User update(String email, String name) {
     this.name = name;
     this.email = email;
     return this;
+  }
+
+  public User(Long id, String oauthId, String name, String email, RoleType roleType){
+    this.id = id;
+    this.oauthId = oauthId;
+    this.name = name;
+    this.email = email;
+    this.role = roleType;
   }
 }
