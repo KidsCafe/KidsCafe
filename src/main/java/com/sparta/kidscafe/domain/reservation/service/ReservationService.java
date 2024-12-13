@@ -11,6 +11,7 @@ import com.sparta.kidscafe.domain.reservation.dto.request.ReservationCreateReque
 import com.sparta.kidscafe.domain.reservation.dto.response.ReservationResponseDto;
 import com.sparta.kidscafe.domain.reservation.entity.Reservation;
 import com.sparta.kidscafe.domain.reservation.entity.ReservationDetail;
+import com.sparta.kidscafe.domain.reservation.enums.ReservationStatus;
 import com.sparta.kidscafe.domain.reservation.repository.ReservationDetailRepository;
 import com.sparta.kidscafe.domain.reservation.repository.ReservationRepository;
 import com.sparta.kidscafe.domain.reservation.repository.condition.ReservationSearchCondition;
@@ -35,11 +36,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class ReservationService {
 
   private final ReservationRepository reservationRepository;
-  private final RoomRepository roomRepository;
   private final ReservationCalculationService reservationCalculationService;
   private final CafeRepository cafeRepository;
   private final UserRepository userRepository;
-  private final PricePolicyRepository pricePolicyRepository;
   private final ReservationDetailRepository reservationDetailRepository;
 
 //  @Transactional
