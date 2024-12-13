@@ -16,8 +16,8 @@ import com.sparta.kidscafe.api.oauth2.controller.dto.OAuth2TokenResponseDto;
 import com.sparta.kidscafe.api.oauth2.controller.dto.OAuth2UserProfileDto;
 import com.sparta.kidscafe.api.oauth2.controller.dto.OAuthSigninResponseDto;
 import com.sparta.kidscafe.api.oauth2.provider.OAuth2Provider;
-import com.sparta.kidscafe.api.oauth2.provider.OAuth2TokenProvider;
 import com.sparta.kidscafe.common.util.JwtUtil;
+import com.sparta.kidscafe.domain.user.entity.OAuthMember;
 import com.sparta.kidscafe.domain.user.entity.User;
 import com.sparta.kidscafe.domain.user.repository.UserRepository;
 
@@ -42,18 +42,18 @@ public class OAuth2Service {
 		// OAuth2UserProfile -> 유저 정보
 		OAuth2UserProfileDto userProfileDto = getUserProfile(providerName, tokenResponseDto, provider);
 		// db 에 저장
-		User user = saveOrUpdate(userProfileDto);
+		OAuthMember oAuthMember = saveOrUpdate(userProfileDto);
 
 		// jwt 토큰 생성
-		String accessToken = jwtUtil.generateAccessTokenForOauth(String.valueOf(user.getId()), user.getEmail(), user.getOauthId(),
-			String.valueOf(user.getLoginType()));
+		String accessToken = jwtUtil.generateAccessTokenForOauth(oAuthMember);
 		res.addHeader("Authorization", accessToken);
 
 		return OAuthSigninResponseDto.builder()
-			.id(user.getId())
-			.name(user.getName())
-			.email(user.getEmail())
-			.roleType(user.getRole())
+			.id(oAuthMember.getId())
+			.name(oAuthMember.getName())
+			.email(oAuthMember.getEmail())
+			.roleType(oAuthMember.getRole())
+			.loginType(oAuthMember.getLoginType())
 			.accessToken(accessToken)
 			.build();
 	}
