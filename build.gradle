@@ -31,7 +31,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // JPA 사용
     implementation 'org.springframework.boot:spring-boot-starter-validation' // Validation
     implementation 'org.springframework.boot:spring-boot-starter-web' // Web Starter
-//    implementation 'org.springframework.boot:spring-boot-starter-security' // Spring Security 추가
 
     // JWT 라이브러리
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
