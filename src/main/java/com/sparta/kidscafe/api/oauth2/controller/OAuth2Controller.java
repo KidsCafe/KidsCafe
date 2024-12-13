@@ -16,7 +16,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-// @RequestMapping("")
 @RequiredArgsConstructor
 public class OAuth2Controller {
 
