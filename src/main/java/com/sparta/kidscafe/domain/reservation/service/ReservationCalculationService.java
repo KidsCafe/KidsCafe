@@ -19,8 +19,6 @@ public class ReservationCalculationService {
   private final PricePolicyRepository pricePolicyRepository;
 
   public void calcReservation(
-      Cafe cafe,
-      User user,
       Reservation reservation,
       List<ReservationDetail> reservationDetails) {
     double totalPrice = 0;
@@ -36,9 +34,12 @@ public class ReservationCalculationService {
         dto = pricePolicyRepository.findPricePolicyWithRoom(condition);
       }
 
-      price = (reservationdetail.getCount() * dto.getPrice()) * dto.getRate();
+      price = reservationdetail.getPrice();
+      if(dto != null) {
+        price *=  dto.getRate();
+      }
+
       reservationdetail.updatePrice((int) price);
-      reservationDetails.add(reservationdetail);
       totalPrice += price;
     }
 

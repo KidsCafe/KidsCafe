@@ -30,8 +30,10 @@ public class ReservationDslRepositoryImpl implements ReservationDslRepository {
   @Override
   public boolean isRoomAvailable(ReservationSearchCondition condition) {
     Tuple subQuery = isRoomAvailableSubQuery(condition); // 예약하려는 시간대에 해당 방에 예약한 사용자의 수
-    Tuple mainQuery = isRoomAvailableMainQuery(condition); // 가게가 오픈상태인지 점검
+    if(subQuery == null)
+      return true;
 
+    Tuple mainQuery = isRoomAvailableMainQuery(condition); // 가게가 오픈상태인지 점검
     Long reservedRoomId = subQuery.get(0, Long.class);
     long reservedCount = subQuery.get(1, Long.class) == null ? 0 : subQuery.get(1, Long.class);
     Long roomId = mainQuery.get(0, Long.class);
@@ -68,7 +70,7 @@ public class ReservationDslRepositoryImpl implements ReservationDslRepository {
 
   private BooleanBuilder isRoomAvailableSubMakeWhere(ReservationSearchCondition condition) {
     return new BooleanBuilder()
-        .and(roomCondition.eqId(condition.getRoomId()))
+        .and(reservationCondition.eqTargetId(condition.getRoomId()))
         .and(reservationCondition.startedAtBetweenCafeOpening(condition.getStartedAt()))
         .and(reservationCondition.finishedAtBetweenCafeOpening(condition.getFinishedAt()));
   }

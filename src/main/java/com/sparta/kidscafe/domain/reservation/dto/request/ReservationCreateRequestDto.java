@@ -20,8 +20,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ReservationCreateRequestDto {
 
-  private LocalDateTime startedAt;
-  private LocalDateTime finishedAt;
+  private String startedAt;
+  private String finishedAt;
+  private int totalPrice;
   private List<ReservationDetailRequestDto> details;
 
   @Getter
@@ -31,6 +32,7 @@ public class ReservationCreateRequestDto {
 
     private TargetType targetType;
     private Long targetId;
+    private int price;
     private Long count;
 
     public ReservationDetail convertDtoToEntity(Reservation reservation) {
@@ -39,6 +41,7 @@ public class ReservationCreateRequestDto {
           .targetType(targetType)
           .targetId(targetId)
           .count(count)
+          .price(price)
           .build();
     }
   }
@@ -47,8 +50,9 @@ public class ReservationCreateRequestDto {
     return Reservation.builder()
         .user(user)
         .cafe(cafe)
-        .startedAt(startedAt)
-        .finishedAt(finishedAt)
+        .totalPrice(totalPrice)
+        .startedAt(LocalDateTime.parse(startedAt))
+        .finishedAt(LocalDateTime.parse(finishedAt))
         .build();
   }
 
@@ -59,19 +63,20 @@ public class ReservationCreateRequestDto {
     }
     return reservationDetails;
   }
+
   public ReservationSearchCondition createSearchCondition(Long cafeId) {
     return ReservationSearchCondition.builder()
         .cafeId(cafeId)
         .roomId(getRoomId())
         .userCount(getCount())
-        .startedAt(startedAt)
-        .finishedAt(finishedAt)
+        .startedAt(LocalDateTime.parse(startedAt))
+        .finishedAt(LocalDateTime.parse(finishedAt))
         .build();
   }
 
   public Long getRoomId() {
-    for(ReservationDetailRequestDto detail : details) {
-      if(detail.getTargetType().equals(TargetType.ROOM)) {
+    for (ReservationDetailRequestDto detail : details) {
+      if (detail.getTargetType().equals(TargetType.ROOM)) {
         return detail.getTargetId();
       }
     }
@@ -80,7 +85,7 @@ public class ReservationCreateRequestDto {
 
   public int getCount() {
     int totalCount = 0;
-    for(ReservationDetailRequestDto detail : details) {
+    for (ReservationDetailRequestDto detail : details) {
       totalCount += detail.getCount();
     }
     return totalCount;

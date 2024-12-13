@@ -14,6 +14,12 @@ public class ValidationCheck {
     }
   }
 
+  public static void validUser(AuthUser authUser) {
+    if (authUser.getRoleType() != RoleType.USER) {
+      throw new BusinessException(ErrorCode.FORBIDDEN);
+    }
+  }
+
   public static void validAdmin(AuthUser authUser) {
     if (authUser.getRoleType() != RoleType.ADMIN) {
       throw new BusinessException(ErrorCode.FORBIDDEN);

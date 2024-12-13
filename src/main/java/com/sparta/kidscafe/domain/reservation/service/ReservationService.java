@@ -70,7 +70,7 @@ public class ReservationService {
     Reservation reservation = requestDto.convertDtoToEntity(cafe, user);
     List<ReservationDetail> reservationDetails =
         requestDto.convertEntityToDtoByReservationDetail(reservation);
-    reservationCalculationService.calcReservation(cafe, user, reservation, reservationDetails);
+    reservationCalculationService.calcReservation(reservation, reservationDetails);
 
     // 7. 저장
     reservationRepository.save(reservation);

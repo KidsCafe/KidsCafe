@@ -30,7 +30,8 @@ public class PricePolicyDslRepositoryImpl implements PricePolicyDslRepository {
             room.price,
             pricePolicy.rate
         ))
-        .leftJoin(pricePolicy).on(pricePolicy.cafe.id.eq(room.cafe.id))
+        .from(pricePolicy)
+        .leftJoin(room).on(room.cafe.id.eq(pricePolicy.cafe.id))
         .where(makeWhere(condition))
         .fetchFirst();
   }
@@ -42,7 +43,7 @@ public class PricePolicyDslRepositoryImpl implements PricePolicyDslRepository {
             pricePolicy.rate
         ))
         .from(pricePolicy)
-        .leftJoin(pricePolicy).on(pricePolicy.cafe.id.eq(fee.cafe.id))
+        .leftJoin(fee).on(fee.cafe.id.eq(pricePolicy.cafe.id))
         .where(makeWhere(condition))
         .fetchFirst();
   }

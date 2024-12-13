@@ -33,7 +33,7 @@ public class ReservationController {
       @Auth AuthUser authUser,
       @PathVariable Long cafeId,
       @Valid @RequestBody ReservationCreateRequestDto requestDto) {
-    ValidationCheck.validNotUser(authUser);
+    ValidationCheck.validUser(authUser);
     StatusDto response = reservationService.createReservation(authUser, cafeId, requestDto);
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }

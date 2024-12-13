@@ -81,7 +81,7 @@ public class CafeCondition {
         .now()
         .getDayOfWeek()
         .getDisplayName(TextStyle.SHORT, Locale.KOREAN);
-    innerBuilder.and(cafe.dayOff.eq(reservationDayByKorean));
+    innerBuilder.and(cafe.dayOff.notLike(reservationDayByKorean));
     return innerBuilder.getValue();
   }
 
