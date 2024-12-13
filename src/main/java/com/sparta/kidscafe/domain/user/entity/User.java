@@ -3,6 +3,7 @@ package com.sparta.kidscafe.domain.user.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sparta.kidscafe.api.oauth2.controller.dto.OAuth2UserProfileDto;
 import com.sparta.kidscafe.common.entity.Timestamped;
 import com.sparta.kidscafe.common.enums.LoginType;
@@ -25,6 +26,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Getter
 @Builder
@@ -32,7 +34,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name = "user")
-public class User extends Timestamped {
+public class User extends Timestamped implements OAuthMember {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -80,16 +82,10 @@ public class User extends Timestamped {
   }
 
   public User update(String email, String name) {
-    this.name = name;
+    if(name != null && !name.isBlank()){
+      this.name = name;
+    }
     this.email = email;
     return this;
-  }
-
-  public User(Long id, String oauthId, String name, String email, RoleType roleType){
-    this.id = id;
-    this.oauthId = oauthId;
-    this.name = name;
-    this.email = email;
-    this.role = roleType;
   }
 }
