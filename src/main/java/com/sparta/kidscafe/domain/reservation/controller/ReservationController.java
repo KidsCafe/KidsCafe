@@ -79,6 +79,7 @@ public class ReservationController {
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 
+  // 예약 상태 변경
   @PatchMapping("/admin/reservations/{reservationId}/complete")
   public ResponseEntity<StatusDto> completeReservation(
       @Auth AuthUser authUser,
@@ -86,5 +87,26 @@ public class ReservationController {
     StatusDto response = reservationService.confirmPayment(authUser, reservationId);
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }
+
+  // 예약 취소: User용
+  @PutMapping("/users/reservations/{reservationId}/cancel")
+  public ResponseEntity<StatusDto> cancelReservationByUser(
+      @Auth AuthUser authUser,
+      @PathVariable Long reservationId) {
+    StatusDto response = reservationService.cancelReservationByUser(authUser, reservationId);
+    return ResponseEntity.status(HttpStatus.OK).body(response);
+  }
+
+  // 예약 취소: Owner용
+  @PutMapping("/owners/reservations/{reservationId}/{cafeId}/cancel")
+  public ResponseEntity<StatusDto> cancelReservationByOwner(
+      @Auth AuthUser authUser,
+      @PathVariable Long reservationId,
+      @PathVariable Long cafeId) {
+    StatusDto response = reservationService.cancelReservationByOwner(authUser, reservationId,
+        cafeId);
+    return ResponseEntity.status(HttpStatus.OK).body(response);
+  }
+
 
 }
