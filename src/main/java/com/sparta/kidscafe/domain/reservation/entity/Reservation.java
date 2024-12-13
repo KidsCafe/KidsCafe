@@ -51,8 +51,6 @@ public class Reservation extends Timestamped {
   @Enumerated(EnumType.STRING)
   private ReservationStatus status;
 
-  private boolean isDeleted;
-
   @Column(updatable = false)
   private LocalDateTime startedAt;
 
@@ -61,6 +59,10 @@ public class Reservation extends Timestamped {
 
   @Column(updatable = false)
   private int totalPrice;
+
+  private boolean isDeleted;
+
+  private boolean isPaymentConfirmed;
 
   @Builder.Default
   @OneToMany(mappedBy = "reservation", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
@@ -73,17 +75,12 @@ public class Reservation extends Timestamped {
   public Reservation() {
     this.status = ReservationStatus.PENDING;
     this.isDeleted = false;
+    this.isPaymentConfirmed = false;
   }
   public void approve() {
     if (this.status != ReservationStatus.PENDING) {
       throw new BusinessException(ErrorCode.INVALID_STATUS_CHANGE);
     } this.status = ReservationStatus.APPROVED;
-  }
-
-  public void updateStatus(ReservationStatus status) {
-    if (status == ReservationStatus.PENDING) {
-      throw new BusinessException(ErrorCode.INVALID_STATUS_CHANGE);
-    } this.status = status;
   }
 
   public void cancelByUser() {
@@ -95,6 +92,15 @@ public class Reservation extends Timestamped {
   public void cancelByOwner() {
     this.status = ReservationStatus.CANCELLED_BY_OWNER;
     this.isDeleted = true;
+  }
+
+  public Reservation confirmPayment() {
+    if (this.status != ReservationStatus.APPROVED) {
+      throw new BusinessException(ErrorCode.INVALID_STATUS_CHANGE);
+    }
+    this.isPaymentConfirmed = true;
+    this.status = ReservationStatus.COMPLETED;
+    return this;
   }
 
   public boolean isDeleted() {
