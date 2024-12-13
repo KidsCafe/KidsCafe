@@ -3,13 +3,11 @@ package com.sparta.kidscafe.domain.cafe.service;
 import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.ListResponseDto;
 import com.sparta.kidscafe.common.enums.ImageType;
-import com.sparta.kidscafe.common.util.ValidationCheck;
 import com.sparta.kidscafe.common.util.FileUtil;
+import com.sparta.kidscafe.common.util.valid.CafeValidationCheck;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeImageDeleteRequestDto;
-import com.sparta.kidscafe.domain.cafe.entity.Cafe;
 import com.sparta.kidscafe.domain.cafe.entity.CafeImage;
 import com.sparta.kidscafe.domain.cafe.repository.CafeImageRepository;
-import com.sparta.kidscafe.domain.cafe.repository.CafeRepository;
 import com.sparta.kidscafe.domain.image.dto.ImageResponseDto;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +24,7 @@ public class CafeImageService {
 
   @Value("${filePath.cafe}")
   private String defaultImagePath;
-  private final CafeRepository cafeRepository;
+  private final CafeValidationCheck cafeValidationCheck;
   private final CafeImageRepository cafeImageRepository;
   private final FileUtil fileUtil;
 
@@ -42,11 +40,7 @@ public class CafeImageService {
 
   @Transactional
   public void deleteImage(AuthUser authUser, CafeImageDeleteRequestDto requestDto) {
-    Long cafeId = requestDto.getCafeId();
-    Long userId = authUser.getId();
-    Cafe cafe = cafeRepository.findByIdAndUserId(cafeId, userId).orElse(null);
-    ValidationCheck.validMyCafe(authUser, cafe);
-
+    cafeValidationCheck.validMyCafe(authUser, requestDto.getCafeId());
     List<CafeImage> deleteImages = cafeImageRepository.findAllById(requestDto.getImages());
     for (CafeImage deleteImage : deleteImages) {
       deleteImage.delete();

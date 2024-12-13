@@ -136,3 +136,98 @@ where (res.reserved_count IS NULL OR res.reserved_count < ro.max_count) # 예약
   and (c.day_off like '%일%' # 가게가 오픈 상태인지
     and c.opened_at >= '00:00'
     and c.opened_at <= '23:59');
+
+select rd.target_id,
+       sum(rd.count)
+from reservation r
+         left join reservation_detail rd
+                   on rd.reservation_id = r.id
+where rd.target_id = 1
+  and (
+    r.started_at >= '2024-12-05 14:00:00'
+        and r.finished_at <= '2024-12-05 14:00:00'
+    )
+  and (
+    r.started_at >= '2024-12-05 16:00:00'
+        and r.finished_at <= '2024-12-05 16:00:00'
+    )
+group by rd.target_id
+
+select *
+from room ro
+         left join reservation_detail rd on ro.id = rd.target_id
+         left join reservation re on re.id = rd.reservation_id
+where ro.id = 1;
+
+# 모르겠음 초심으로 돌아가자
+# 방 아이디가 1인 예약 건수들을 찾는다.
+select re.id
+from reservation re
+         left join reservation_detail rd on re.id = rd.reservation_id
+where rd.target_id = 1 and rd.target_type = 'ROOM';
+
+# 1번 방에 예약한 인원을 찾는다.
+select sum(rd.count)
+from reservation_detail rd
+where rd.reservation_id in (select re.id
+                            from reservation re
+                                     left join reservation_detail rd on re.id = rd.reservation_id
+                            where rd.target_id = 1 and rd.target_type = 'ROOM')
+  and target_type='FEE';
+
+# 1번 방에 14~16시 사이에 예약한 인원을 찾는다.
+select sum(rd.count)
+from reservation_detail rd left join reservation re on rd.reservation_id = re.id
+where rd.reservation_id in (select re.id
+                            from reservation re
+                                     left join reservation_detail rd on re.id = rd.reservation_id
+                            where rd.target_id = 1 and rd.target_type = 'ROOM')
+  and target_type='FEE'
+  and ( re.finished_at >= '2024-12-05 14:00:00' and re.started_at <= '2024-12-05 16:00:00');
+
+#  1번카페가 영업중일 때고, 1번방에 14~16시 사이에 예약한 인원을 찾는다.
+select sum(rd.count)
+from reservation_detail rd
+         left join reservation re on rd.reservation_id = re.id
+         left join cafe c on c.id = re.cafe_id
+where rd.reservation_id in (select re.id
+                            from reservation re
+                                     left join reservation_detail rd on re.id = rd.reservation_id
+                            where rd.target_id = 1 and rd.target_type = 'ROOM')
+  and target_type='FEE'
+  and ( re.finished_at >= '2024-12-05 14:00:00' and re.started_at <= '2024-12-05 16:00:00')
+  and c.closed_at >= '2024-12-05 14:00:00' and c.opened_at <= '2024-12-05 16:00:00'
+  and c.day_off not like '%화%';
+
+#  1번카페가 영업중일 때고, 1번방에 14~16시 사이에 예약한 인원과 방의 정원을 찾는다.
+select sum(rd.count) as total
+from reservation_detail rd
+         left join reservation re on rd.reservation_id = re.id
+         left join cafe c on c.id = re.cafe_id
+where rd.reservation_id in (select re.id
+                            from reservation re
+                                     left join reservation_detail rd on re.id = rd.reservation_id
+                            where rd.target_id = 1 and rd.target_type = 'ROOM')
+  and target_type='FEE'
+  and ( re.finished_at >= '2024-12-05 14:00:00' and re.started_at <= '2024-12-05 16:00:00')
+  and c.closed_at >= '2024-12-05 14:00:00' and c.opened_at <= '2024-12-05 16:00:00'
+  and c.day_off not like '%화%';
+
+#  1번카페가 영업중일 때고, 1번방에 14~16시 사이에 예약한 인원과 방의 정원을 찾는다. [새로운 주문 3명]
+select sum(rd.count) + 3 <= (select max_count from room where room.id = 1) as isAvailable
+from reservation_detail rd
+         left join reservation re on rd.reservation_id = re.id
+         left join cafe c on c.id = re.cafe_id
+where rd.reservation_id in (select re.id
+                            from reservation re
+                                     left join reservation_detail rd on re.id = rd.reservation_id
+                            where rd.target_id = 1 and rd.target_type = 'ROOM')
+  and target_type='FEE'
+  and ( re.finished_at >= '2024-12-05 14:00:00' and re.started_at <= '2024-12-05 16:00:00')
+  and c.closed_at >= '2024-12-05 14:00:00' and c.opened_at <= '2024-12-05 16:00:00'
+  and c.day_off not like '%화%';
+# 필요한 조건 변수 ..
+# 1. 총 인원
+# 2. 방 번호
+# 3. 예매 시작 시간
+# 4. 예매 마감 시간

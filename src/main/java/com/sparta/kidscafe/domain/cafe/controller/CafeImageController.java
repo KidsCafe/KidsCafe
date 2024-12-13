@@ -3,7 +3,7 @@ package com.sparta.kidscafe.domain.cafe.controller;
 import com.sparta.kidscafe.common.annotation.Auth;
 import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.StatusDto;
-import com.sparta.kidscafe.common.util.ValidationCheck;
+import com.sparta.kidscafe.common.util.valid.AuthValidationCheck;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeImageDeleteRequestDto;
 import com.sparta.kidscafe.domain.cafe.service.CafeImageService;
 import java.util.List;
@@ -44,7 +44,7 @@ public class CafeImageController {
       @Auth AuthUser authUser,
       @RequestBody CafeImageDeleteRequestDto requestDto
   ) {
-    ValidationCheck.validNotUser(authUser);
+    AuthValidationCheck.validNotUser(authUser);
     cafeImageService.deleteImage(authUser, requestDto);
     return ResponseEntity.noContent().build();
   }

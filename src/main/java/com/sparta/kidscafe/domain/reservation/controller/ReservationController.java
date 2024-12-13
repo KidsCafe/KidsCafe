@@ -4,7 +4,7 @@ import com.sparta.kidscafe.common.annotation.Auth;
 import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.PageResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
-import com.sparta.kidscafe.common.util.ValidationCheck;
+import com.sparta.kidscafe.common.util.valid.AuthValidationCheck;
 import com.sparta.kidscafe.domain.reservation.dto.request.ReservationCreateRequestDto;
 import com.sparta.kidscafe.domain.reservation.dto.response.ReservationResponseDto;
 import com.sparta.kidscafe.domain.reservation.service.ReservationService;
@@ -35,7 +35,7 @@ public class ReservationController {
       @Auth AuthUser authUser,
       @PathVariable Long cafeId,
       @Valid @RequestBody ReservationCreateRequestDto requestDto) {
-    ValidationCheck.validUser(authUser);
+    AuthValidationCheck.validUser(authUser);
     StatusDto response = reservationService.createReservation(authUser, cafeId, requestDto);
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }

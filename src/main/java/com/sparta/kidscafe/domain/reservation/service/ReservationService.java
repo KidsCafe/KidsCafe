@@ -6,7 +6,6 @@ import com.sparta.kidscafe.common.dto.StatusDto;
 import com.sparta.kidscafe.common.enums.RoleType;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
 import com.sparta.kidscafe.domain.cafe.repository.CafeRepository;
-import com.sparta.kidscafe.domain.pricepolicy.repository.PricePolicyRepository;
 import com.sparta.kidscafe.domain.reservation.dto.request.ReservationCreateRequestDto;
 import com.sparta.kidscafe.domain.reservation.dto.response.ReservationResponseDto;
 import com.sparta.kidscafe.domain.reservation.entity.Reservation;
@@ -15,7 +14,6 @@ import com.sparta.kidscafe.domain.reservation.enums.ReservationStatus;
 import com.sparta.kidscafe.domain.reservation.repository.ReservationDetailRepository;
 import com.sparta.kidscafe.domain.reservation.repository.ReservationRepository;
 import com.sparta.kidscafe.domain.reservation.repository.condition.ReservationSearchCondition;
-import com.sparta.kidscafe.domain.room.repository.RoomRepository;
 import com.sparta.kidscafe.domain.user.entity.User;
 import com.sparta.kidscafe.domain.user.repository.UserRepository;
 import com.sparta.kidscafe.exception.BusinessException;
@@ -155,10 +153,10 @@ public class ReservationService {
       throw new BusinessException(ErrorCode.RESERVATION_FAILURE);
     }
 
-    //4. 저장
+    //4. 예약
     saveReservations(user, cafe, requestDto);
 
-    // 8. 반환
+    // 5. 반환
     return StatusDto.builder()
         .status(HttpStatus.CREATED.value())
         .message("예약 완료")
@@ -166,13 +164,10 @@ public class ReservationService {
   }
 
   public void saveReservations(User user, Cafe cafe, ReservationCreateRequestDto requestDto) {
-    // 4. 예약이 가능하다면 예약 생성
     Reservation reservation = requestDto.convertDtoToEntity(cafe, user);
     List<ReservationDetail> reservationDetails =
         requestDto.convertEntityToDtoByReservationDetail(reservation);
     reservationCalculationService.calcReservation(reservation, reservationDetails);
-
-    // 7. 저장
     reservationRepository.save(reservation);
     reservationDetailRepository.saveAll(reservationDetails);
   }

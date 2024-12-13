@@ -75,13 +75,13 @@ public class CafeCondition {
     return innerBuilder.getValue();
   }
 
-  public Predicate dayOff(LocalDateTime reservationDay) {
+  public Predicate notHoliday(LocalDateTime reservationDay) {
     BooleanBuilder innerBuilder = new BooleanBuilder();
     String reservationDayByKorean = LocalDate
         .now()
         .getDayOfWeek()
         .getDisplayName(TextStyle.SHORT, Locale.KOREAN);
-    innerBuilder.and(cafe.dayOff.notLike(reservationDayByKorean));
+    innerBuilder.and(cafe.dayOff.notLike("%"+reservationDayByKorean+"%"));
     return innerBuilder.getValue();
   }
 
@@ -119,10 +119,26 @@ public class CafeCondition {
   }
 
   public BooleanExpression goeOpenedAt(LocalTime openedAt) {
+    // goe 크거나 같음, loe 작거나 같음
     if (openedAt == null) {
       return null;
     }
     return cafe.openedAt.goe(openedAt);
+  }
+
+  public BooleanExpression loeOpenedAt(LocalTime openedAt) {
+    // goe 크거나 같음, loe 작거나 같음
+    if (openedAt == null) {
+      return null;
+    }
+    return cafe.openedAt.loe(openedAt);
+  }
+
+  public BooleanExpression goeClosedAt(LocalTime closedAt) {
+    if (closedAt == null) {
+      return null;
+    }
+    return cafe.closedAt.goe(closedAt);
   }
 
   public BooleanExpression loeClosedAt(LocalTime closedAt) {
