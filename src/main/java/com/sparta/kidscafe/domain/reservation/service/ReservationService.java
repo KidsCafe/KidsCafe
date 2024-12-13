@@ -2,7 +2,6 @@ package com.sparta.kidscafe.domain.reservation.service;
 
 import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.PageResponseDto;
-import com.sparta.kidscafe.common.dto.ResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
 import com.sparta.kidscafe.common.enums.RoleType;
 import com.sparta.kidscafe.common.enums.TargetType;
@@ -131,10 +130,10 @@ public class ReservationService {
     List<PricePolicy> pricePolies = pricePolicyRepository.findAllByCafeId(cafeId);
 
     int totalPrice = 0;
-    for(PricePolicy pricePolicy : pricePolies) {
-      for(ReservationDetail detail : details) {
+    for (PricePolicy pricePolicy : pricePolies) {
+      for (ReservationDetail detail : details) {
         // 타겟이(ROOM, FEE)같다면
-        if(pricePolicy.getTargetType().equals(detail.getTargetType())) {
+        if (pricePolicy.getTargetType().equals(detail.getTargetType())) {
           detail.updatePrice(pricePolicy.getRate()); // 가격 적용
           totalPrice += detail.getPrice();
         }
@@ -145,13 +144,14 @@ public class ReservationService {
 
   // 예약 내역 조회(User용)
   @Transactional(readOnly = true)
-  public PageResponseDto<ReservationResponseDto> getReservationsByUser(AuthUser authUser, int page, int size) {
+  public PageResponseDto<ReservationResponseDto> getReservationsByUser(AuthUser authUser, int page,
+      int size) {
     if (!authUser.getRoleType().equals(RoleType.USER)) {
       throw new BusinessException(ErrorCode.FORBIDDEN);
     }
     Pageable pageable = PageRequest.of(page, size, Sort.by(Direction.DESC, "createdAt"));
-    Page<Reservation> reservationsForUser = reservationRepository.findByUserId(authUser.getId(), pageable);
-
+    Page<Reservation> reservationsForUser = reservationRepository.findByUserId(authUser.getId(),
+        pageable);
 
     Page<ReservationResponseDto> responseDto = reservationsForUser.map(reservation ->
         ReservationResponseDto.builder()
@@ -168,7 +168,8 @@ public class ReservationService {
 
   // 예약 내역 조회(Owner용)
   @Transactional(readOnly = true)
-  public PageResponseDto<ReservationResponseDto> getReservationsByOwner(AuthUser authUser, Long cafeId, int page, int size) {
+  public PageResponseDto<ReservationResponseDto> getReservationsByOwner(AuthUser authUser,
+      Long cafeId, int page, int size) {
     if (!authUser.getRoleType().equals(RoleType.OWNER)) {
       throw new BusinessException(ErrorCode.FORBIDDEN);
     }
@@ -195,7 +196,7 @@ public class ReservationService {
 
   // 예약 승인
   @Transactional
-  public StatusDto approveReservation (AuthUser authUser, Long reservationId) {
+  public StatusDto approveReservation(AuthUser authUser, Long reservationId) {
     if (!authUser.getRoleType().equals(RoleType.OWNER)) {
       throw new BusinessException(ErrorCode.FORBIDDEN);
     }
@@ -212,7 +213,8 @@ public class ReservationService {
         .message("예약 승인")
         .build();
   }
-  // 예약 상태 변경: Confirmed (결제 완료 상황 (결제 여부 확인 메서드 사용) -> Complete)
+
+  // 예약 상태 변경: 결제 완료 상황 (결제 여부 확인 메서드 사용) -> Complete)
   @Transactional
   public StatusDto confirmPayment(AuthUser authUser, Long reservationId) {
     if (!authUser.getRoleType().equals(RoleType.USER)) {
