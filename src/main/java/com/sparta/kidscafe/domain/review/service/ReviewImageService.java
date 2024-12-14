@@ -1,6 +1,6 @@
 package com.sparta.kidscafe.domain.review.service;
 
-import com.sparta.kidscafe.common.client.S3FileUploader;
+import com.sparta.kidscafe.common.util.S3FileUploader;
 import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.StatusDto;
 import com.sparta.kidscafe.domain.review.entity.Review;
