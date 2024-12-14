@@ -18,9 +18,9 @@ import lombok.RequiredArgsConstructor;
 public class ReservationDslRepositoryImpl implements ReservationDslRepository {
 
   private final JPAQueryFactory queryFactory;
-  private final ReservationCondition reservationCondition;
   private final CafeCondition cafeCondition;
   private final RoomCondition roomCondition;
+  private final ReservationCondition reservationCondition;
 
   private final QRoom room = QRoom.room;
   private final QCafe cafe = QCafe.cafe;

@@ -5,6 +5,7 @@ import com.sparta.kidscafe.common.dto.PageResponseDto;
 import com.sparta.kidscafe.common.dto.ResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
 import com.sparta.kidscafe.common.util.valid.CafeValidationCheck;
+import com.sparta.kidscafe.common.util.valid.UserValidationCheck;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeCreateRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeSimpleRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafesSimpleCreateRequestDto;
@@ -14,7 +15,7 @@ import com.sparta.kidscafe.domain.cafe.entity.Cafe;
 import com.sparta.kidscafe.domain.cafe.entity.CafeImage;
 import com.sparta.kidscafe.domain.cafe.repository.CafeImageRepository;
 import com.sparta.kidscafe.domain.cafe.repository.CafeRepository;
-import com.sparta.kidscafe.domain.cafe.repository.condition.CafeCafeSearchCondition;
+import com.sparta.kidscafe.domain.cafe.repository.condition.CafeSearchCondition;
 import com.sparta.kidscafe.domain.fee.entity.Fee;
 import com.sparta.kidscafe.domain.fee.repository.FeeRepository;
 import com.sparta.kidscafe.domain.pricepolicy.entity.PricePolicy;
@@ -36,17 +37,17 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class CafeService {
 
-  private final UserRepository userRepository;
   private final CafeRepository cafeRepository;
   private final CafeImageRepository cafeImageRepository;
   private final RoomRepository roomRepository;
   private final FeeRepository feeRepository;
   private final PricePolicyRepository pricePolicyRepository;
+  private final UserValidationCheck userValidationCheck;
   private final CafeValidationCheck cafeValidationCheck;
 
   @Transactional
   public StatusDto createCafe(AuthUser authUser, CafeCreateRequestDto requestDto) {
-    User user = findByUserId(authUser.getId());
+    User user = userValidationCheck.validMy(authUser.getId());
     Cafe cafe = saveCafe(requestDto, user);
     saveCafeImage(cafe, requestDto.getImages());
     saveCafeDetailInfo(requestDto, cafe);
@@ -57,7 +58,7 @@ public class CafeService {
   }
 
   public StatusDto creatCafe(AuthUser authUser, CafesSimpleCreateRequestDto requestDto) {
-    User user = findByUserId(authUser.getId());
+    User user = userValidationCheck.validMy(authUser.getId());
     List<Cafe> cafes = requestDto.convertDtoToEntity(user);
     cafeRepository.saveAll(cafes);
     return createStatusDto(
@@ -66,7 +67,7 @@ public class CafeService {
     );
   }
 
-  public PageResponseDto<CafeResponseDto> searchCafe(CafeCafeSearchCondition condition) {
+  public PageResponseDto<CafeResponseDto> searchCafe(CafeSearchCondition condition) {
     Page<CafeResponseDto> cafes = cafeRepository.findAllByCafe(condition);
     return PageResponseDto.success(
         cafes,
@@ -88,7 +89,7 @@ public class CafeService {
 
   @Transactional
   public StatusDto updateCafe(AuthUser authUser, Long cafeId, CafeSimpleRequestDto requestDto) {
-    Cafe cafe = cafeValidationCheck.validMyCafe(authUser, cafeId);
+    Cafe cafe = cafeValidationCheck.validMyCafe(cafeId, authUser.getId());
     cafe.update(requestDto);
     return createStatusDto(
         HttpStatus.OK,
@@ -98,7 +99,7 @@ public class CafeService {
 
   @Transactional
   public void deleteCafe(AuthUser authUser, Long cafeId) {
-    Cafe cafe = cafeValidationCheck.validMyCafe(authUser, cafeId);
+    Cafe cafe = cafeValidationCheck.validMyCafe(cafeId, authUser.getId());
     cafeRepository.delete(cafe);
     List<CafeImage> cafeImages = cafeImageRepository.findAllByCafeId(cafeId);
     for (CafeImage cafeImage : cafeImages) {
@@ -110,11 +111,6 @@ public class CafeService {
   public void deleteCafe(AuthUser authUser, List<Long> cafeIds) {
     List<Cafe> cafes = cafeRepository.findAllByUserIdAndIdIn(authUser.getId(), cafeIds);
     cafeRepository.deleteAll(cafes);
-  }
-
-  private User findByUserId(Long userId) {
-    return userRepository.findById(userId)
-        .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
   }
 
   public void saveCafeImage(Cafe cafe, List<Long> images) {

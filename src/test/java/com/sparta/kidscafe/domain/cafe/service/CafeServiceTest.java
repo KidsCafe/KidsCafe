@@ -1,385 +1,29 @@
-//package com.sparta.kidscafe.domain.cafe.service;
-//
-//import static org.assertj.core.api.Assertions.assertThat;
-//import static org.junit.jupiter.api.Assertions.assertEquals;
-//import static org.junit.jupiter.api.Assertions.assertNotNull;
-//import static org.junit.jupiter.api.Assertions.assertThrows;
-//import static org.mockito.ArgumentMatchers.any;
-//import static org.mockito.Mockito.anyList;
-//import static org.mockito.Mockito.mock;
-//import static org.mockito.Mockito.never;
-//import static org.mockito.Mockito.times;
-//import static org.mockito.Mockito.verify;
-//import static org.mockito.Mockito.when;
-//
-//import com.sparta.kidscafe.common.dto.AuthUser;
-//import com.sparta.kidscafe.common.dto.PageResponseDto;
-//import com.sparta.kidscafe.common.dto.ResponseDto;
-//import com.sparta.kidscafe.common.dto.StatusDto;
-//import com.sparta.kidscafe.common.enums.RoleType;
-//import com.sparta.kidscafe.domain.cafe.dto.searchCondition.SearchCondition;
-//import com.sparta.kidscafe.domain.cafe.dto.request.create.CafeCreateRequestDto;
-//import com.sparta.kidscafe.domain.cafe.dto.request.create.CafesSimpleCreateRequestDto;
-//import com.sparta.kidscafe.domain.cafe.dto.response.CafeDetailResponseDto;
-//import com.sparta.kidscafe.domain.cafe.dto.response.CafeResponseDto;
-//import com.sparta.kidscafe.domain.cafe.entity.Cafe;
-//import com.sparta.kidscafe.domain.cafe.entity.CafeImage;
-//import com.sparta.kidscafe.domain.cafe.repository.CafeRepository;
-//import com.sparta.kidscafe.domain.fee.entity.Fee;
-//import com.sparta.kidscafe.domain.fee.repository.FeeRepository;
-//import com.sparta.kidscafe.domain.pricepolicy.entity.PricePolicy;
-//import com.sparta.kidscafe.domain.pricepolicy.repository.PricePolicyRepository;
-//import com.sparta.kidscafe.domain.room.entity.Room;
-//import com.sparta.kidscafe.domain.room.repository.RoomRepository;
-//import com.sparta.kidscafe.domain.user.entity.User;
-//import com.sparta.kidscafe.domain.user.repository.UserRepository;
-//import com.sparta.kidscafe.exception.BusinessException;
-//import com.sparta.kidscafe.exception.ErrorCode;
-//import java.time.LocalTime;
-//import java.util.Arrays;
-//import java.util.Collections;
-//import java.util.List;
-//import java.util.Optional;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.DisplayName;
-//import org.junit.jupiter.api.Test;
-//import org.junit.jupiter.api.extension.ExtendWith;
-//import org.mockito.Mock;
-//import org.mockito.junit.jupiter.MockitoExtension;
-//import org.springframework.data.domain.Page;
-//import org.springframework.data.domain.PageImpl;
-//import org.springframework.data.domain.PageRequest;
-//import org.springframework.http.HttpStatus;
-//import org.springframework.web.multipart.MultipartFile;
-//
-//@ExtendWith(MockitoExtension.class) // @Mock 사용을 위해 설정합니다.
-//public class CafeServiceTest {
-//
-//  @Mock
-//  private CafeRepository cafeRepository;
-//
-//  @Mock
-//  private RoomRepository roomRepository;
-//
-//  @Mock
-//  private FeeRepository feeRepository;
-//
-//  @Mock
-//  private PricePolicyRepository pricePolicyRepository;
-//
-//  @Mock
-//  private UserRepository userRepository;
-//
-//  @Mock
-//  private CafeImageService cafeImageService;
-//
-//  private CafeService cafeService;
-//
-//  private AuthUser authUser;
-//  private AuthUser ownerAuthUser;
-//  private AuthUser adminAuthUser;
-//
-//  private User user;
-//  private User ownerUser;
-//  private User adminUser;
-//
-//  private CafeCreateRequestDto requestDto;
-//  private List<MultipartFile> cafeImages;
-//
-//  @BeforeEach
-//  void setUp() {
-//    cafeService = new CafeService(
-//        cafeRepository,
-//        roomRepository,
-//        feeRepository,
-//        pricePolicyRepository,
-//        userRepository,
-//        cafeImageService);
-//
-//    authUser = new AuthUser(15L, "test@email.com", RoleType.USER);
-//    ownerAuthUser = new AuthUser(15L, "test@email.com", RoleType.OWNER);
-//    adminAuthUser = new AuthUser(15L, "test@email.com", RoleType.ADMIN);
-//
-//    user = User.builder().id(authUser.getId()).build();
-//    ownerUser = User.builder().id(ownerAuthUser.getId()).build();
-//    adminUser = User.builder().id(adminAuthUser.getId()).role(RoleType.ADMIN).build();
-//
-//    requestDto = mock(CafeCreateRequestDto.class);
-//    cafeImages = Arrays.asList(mock(MultipartFile.class), mock(MultipartFile.class));
-//  }
-//
-//  private PageRequest createPageRequest(int page, int size) {
-//    return PageRequest.of(page, size);
-//  }
-//
-//  private SearchCondition createSearchCondition() {
-//    return SearchCondition.createBuilder()
-//        .name("Test Cafe")
-//        .region("Seoul")
-//        .size(100)
-//        .ageGroup("3-5")
-//        .minPrice(1000)
-//        .maxPrice(5000)
-//        .minStar(3.0)
-//        .maxStar(5.0)
-//        .parking(true)
-//        .opening(true)
-//        .existRestaurant(false)
-//        .existRoom(true)
-//        .adultPrice(false)
-//        .multiFamily(true)
-//        .openedAt(LocalTime.of(9, 0))
-//        .closedAt(LocalTime.of(21, 0))
-//        .userId(1L)
-//        .build();
-//  }
-//
-//  @Test
-//  @DisplayName("카페 목록 조회 성공 - 사용자가 검색한")
-//  void searchCafe_success() {
-//    // Arrange: 테스트 입력값 및 Mock 동작 정의
-//    SearchCondition searchCondition = SearchCondition.createBuilder()
-//        .name("Test Cafe")
-//        .region("Seoul")
-//        .pageable(PageRequest.of(0, 10))
-//        .build();
-//
-//    List<CafeResponseDto> cafeResponseDtoList = Arrays.asList(
-//        new CafeResponseDto(
-//            1L,
-//            "Test Cafe",
-//            "Seoul",
-//            50,
-//            4.5,
-//            20L,
-//            "월",
-//            true,
-//            true,
-//            true,
-//            true,
-//            "http://..",
-//            null,
-//            null),
-//        new CafeResponseDto(
-//            2L,
-//            "Another Cafe",
-//            "Seoul",
-//            30,
-//            4.0,
-//            15L,
-//            "토, 일",
-//            true,
-//            true,
-//            false,
-//            true,
-//            "http://..",
-//            null,
-//            null)
-//    );
-//
-//    Page<CafeResponseDto> mockPage = new PageImpl<>(cafeResponseDtoList,
-//        searchCondition.getPageable(), 2);
-//
-//    // Mock 동작 설정: Repository 호출 시 Mock 결과 반환
-//    when(cafeRepository.findAllByCafe(any(SearchCondition.class))).thenReturn(mockPage);
-//
-//    // Act: 테스트 대상 메서드 호출
-//    PageResponseDto<CafeResponseDto> response = cafeService.searchCafe(searchCondition);
-//
-//    // Assert: 반환값 검증
-//    assertThat(response.getData()).hasSize(2); // 반환된 데이터 크기 확인
-//    assertThat(response.getData().get(0).getName()).isEqualTo("Test Cafe"); // 첫 번째 Cafe 이름 확인
-//    assertThat(response.getData().get(1).getName()).isEqualTo("Another Cafe"); // 두 번째 Cafe 이름 확인
-//  }
-//
-//  @Test
-//  @DisplayName("카페 상세 조회 성공")
-//  void findCafe_success() {
-//    // given
-//    Long cafeId = 1L;
-//    CafeResponseDto cafeResponseDto = new CafeResponseDto(
-//        1L,
-//        "Test Cafe",
-//        "Seoul",
-//        50,
-//        4.5,
-//        20L,
-//        "월",
-//        true,
-//        true,
-//        true,
-//        true,
-//        "http://..",
-//        null,
-//        null);
-//    List<CafeImage> images = Collections.emptyList();
-//    List<Room> rooms = Collections.emptyList();
-//    List<Fee> fees = Collections.emptyList();
-//    List<PricePolicy> pricePolicies = Collections.emptyList();
-//
-//    when(cafeRepository.findCafeById(cafeId)).thenReturn(cafeResponseDto);
-//    when(cafeImageService.searchCafeImage(cafeId)).thenReturn(images);
-//    when(roomRepository.findAllByCafeId(cafeId)).thenReturn(rooms);
-//    when(feeRepository.findAllByCafeId(cafeId)).thenReturn(fees);
-//    when(pricePolicyRepository.findAllByCafeId(cafeId)).thenReturn(pricePolicies);
-//
-//    // when
-//    ResponseDto<CafeDetailResponseDto> response = cafeService.findCafe(cafeId);
-//
-//    // then
-//    assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-//    assertThat(response.getData()).isNotNull();
-//    assertThat(response.getMessage()).isEqualTo("[Test Cafe] 상세 조회 성공");
-//  }
-//
-//  @Test
-//  @DisplayName("카페 상세 조회 - 조회 결과가 없음")
-//  void findCafe_notFound() {
-//    // given
-//    Long cafeId = 1L;
-//    when(cafeRepository.findCafeById(cafeId)).thenReturn(null);
-//
-//    // when
-//    ResponseDto<CafeDetailResponseDto> response = cafeService.findCafe(cafeId);
-//
-//    // then
-//    assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-//    assertThat(response.getData()).isNull();
-//    assertThat(response.getMessage()).isEqualTo("조회 결과가 없습니다.");
-//  }
-//
-//  @Test
-//  @DisplayName("관리자 카페 등록 성공")
-//  void createCafe_admin_success() {
-//    // given: Mock 데이터와 의존성 설정
-//    Cafe cafe1 = mock(Cafe.class);
-//    Cafe cafe2 = mock(Cafe.class);
-//    List<Cafe> cafes = Arrays.asList(cafe1, cafe2);
-//
-//    CafesSimpleCreateRequestDto requestDto = mock(CafesSimpleCreateRequestDto.class);
-//    when(userRepository.findById(adminUser.getId())).thenReturn(Optional.of(adminUser));
-//    when(requestDto.convertDtoToEntity(adminUser)).thenReturn(cafes);
-//
-//    // when: 서비스 호출
-//    StatusDto result = cafeService.creatCafe(adminAuthUser, requestDto);
-//
-//    // then: 결과 검증
-//    assertThat(result.getStatus()).isEqualTo(HttpStatus.CREATED.value());
-//    assertThat(result.getMessage()).isEqualTo("카페 [" + cafes.size() + "]개 등록 성공");
-//
-//    // verify: 레포지토리 호출 검증
-//    verify(cafeRepository, times(1)).saveAll(cafes);
-//  }
-//
-//  @Test
-//  @DisplayName("관리자 카페 등록 실패 - 유저를 찾을 수 없음")
-//  void createCafe_admin_userNotFound() {
-//    // given: Mock 데이터 설정
-//    CafesSimpleCreateRequestDto requestDto = mock(CafesSimpleCreateRequestDto.class);
-//    when(userRepository.findById(adminUser.getId())).thenReturn(Optional.empty());
-//
-//    // when & then: 예외 검증
-//    BusinessException exception = assertThrows(BusinessException.class, () ->
-//        cafeService.creatCafe(adminAuthUser, requestDto)
-//    );
-//    assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.USER_NOT_FOUND);
-//
-//    // verify: 레포지토리가 호출되지 않았는지 검증
-//    verify(cafeRepository, never()).saveAll(anyList());
-//  }
-//
-//  @Test
-//  @DisplayName("관리자 카페 등록 실패 - 관리자 권한 없음")
-//  void createCafe_admin_forbidden() {
-//    // given: Mock 데이터 설정
-//    CafesSimpleCreateRequestDto requestDto = mock(CafesSimpleCreateRequestDto.class);
-//
-//    // when & then: 예외 검증
-//    BusinessException exception = assertThrows(BusinessException.class, () ->
-//        cafeService.creatCafe(ownerAuthUser, requestDto)
-//    );
-//    assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.FORBIDDEN);
-//
-//    // verify: 레포지토리가 호출되지 않았는지 검증
-//    verify(cafeRepository, never()).saveAll(anyList());
-//  }
-//
-//  @Test
-//  @DisplayName("관리자 카페 조회 성공")
-//  void searchCafeByAdmin_success() {
-//    // given
-//    SearchCondition condition = createSearchCondition();
-//    PageRequest pageRequest = createPageRequest(0, 10);
-//    Page<CafeResponseDto> mockPage = new PageImpl<>(Collections.emptyList(), pageRequest, 0);
-//
-//    when(cafeRepository.findAllByCafe(any(SearchCondition.class))).thenReturn(mockPage);
-//
-//    // when
-//    PageResponseDto<CafeResponseDto> result = cafeService.searchCafeByAdmin(adminAuthUser, condition);
-//
-//    // then
-//    assertNotNull(result);
-//    assertThat(result.getStatus()).isEqualTo(HttpStatus.OK.value());
-//    verify(cafeRepository, times(1)).findAllByCafe(any(SearchCondition.class));
-//  }
-//
-//  @Test
-//  @DisplayName("관리자 카페 조회 실패 - 권한 없음")
-//  void searchCafeByAdmin_forbidden() {
-//    // given
-//    SearchCondition condition = createSearchCondition();
-//
-//    // when
-//    BusinessException exception = assertThrows(BusinessException.class,
-//        () -> cafeService.searchCafeByAdmin(ownerAuthUser, condition));
-//
-//    // then
-//    assertEquals(ErrorCode.FORBIDDEN, exception.getErrorCode());
-//  }
-//
-//  @Test
-//  @DisplayName("사장님 카페 조회 성공")
-//  void searchCafeByOwner_success() {
-//    // given
-//    SearchCondition condition = createSearchCondition();
-//    PageRequest pageRequest = createPageRequest(0, 10);
-//    Page<CafeResponseDto> mockPage = new PageImpl<>(Collections.emptyList(), pageRequest, 0);
-//
-//    when(cafeRepository.findAllByCafe(any(SearchCondition.class))).thenReturn(mockPage);
-//
-//    // when
-//    PageResponseDto<CafeResponseDto> result = cafeService.searchCafeByOwner(ownerAuthUser, condition);
-//
-//    // then
-//    assertNotNull(result);
-//    assertThat(result.getStatus()).isEqualTo(HttpStatus.OK.value());
-//    verify(cafeRepository, times(1)).findAllByCafe(any(SearchCondition.class));
-//  }
-//
-//  @Test
-//  @DisplayName("사장님 카페 조회 실패 - 권한 없음")
-//  void searchCafeByOwner_forbidden() {
-//    // given
-//    SearchCondition condition = createSearchCondition();
-//
-//    // when
-//    BusinessException exception = assertThrows(BusinessException.class,
-//        () -> cafeService.searchCafeByOwner(authUser, condition));
-//
-//    // then
-//    assertEquals(ErrorCode.FORBIDDEN, exception.getErrorCode());
-//  }
-//}
-
 package com.sparta.kidscafe.domain.cafe.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.sparta.kidscafe.common.dto.AuthUser;
+import com.sparta.kidscafe.common.dto.PageResponseDto;
+import com.sparta.kidscafe.common.dto.ResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
 import com.sparta.kidscafe.common.enums.RoleType;
+import com.sparta.kidscafe.common.util.valid.CafeValidationCheck;
+import com.sparta.kidscafe.common.util.valid.UserValidationCheck;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeCreateRequestDto;
+import com.sparta.kidscafe.domain.cafe.dto.request.CafeSimpleRequestDto;
+import com.sparta.kidscafe.domain.cafe.dto.request.CafesSimpleCreateRequestDto;
+import com.sparta.kidscafe.domain.cafe.dto.response.CafeDetailResponseDto;
+import com.sparta.kidscafe.domain.cafe.dto.response.CafeResponseDto;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
+import com.sparta.kidscafe.domain.cafe.entity.CafeImage;
 import com.sparta.kidscafe.domain.cafe.repository.CafeImageRepository;
 import com.sparta.kidscafe.domain.cafe.repository.CafeRepository;
+import com.sparta.kidscafe.domain.cafe.repository.condition.CafeSearchCondition;
 import com.sparta.kidscafe.domain.fee.entity.Fee;
 import com.sparta.kidscafe.domain.fee.repository.FeeRepository;
 import com.sparta.kidscafe.domain.pricepolicy.entity.PricePolicy;
@@ -387,31 +31,25 @@ import com.sparta.kidscafe.domain.pricepolicy.repository.PricePolicyRepository;
 import com.sparta.kidscafe.domain.room.entity.Room;
 import com.sparta.kidscafe.domain.room.repository.RoomRepository;
 import com.sparta.kidscafe.domain.user.entity.User;
-import com.sparta.kidscafe.domain.user.repository.UserRepository;
-import com.sparta.kidscafe.domain.user.service.UserService;
 import com.sparta.kidscafe.dummy.DummyCafe;
+import com.sparta.kidscafe.dummy.DummyCafeImage;
 import com.sparta.kidscafe.dummy.DummyUser;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
 
 class CafeServiceTest {
 
   @InjectMocks
   private CafeService cafeService;
-
-  @Mock
-  private UserRepository userRepository;
 
   @Mock
   private CafeRepository cafeRepository;
@@ -429,7 +67,19 @@ class CafeServiceTest {
   private PricePolicyRepository pricePolicyRepository;
 
   @Mock
-  private CafeCreateRequestDto requestDto;
+  private CafeCreateRequestDto cafeCreateRequestDto;
+
+  @Mock
+  private CafesSimpleCreateRequestDto cafesSimpleCreateRequestDto;
+
+  @Mock
+  private CafeSimpleRequestDto cafeSimpleRequestDto;
+
+  @Mock
+  private UserValidationCheck userValidationCheck;
+
+  @Mock
+  private CafeValidationCheck cafeValidationCheck;
 
   @BeforeEach
   void setUp() {
@@ -445,51 +95,169 @@ class CafeServiceTest {
   void createCafeOwner_Success() {
     // given
     AuthUser authUser = createAuthUser(RoleType.OWNER);
-    User user = DummyUser.createDummyUser(RoleType.USER);
-    Cafe cafe = DummyCafe.createDummyCafe(user);
+    User user = DummyUser.createDummyUser(authUser.getRoleType());
+    Cafe cafe = DummyCafe.createDummyCafe(user, null);
 
-    when(requestDto.convertDtoToEntityByCafe(user)).thenReturn(cafe);
-    when(requestDto.convertDtoToEntityByRoom(cafe)).thenReturn(Collections.singletonList(mock(Room.class)));
-    when(requestDto.convertDtoToEntityByFee(cafe)).thenReturn(Collections.singletonList(mock(Fee.class)));
-    when(requestDto.convertDtoToEntityByPricePolicy(cafe)).thenReturn(Collections.singletonList(mock(PricePolicy.class)));
+    when(userValidationCheck.validMy(authUser.getId())).thenReturn(user);
+    when(cafeCreateRequestDto.convertDtoToEntityByCafe(user)).thenReturn(cafe);
+    when(cafeCreateRequestDto.convertDtoToEntityByRoom(cafe)).thenReturn(Collections.singletonList(mock(Room.class)));
+    when(cafeCreateRequestDto.convertDtoToEntityByFee(cafe)).thenReturn(Collections.singletonList(mock(Fee.class)));
+    when(cafeCreateRequestDto.convertDtoToEntityByPricePolicy(cafe)).thenReturn(Collections.singletonList(mock(PricePolicy.class)));
 
-    when(userRepository.findById(authUser.getId())).thenReturn(Optional.of(user));
+    when(userValidationCheck.validMy(authUser.getId())).thenReturn(user);
     when(cafeRepository.save(any(Cafe.class))).thenReturn(cafe);
 
     // when
-    StatusDto result = cafeService.createCafe(authUser, requestDto);
+    StatusDto result = cafeService.createCafe(authUser, cafeCreateRequestDto);
 
     // then
     assertEquals(HttpStatus.CREATED.value(), result.getStatus());
-    assertEquals("["+ cafe.getName() +"] 등록 성공", result.getMessage());
+    assertEquals("[" + cafe.getName() + "] 등록 성공", result.getMessage());
 
-    verify(userRepository).findById(authUser.getId());
+    verify(userValidationCheck).validMy(authUser.getId());
     verify(cafeRepository).save(any(Cafe.class));
-    verify(cafeImageRepository).findAllById(requestDto.getImages());
+    verify(cafeImageRepository).findAllById(cafeCreateRequestDto.getImages());
     verify(roomRepository).saveAll(any());
     verify(feeRepository).saveAll(any());
     verify(pricePolicyRepository).saveAll(any());
   }
 
-//  @Test
-//  void creatCafe_MultipleCafes_Success() {
-//    // Arrange
-//    AuthUser authUser = createAuthUser(RoleType.ADMIN);
-//    User user = DummyUser.createDummyUser(RoleType.ADMIN);
-//    List<Cafe> cafes = DummyCafe.createDummyCafes(user, 2);
-//
-//    when(userRepository.findById(authUser.getId())).thenReturn(java.util.Optional.of(user));
-//    when(cafesSimpleCreateRequestDto.convertDtoToEntity(user)).thenReturn(cafes);
-//
-//    // Act
-//    StatusDto result = cafeService.creatCafe(authUser, cafesSimpleCreateRequestDto);
-//
-//    // Assert
-//    assertEquals(HttpStatus.CREATED.value(), result.getStatus());
-//    assertEquals("카페 [2]개 등록 성공", result.getMessage());
-//
-//    verify(userRepository).findById(authUser.getId());
-//    verify(cafesSimpleCreateRequestDto).convertDtoToEntity(user);
-//    verify(cafeRepository).saveAll(cafes);
-//  }
+  @Test
+  @DisplayName("카페 등록 성공 - 관리자")
+  void creatCafe_MultipleCafes_Success() {
+    // given
+    AuthUser authUser = createAuthUser(RoleType.ADMIN);
+    User user = DummyUser.createDummyUser(authUser.getRoleType());
+    List<Cafe> cafes = DummyCafe.createDummyCafes(user, 2);
+
+    when(cafesSimpleCreateRequestDto.convertDtoToEntity(user)).thenReturn(cafes);
+    when(userValidationCheck.validMy(authUser.getId())).thenReturn(user);
+
+    // when
+    StatusDto result = cafeService.creatCafe(authUser, cafesSimpleCreateRequestDto);
+
+    // then
+    assertEquals(HttpStatus.CREATED.value(), result.getStatus());
+    assertEquals("카페 [2]개 등록 성공", result.getMessage());
+
+    verify(userValidationCheck).validMy(authUser.getId());
+    verify(cafesSimpleCreateRequestDto).convertDtoToEntity(user);
+    verify(cafeRepository).saveAll(cafes);
+  }
+
+  @Test
+  @DisplayName("카페 조회 성공")
+  void searchCafe_Success() {
+    // given
+    CafeSearchCondition condition = mock(CafeSearchCondition.class);
+    CafeResponseDto cafeResponseDto = new CafeResponseDto();
+    CafeResponseDto cafeResponseDto2 = new CafeResponseDto();
+    Page<CafeResponseDto> cafes = new PageImpl<>(List.of(cafeResponseDto, cafeResponseDto2));
+    when(cafeRepository.findAllByCafe(condition)).thenReturn(cafes);
+
+    // when
+    PageResponseDto<CafeResponseDto> result = cafeService.searchCafe(condition);
+
+    // than
+    assertEquals(HttpStatus.OK.value(), result.getStatus());
+    assertEquals("카페 조회 성공", result.getMessage());
+    assertEquals(2, result.getData().size());
+    verify(cafeRepository).findAllByCafe(condition);
+  }
+
+  @Test
+  @DisplayName("카페 상세 조회 성공")
+  void findCafe_Success() {
+    // given
+    Long cafeId = 1L;
+    CafeResponseDto cafeResponseDto = CafeResponseDto.builder().name("Test Cafe").build();
+    CafeDetailResponseDto cafeDetailResponseDto = new CafeDetailResponseDto();
+    cafeDetailResponseDto.setCafeInfo(cafeResponseDto);
+    when(cafeRepository.findCafeById(cafeId)).thenReturn(cafeResponseDto);
+
+    // when
+    ResponseDto<CafeDetailResponseDto> result = cafeService.findCafe(cafeId);
+
+    // then
+    assertEquals(HttpStatus.OK.value(), result.getStatus());
+    assertEquals("[Test Cafe] 상세 조회 성공", result.getMessage());
+    assertEquals("Test Cafe", result.getData().getName());
+    verify(cafeRepository).findCafeById(cafeId);
+  }
+
+  @Test
+  @DisplayName("카페 상세 조회 - 검색 결과가 없음")
+  void findCafe_NotFound() {
+    // given
+    Long cafeId = 1L;
+    when(cafeRepository.findCafeById(cafeId)).thenReturn(null);
+
+    // when
+    ResponseDto<CafeDetailResponseDto> result = cafeService.findCafe(cafeId);
+
+    // then
+    assertEquals(HttpStatus.OK.value(), result.getStatus());
+    assertEquals("조회 결과가 없습니다.", result.getMessage());
+    assertNull(result.getData());
+    verify(cafeRepository).findCafeById(cafeId);
+  }
+
+  @Test
+  @DisplayName("카페 수정 성공")
+  void updateCafe_Success() {
+    // given
+    Long cafeId = 2L;
+    AuthUser authUser = createAuthUser(RoleType.OWNER);
+    User user = DummyUser.createDummyUser(authUser.getRoleType());
+    Cafe cafe = DummyCafe.createDummyCafe(user, cafeId);
+    when(cafeValidationCheck.validMyCafe(cafeId, authUser.getId())).thenReturn(cafe);
+
+    // when
+    StatusDto result = cafeService.updateCafe(authUser, cafeId, cafeSimpleRequestDto);
+
+    // then
+    assertEquals(HttpStatus.OK.value(), result.getStatus());
+    assertEquals("[" + cafe.getName() + "] 수정 성공", result.getMessage());
+    verify(cafeValidationCheck).validMyCafe(cafeId, authUser.getId());
+  }
+
+  @Test
+  @DisplayName("카페 삭제 성공 - 사장님")
+  void deleteCafe_Success() {
+    // given
+    Long cafeId = 1L;
+    AuthUser authUser = createAuthUser(RoleType.OWNER);
+    User user = DummyUser.createDummyUser(authUser.getRoleType());
+    Cafe cafe = DummyCafe.createDummyCafe(user, cafeId);
+    List<CafeImage> cafeImages = DummyCafeImage.createDummyCafeImages(cafe, 2);
+
+    when(cafeValidationCheck.validMyCafe(cafeId, authUser.getId())).thenReturn(cafe);
+    when(cafeImageRepository.findAllByCafeId(cafeId)).thenReturn(cafeImages);
+
+    // when
+    cafeService.deleteCafe(authUser, cafeId);
+
+    // then
+    verify(cafeValidationCheck).validMyCafe(cafeId, authUser.getId());
+    verify(cafeRepository).delete(cafe);
+    verify(cafeImageRepository).findAllByCafeId(cafeId);
+  }
+
+  @Test
+  @DisplayName("카페 삭제 성공 - 관리자")
+  void deleteMultipleCafes_Success() {
+    // given
+    AuthUser authUser = createAuthUser(RoleType.OWNER);
+    User user = DummyUser.createDummyUser(authUser.getRoleType());
+    List<Long> cafeIds = List.of(1L, 2L);
+    List<Cafe> cafes = DummyCafe.createDummyCafes(user, cafeIds.size());
+    when(cafeRepository.findAllByUserIdAndIdIn(authUser.getId(), cafeIds)).thenReturn(cafes);
+
+    // when
+    cafeService.deleteCafe(authUser, cafeIds);
+
+    // then
+    verify(cafeRepository).findAllByUserIdAndIdIn(authUser.getId(), cafeIds);
+    verify(cafeRepository).deleteAll(cafes);
+  }
 }

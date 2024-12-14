@@ -109,7 +109,7 @@ public class CafeController {
   }
 
   @DeleteMapping("owners/cafes/{cafeId}")
-  public ResponseEntity<?> deleteCafe(
+  public ResponseEntity<Void> deleteCafe(
       @Auth AuthUser authUser,
       @PathVariable Long cafeId
   ) {
@@ -119,7 +119,7 @@ public class CafeController {
   }
 
   @DeleteMapping("admin/cafes")
-  public ResponseEntity<?> deleteCafe(
+  public ResponseEntity<Void> deleteCafe(
       @Auth AuthUser authUser,
       @RequestBody List<Long> cafes
   ) {

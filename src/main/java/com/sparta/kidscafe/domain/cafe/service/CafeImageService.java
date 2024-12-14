@@ -40,7 +40,7 @@ public class CafeImageService {
 
   @Transactional
   public void deleteImage(AuthUser authUser, CafeImageDeleteRequestDto requestDto) {
-    cafeValidationCheck.validMyCafe(authUser, requestDto.getCafeId());
+    cafeValidationCheck.validMyCafe(requestDto.getCafeId(), authUser.getId());
     List<CafeImage> deleteImages = cafeImageRepository.findAllById(requestDto.getImages());
     for (CafeImage deleteImage : deleteImages) {
       deleteImage.delete();

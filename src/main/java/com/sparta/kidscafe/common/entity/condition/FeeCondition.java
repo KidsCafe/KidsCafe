@@ -4,7 +4,7 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.sparta.kidscafe.common.enums.AgeGroup;
-import com.sparta.kidscafe.domain.cafe.repository.condition.CafeCafeSearchCondition;
+import com.sparta.kidscafe.domain.cafe.repository.condition.CafeSearchCondition;
 import com.sparta.kidscafe.domain.fee.entity.QFee;
 import java.util.Arrays;
 import org.springframework.stereotype.Component;
@@ -15,7 +15,7 @@ public class FeeCondition {
 
   private final QFee fee = new QFee("fee");
 
-  public Predicate ageGroup(CafeCafeSearchCondition condition) {
+  public Predicate ageGroup(CafeSearchCondition condition) {
     if (StringUtils.hasText(condition.getAgeGroup())) {
       return null;
     }

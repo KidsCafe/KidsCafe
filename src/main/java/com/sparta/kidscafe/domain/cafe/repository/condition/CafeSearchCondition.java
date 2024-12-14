@@ -6,7 +6,7 @@ import lombok.experimental.SuperBuilder;
 
 @Getter
 @SuperBuilder(builderMethodName = "createBuilder")
-public class CafeCafeSearchCondition extends CafeSearchPageCondition {
+public class CafeSearchCondition extends CafeSearchPageCondition {
 
   private String name;
   private String region;

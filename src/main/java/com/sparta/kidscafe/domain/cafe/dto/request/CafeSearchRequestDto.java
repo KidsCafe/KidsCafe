@@ -1,6 +1,6 @@
 package com.sparta.kidscafe.domain.cafe.dto.request;
 
-import com.sparta.kidscafe.domain.cafe.repository.condition.CafeCafeSearchCondition;
+import com.sparta.kidscafe.domain.cafe.repository.condition.CafeSearchCondition;
 import java.time.LocalTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -30,8 +30,8 @@ public class CafeSearchRequestDto extends CafeSearchPageRequestDto {
   private String closedAt;
   private Long userId;
 
-  public CafeCafeSearchCondition getSearchCondition() {
-    return CafeCafeSearchCondition.createBuilder()
+  public CafeSearchCondition getSearchCondition() {
+    return CafeSearchCondition.createBuilder()
         .name(name)
         .region(region)
         .size(size)
