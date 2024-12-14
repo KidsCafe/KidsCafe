@@ -1,10 +1,10 @@
 package com.sparta.kidscafe.domain.pricepolicy.repository;
 
-import com.sparta.kidscafe.domain.pricepolicy.dto.response.PricePolicyDto;
 import com.sparta.kidscafe.domain.pricepolicy.searchcondition.PricePolicySearchCondition;
+import java.util.List;
 
 public interface PricePolicyDslRepository {
-  PricePolicyDto findPricePolicyWithRoom(PricePolicySearchCondition condition);
+  List<Double> findPricePolicyWithRoom(PricePolicySearchCondition condition);
 
-  PricePolicyDto findPricePolicyWithFee(PricePolicySearchCondition condition);
+  List<Double> findPricePolicyWithFee(PricePolicySearchCondition condition);
 }

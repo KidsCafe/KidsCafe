@@ -28,8 +28,8 @@ public class ReservationDslRepositoryImpl implements ReservationDslRepository {
   private final QReservationDetail reservationDetail = QReservationDetail.reservationDetail;
 
   @Override
-  public Boolean isRoomAvailable(ReservationSearchCondition condition) {
-    return queryFactory
+  public boolean isRoomAvailable(ReservationSearchCondition condition) {
+    Boolean isRoomAvailable = queryFactory
         .select(reservationDetail
             .count
             .sum()
@@ -40,6 +40,8 @@ public class ReservationDslRepositoryImpl implements ReservationDslRepository {
         .leftJoin(cafe).on(cafe.id.eq(reservation.cafe.id))
         .where(isRoomAvailableMakeWhere(condition))
         .fetchOne();
+
+    return isRoomAvailable == null || isRoomAvailable;
   }
 
   private JPQLQuery<Integer> roomMaxCountQuery(ReservationSearchCondition condition) {

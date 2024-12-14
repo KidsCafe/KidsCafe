@@ -1,7 +1,5 @@
 package com.sparta.kidscafe.common.entity.condition;
 
-import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.sparta.kidscafe.common.enums.TargetType;
 import com.sparta.kidscafe.domain.pricepolicy.entity.QPricePolicy;
@@ -29,17 +27,11 @@ public class PricePolicyCondition {
     return pricePolicy.targetType.eq(targetType);
   }
 
-  public Predicate likeWorkDay(String dayType) {
+  public BooleanExpression likeWorkDay(String dayType) {
     if (StringUtils.hasText(dayType)) {
       return null;
     }
 
-    String[] workDays = dayType.split(", ");
-    BooleanBuilder innerBuilder = new BooleanBuilder();
-    for(String workDay : workDays) {
-      innerBuilder.or(pricePolicy.dayType.contains(workDay));
-    }
-
-    return innerBuilder.getValue();
+    return pricePolicy.dayType.contains(dayType);
   }
 }

@@ -231,3 +231,20 @@ where rd.reservation_id in (select re.id
 # 2. 방 번호
 # 3. 예매 시작 시간
 # 4. 예매 마감 시간
+
+# 적용되는 정책이 있는지
+select p.rate
+from fee f left join price_policy p on f.id = p.target_id
+where target_type = 'FEE'
+  and day_type like '%토%'
+  and target_id = 1;
+# 조건 변수
+# target type
+# 예약 날짜
+# targetId
+
+select p.rate
+from room r left join price_policy p on r.id = p.target_id
+where target_type = 'ROOM'
+  and day_type like '%토%'
+  and target_id = 1;

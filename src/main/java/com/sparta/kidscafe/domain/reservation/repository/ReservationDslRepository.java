@@ -4,5 +4,5 @@ import com.sparta.kidscafe.domain.reservation.repository.condition.ReservationSe
 
 public interface ReservationDslRepository {
 
-  Boolean isRoomAvailable(ReservationSearchCondition condition);
+  boolean isRoomAvailable(ReservationSearchCondition condition);
 }

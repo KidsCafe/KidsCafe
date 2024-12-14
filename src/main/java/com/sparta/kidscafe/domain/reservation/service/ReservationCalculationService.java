@@ -1,13 +1,14 @@
 package com.sparta.kidscafe.domain.reservation.service;
 
 import com.sparta.kidscafe.common.enums.TargetType;
-import com.sparta.kidscafe.domain.cafe.entity.Cafe;
-import com.sparta.kidscafe.domain.pricepolicy.dto.response.PricePolicyDto;
+import com.sparta.kidscafe.domain.fee.repository.FeeRepository;
 import com.sparta.kidscafe.domain.pricepolicy.repository.PricePolicyRepository;
 import com.sparta.kidscafe.domain.pricepolicy.searchcondition.PricePolicySearchCondition;
 import com.sparta.kidscafe.domain.reservation.entity.Reservation;
 import com.sparta.kidscafe.domain.reservation.entity.ReservationDetail;
-import com.sparta.kidscafe.domain.user.entity.User;
+import com.sparta.kidscafe.domain.room.repository.RoomRepository;
+import com.sparta.kidscafe.exception.BusinessException;
+import com.sparta.kidscafe.exception.ErrorCode;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,8 @@ import org.springframework.stereotype.Service;
 public class ReservationCalculationService {
 
   private final PricePolicyRepository pricePolicyRepository;
+  private final FeeRepository feeRepository;
+  private final RoomRepository roomRepository;
 
   public void calcReservation(
       Reservation reservation,
@@ -24,19 +27,23 @@ public class ReservationCalculationService {
     double totalPrice = 0;
     for (ReservationDetail reservationdetail : reservationDetails) {
       double price;
-      PricePolicyDto dto;
       PricePolicySearchCondition condition =
           PricePolicySearchCondition.create(reservation, reservationdetail);
 
+      List<Double> rates;
       if (reservationdetail.getTargetType().equals(TargetType.FEE)) {
-        dto = pricePolicyRepository.findPricePolicyWithFee(condition);
+        price = feeRepository.findById(condition.getTargetId())
+            .orElseThrow(() -> new BusinessException(ErrorCode.FEE_NOT_FOUND)).getFee();
+        rates = pricePolicyRepository.findPricePolicyWithFee(condition);
       } else {
-        dto = pricePolicyRepository.findPricePolicyWithRoom(condition);
+        price = roomRepository.findById(condition.getTargetId())
+            .orElseThrow(() -> new BusinessException(ErrorCode.ROOM_NOT_FOUND)).getPrice();
+        rates = pricePolicyRepository.findPricePolicyWithRoom(condition);
       }
 
-      price = reservationdetail.getPrice();
-      if(dto != null) {
-        price *=  dto.getRate();
+      price = reservationdetail.getPrice() * reservationdetail.getCount();
+      for(Double rate : rates) {
+        price *= rate;
       }
 
       reservationdetail.updatePrice((int) price);
