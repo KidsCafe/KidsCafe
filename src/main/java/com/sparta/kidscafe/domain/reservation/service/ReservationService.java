@@ -96,6 +96,7 @@ public class ReservationService {
             .cafeName(reservation.getCafe().getName())
             .startedAt(reservation.getStartedAt())
             .finishedAt(reservation.getFinishedAt())
+            .status(String.valueOf(reservation.getStatus()))
             .totalPrice(reservation.getTotalPrice())
             .build()
     );
@@ -124,6 +125,7 @@ public class ReservationService {
             .cafeName(reservation.getCafe().getName())
             .startedAt(reservation.getStartedAt())
             .finishedAt(reservation.getFinishedAt())
+            .status(String.valueOf(reservation.getStatus()))
             .totalPrice(reservation.getTotalPrice())
             .build()
     );
