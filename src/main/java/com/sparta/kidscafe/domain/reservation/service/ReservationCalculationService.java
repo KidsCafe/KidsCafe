@@ -9,6 +9,7 @@ import com.sparta.kidscafe.domain.reservation.entity.ReservationDetail;
 import com.sparta.kidscafe.domain.room.repository.RoomRepository;
 import com.sparta.kidscafe.exception.BusinessException;
 import com.sparta.kidscafe.exception.ErrorCode;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,7 +31,7 @@ public class ReservationCalculationService {
       PricePolicySearchCondition condition =
           PricePolicySearchCondition.create(reservation, reservationdetail);
 
-      List<Double> rates;
+      List<Double> rates = new ArrayList<>();
       if (reservationdetail.getTargetType().equals(TargetType.FEE)) {
         price = feeRepository.findById(condition.getTargetId())
             .orElseThrow(() -> new BusinessException(ErrorCode.FEE_NOT_FOUND)).getFee();
@@ -42,7 +43,7 @@ public class ReservationCalculationService {
       }
 
       price = reservationdetail.getPrice() * reservationdetail.getCount();
-      for(Double rate : rates) {
+      for (Double rate : rates) {
         price *= rate;
       }
 
