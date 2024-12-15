@@ -1,19 +1,31 @@
-package com.sparta.kidscafe.domain.cafe.dto.request.create;
+package com.sparta.kidscafe.domain.cafe.dto.request;
 
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
+import com.sparta.kidscafe.domain.fee.dto.request.FeeCreateRequestDto;
+import com.sparta.kidscafe.domain.fee.entity.Fee;
+import com.sparta.kidscafe.domain.pricepolicy.dto.request.PricePolicyCreateRequestDto;
+import com.sparta.kidscafe.domain.pricepolicy.entity.PricePolicy;
+import com.sparta.kidscafe.domain.room.dto.request.RoomCreateRequestDto;
+import com.sparta.kidscafe.domain.room.entity.Room;
 import com.sparta.kidscafe.domain.user.entity.User;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Data
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CafeSimpleCreateRequestDto {
+public class CafeCreateRequestDto {
+
   @NotBlank(message = "카페 이름을 입력해주세요.")
   private String name;
 
@@ -39,6 +51,18 @@ public class CafeSimpleCreateRequestDto {
   private LocalTime openedAt;
   private LocalTime closedAt;
 
+  @Valid
+  private List<Long> images;
+
+  @Valid
+  private List<RoomCreateRequestDto> rooms;
+
+  @Valid
+  private List<FeeCreateRequestDto> fees;
+
+  @Valid
+  private List<PricePolicyCreateRequestDto> pricePolicies;
+
   public Cafe convertDtoToEntityByCafe(User user) {
     return Cafe.builder()
         .user(user)
@@ -54,5 +78,26 @@ public class CafeSimpleCreateRequestDto {
         .openedAt(openedAt)
         .closedAt(closedAt)
         .build();
+  }
+
+  public List<Room> convertDtoToEntityByRoom(Cafe cafe) {
+    List<Room> cafeRooms = new ArrayList<>();
+    for(RoomCreateRequestDto dto : rooms)
+      cafeRooms.add(dto.convertDtoToEntity(cafe));
+    return cafeRooms;
+  }
+
+  public List<Fee> convertDtoToEntityByFee(Cafe cafe) {
+    List<Fee> cafeFees = new ArrayList<>();
+    for(FeeCreateRequestDto dto : fees)
+      cafeFees.add(dto.convertDtoToEntity(cafe));
+    return cafeFees;
+  }
+
+  public List<PricePolicy> convertDtoToEntityByPricePolicy(Cafe cafe) {
+    List<PricePolicy> cafePricePolicies = new ArrayList<>();
+    for(PricePolicyCreateRequestDto dto : pricePolicies)
+      cafePricePolicies.add(dto.convertDtoToEntity(cafe));
+    return cafePricePolicies;
   }
 }

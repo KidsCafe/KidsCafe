@@ -33,14 +33,13 @@ public class ReviewController {
 
   private final ReviewService reviewService;
 
-  @PostMapping(value = "/cafes/{cafeId}/reviews",consumes = MediaType.MULTIPART_FORM_DATA_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
+  @PostMapping( "/cafes/{cafeId}/reviews")
     public ResponseEntity<StatusDto> createReview (
         @Auth AuthUser authUser,
         @Valid @RequestPart ReviewCreateRequestDto request,
-        @RequestPart List<MultipartFile> reviewImages,
         @PathVariable Long cafeId
   ) {
-    StatusDto response = reviewService.createReview(authUser, request, reviewImages, cafeId);
+    StatusDto response = reviewService.createReview(authUser, request, cafeId);
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 

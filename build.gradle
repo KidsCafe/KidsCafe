@@ -76,7 +76,7 @@ test {
     systemProperty 'spring.profiles.active', 'test'
     def isBuild = project.hasProperty('excludeTests')
     useJUnitPlatform() { // JUnit 플랫폼 사용
-        if(isBuild) {
+        if (isBuild) {
             excludeTags('dummy-test')
         }
     }

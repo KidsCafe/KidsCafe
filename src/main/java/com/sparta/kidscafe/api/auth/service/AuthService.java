@@ -1,7 +1,5 @@
 package com.sparta.kidscafe.api.auth.service;
 
-import org.springframework.stereotype.Service;
-
 import com.sparta.kidscafe.api.auth.controller.dto.SigninRequestDto;
 import com.sparta.kidscafe.api.auth.controller.dto.SigninResponseDto;
 import com.sparta.kidscafe.api.auth.controller.dto.SignupRequestDto;
@@ -13,8 +11,9 @@ import com.sparta.kidscafe.domain.user.entity.User;
 import com.sparta.kidscafe.domain.user.repository.UserRepository;
 import com.sparta.kidscafe.exception.BusinessException;
 import com.sparta.kidscafe.exception.ErrorCode;
-
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -40,13 +39,14 @@ public class AuthService {
         userRepository.save(user);
     }
 
-    public SigninResponseDto signin(SigninRequestDto requestDto) {
+    public SigninResponseDto signin(HttpServletResponse res, SigninRequestDto requestDto) {
         User user = userRepository.findByEmail(requestDto.email())
             .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
         if(!passwordEncoder.matches(requestDto.password(), user.getPassword())){
             throw new BusinessException(ErrorCode.WRONG_PASSWORD);
         }
         String accessToken = jwtUtil.generateAccessToken(user);
+        res.addHeader("Authorization", accessToken);
         return new SigninResponseDto(accessToken);
     }
 }

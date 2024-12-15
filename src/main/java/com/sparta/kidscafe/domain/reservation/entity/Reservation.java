@@ -2,10 +2,15 @@ package com.sparta.kidscafe.domain.reservation.entity;
 
 import com.sparta.kidscafe.common.entity.Timestamped;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
+import com.sparta.kidscafe.domain.reservation.enums.ReservationStatus;
 import com.sparta.kidscafe.domain.user.entity.User;
+import com.sparta.kidscafe.exception.BusinessException;
+import com.sparta.kidscafe.exception.ErrorCode;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,15 +25,16 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Where;
 
 @Getter
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@Where(clause = "is_deleted = false")
 @Entity
 @Table(name = "reservation")
 public class Reservation extends Timestamped {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -41,6 +47,10 @@ public class Reservation extends Timestamped {
   @JoinColumn(name = "user_id")
   private User user;
 
+  @Getter
+  @Enumerated(EnumType.STRING)
+  private ReservationStatus status;
+
   @Column(updatable = false)
   private LocalDateTime startedAt;
 
@@ -50,11 +60,57 @@ public class Reservation extends Timestamped {
   @Column(updatable = false)
   private int totalPrice;
 
+  private boolean isDeleted;
+
+  private boolean isPaymentConfirmed;
+
   @Builder.Default
   @OneToMany(mappedBy = "reservation", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
   private List<ReservationDetail> reservationDetails = new ArrayList<>();
 
   public void updateTotalPrice(int price) {
     totalPrice = price;
+  }
+
+  public Reservation() {
+    this.status = ReservationStatus.PENDING;
+    this.isDeleted = false;
+    this.isPaymentConfirmed = false;
+  }
+
+  public void approve() {
+    if (this.status != ReservationStatus.PENDING) {
+      throw new BusinessException(ErrorCode.INVALID_STATUS_CHANGE);
+    }
+    this.status = ReservationStatus.APPROVED;
+  }
+
+  public void cancelByUser() {
+    if (this.status != ReservationStatus.PENDING) {
+      throw new BusinessException(ErrorCode.INVALID_STATUS_CHANGE);
+    }
+    this.status = ReservationStatus.CANCELLED_BY_USER;
+    this.isDeleted = true;
+  }
+
+  public void cancelByOwner() {
+    if (this.status == ReservationStatus.COMPLETED) {
+      throw new BusinessException(ErrorCode.INVALID_STATUS_CHANGE);
+    }
+    this.status = ReservationStatus.CANCELLED_BY_OWNER;
+    this.isDeleted = true;
+  }
+
+  public Reservation confirmPayment() {
+    if (this.status != ReservationStatus.APPROVED) {
+      throw new BusinessException(ErrorCode.INVALID_STATUS_CHANGE);
+    }
+    this.isPaymentConfirmed = true;
+    this.status = ReservationStatus.COMPLETED;
+    return this;
+  }
+
+  public boolean isDeleted() {
+    return isDeleted;
   }
 }

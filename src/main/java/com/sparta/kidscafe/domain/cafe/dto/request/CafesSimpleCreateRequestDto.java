@@ -1,4 +1,4 @@
-package com.sparta.kidscafe.domain.cafe.dto.request.create;
+package com.sparta.kidscafe.domain.cafe.dto.request;
 
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
 import com.sparta.kidscafe.domain.user.entity.User;
@@ -15,11 +15,11 @@ import lombok.NoArgsConstructor;
 public class CafesSimpleCreateRequestDto {
 
   @Valid
-  private List<CafeSimpleCreateRequestDto> cafes;
+  private List<CafeSimpleRequestDto> cafes;
 
   public List<Cafe> convertDtoToEntity(User user) {
     List<Cafe> cafes = new ArrayList<>();
-    for (CafeSimpleCreateRequestDto cafeDto : this.cafes) {
+    for (CafeSimpleRequestDto cafeDto : this.cafes) {
       Cafe cafe = cafeDto.convertDtoToEntityByCafe(user);
       cafes.add(cafe);
     }

@@ -1,15 +1,22 @@
 package com.sparta.kidscafe.domain.cafe.service;
 
+import com.sparta.kidscafe.common.dto.AuthUser;
+import com.sparta.kidscafe.common.dto.ListResponseDto;
+import com.sparta.kidscafe.common.enums.ImageType;
 import com.sparta.kidscafe.common.util.FileUtil;
-import com.sparta.kidscafe.domain.cafe.dto.request.modify.CafeImageRequestDto;
-import com.sparta.kidscafe.domain.cafe.dto.request.modify.CafeModifyRequestDto;
+import com.sparta.kidscafe.domain.cafe.dto.request.CafeImageDeleteRequestDto;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
 import com.sparta.kidscafe.domain.cafe.entity.CafeImage;
 import com.sparta.kidscafe.domain.cafe.repository.CafeImageRepository;
+import com.sparta.kidscafe.domain.cafe.repository.CafeRepository;
+import com.sparta.kidscafe.domain.image.dto.ImageResponseDto;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -18,59 +25,58 @@ public class CafeImageService {
 
   @Value("${filePath.cafe}")
   private String defaultImagePath;
-
+  private final CafeRepository cafeRepository;
   private final CafeImageRepository cafeImageRepository;
   private final FileUtil fileUtil;
 
-  public List<CafeImage> searchCafeImage(Long cafeId) {
-    return cafeImageRepository.findAllByCafeId(cafeId);
+  @Transactional
+  public ListResponseDto<ImageResponseDto> uploadCafeImage(AuthUser authUser,
+      Long cafeId, List<MultipartFile> images) {
+    List<ImageResponseDto> responseImages = saveCafeImage(authUser.getId(), cafeId, images);
+    return ListResponseDto.success(
+        responseImages,
+        HttpStatus.CREATED,
+        "이미지 [" + images.size() + "]장 등록 성공");
   }
 
-  public void updateCafeImage(Cafe cafe, List<MultipartFile> newCafeImageFiles,
-      CafeModifyRequestDto requestDto) {
-    List<CafeImage> cafeImages = cafe.getCafeImages();
-    for (CafeImageRequestDto cafeImageRequestDto : requestDto.getImages()) {
-      if (cafeImageRequestDto.isCreate()) {
-        MultipartFile newImageFile = cafeImageRequestDto.getMatchImageByFile(newCafeImageFiles);
-        saveCafeImage(cafe, newImageFile);
-      } else if (cafeImageRequestDto.isUpdate()) {
-        MultipartFile newImageFile = cafeImageRequestDto.getMatchImageByFile(newCafeImageFiles);
-        CafeImage oriImage = cafeImageRequestDto.getMatchImageByEntity(cafeImages);
-        updateCafeImage(cafe, oriImage, newImageFile);
-      } else {
-        CafeImage deleteImage = cafeImageRequestDto.getMatchImageByEntity(cafeImages);
-        deleteCafeImage(cafeImages, deleteImage);
-      }
+  @Transactional
+  public void deleteImage(AuthUser authUser, CafeImageDeleteRequestDto requestDto) {
+    Long cafeId = requestDto.getCafeId();
+    Long userId = authUser.getId();
+
+    CafeValidationCheck.validNotUser(authUser);
+    Cafe cafe = cafeRepository.findByIdAndUserId(cafeId, userId).orElse(null);
+    CafeValidationCheck.validMyCafe(authUser, cafe);
+
+    List<CafeImage> deleteImages = cafeImageRepository.findAllById(requestDto.getImages());
+    for (CafeImage deleteImage : deleteImages) {
+      deleteImage.delete();
     }
   }
 
-  public void saveCafeImages(Cafe cafe, List<MultipartFile> images) {
+  private List<ImageResponseDto> saveCafeImage(Long userId, Long cafeId,
+      List<MultipartFile> images) {
+    List<ImageResponseDto> responseImages = new ArrayList<>();
     for (MultipartFile image : images) {
-      saveCafeImage(cafe, image);
+      ImageResponseDto imageResponseDto = uploadCafeImage(userId, image);
+      saveCafeImage(imageResponseDto.getImagePath(), cafeId);
+      responseImages.add(imageResponseDto);
     }
+    return responseImages;
   }
 
-  private void saveCafeImage(Cafe cafe, MultipartFile image) {
-    String dirPath = fileUtil.makeDirectory(defaultImagePath, cafe.getId());
-    String imagePath = fileUtil.makeFileName(dirPath, cafe.getId(), image);
+  private ImageResponseDto uploadCafeImage(Long userId, MultipartFile image) {
+    String dirPath = fileUtil.makeDirectory(defaultImagePath, ImageType.CAFE, userId);
+    String imagePath = fileUtil.makeFileName(dirPath, image);
+    fileUtil.uploadImage(imagePath, image);
+    return new ImageResponseDto(imagePath);
+  }
+
+  private void saveCafeImage(String imagePath, Long cafeId) {
     CafeImage cafeImage = CafeImage.builder()
-        .cafe(cafe)
+        .cafeId(cafeId)
         .imagePath(imagePath)
         .build();
     cafeImageRepository.save(cafeImage);
-    fileUtil.uploadImage(imagePath, image);
-  }
-
-  private void updateCafeImage(Cafe cafe, CafeImage oriImage, MultipartFile updateImage) {
-    String dirPath = fileUtil.makeDirectory(defaultImagePath, cafe.getId());
-    String newImagePath = fileUtil.makeFileName(dirPath, cafe.getId(), updateImage);
-    String oriImagePath = oriImage.getImagePath();
-    oriImage.update(newImagePath);
-    fileUtil.updateImage(oriImagePath, newImagePath, updateImage);
-  }
-
-  private void deleteCafeImage(List<CafeImage> cafeImages, CafeImage deleteImage) {
-    cafeImages.remove(deleteImage);
-    fileUtil.deleteImage(deleteImage.getImagePath());
   }
 }

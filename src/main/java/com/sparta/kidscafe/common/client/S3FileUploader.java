@@ -5,16 +5,18 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @Configuration
 public class S3FileUploader {
 
   private final AmazonS3Client amazonS3Client;
   private final String bucket;
-
 
   public S3FileUploader(
       AmazonS3Client amazonS3Client,
@@ -43,6 +45,18 @@ public class S3FileUploader {
       return fileUrls;
     } catch (IOException e) {
       throw new IllegalArgumentException("FILE_UPLOAD_FAILED");
+    }
+  }
+
+  public void deleteFile(String uploadFilePath) {
+
+    try {
+      boolean isObjectExist = amazonS3Client.doesObjectExist(bucket, uploadFilePath);
+      if (isObjectExist) {
+        amazonS3Client.deleteObject(bucket, uploadFilePath);
+      }
+    } catch (Exception e) {
+      log.error(e.getMessage());
     }
   }
 }
