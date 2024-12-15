@@ -9,7 +9,7 @@ import java.util.List;
 
 public class DummyCafe {
 
-  public static Cafe createDummyCafe(User owner) {
+  public static Cafe createDummyCafe(User owner, Long cafeId) {
     String randomCafeName = TestUtil.getRandomString(10);
     String region = "부산광역시";
     String address = "대한민국 어딘가";
@@ -22,6 +22,7 @@ public class DummyCafe {
     LocalTime randomOpenedAt = TestUtil.getRandomLocalTime(5, 12);
     LocalTime randomClosedAt = TestUtil.getRandomLocalTime(6, 24);
     return Cafe.builder()
+        .id(cafeId)
         .user(owner)
         .name(randomCafeName)
         .region(region)
@@ -40,7 +41,7 @@ public class DummyCafe {
   public static List<Cafe> createDummyCafes(User owner, int size) {
     List<Cafe> cafes = new ArrayList<>();
     for(int idx = 0; idx < size; idx++)
-      cafes.add(createDummyCafe(owner));
+      cafes.add(createDummyCafe(owner, null));
     return cafes;
   }
 }

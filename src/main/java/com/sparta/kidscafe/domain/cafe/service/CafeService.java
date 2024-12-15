@@ -4,16 +4,18 @@ import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.PageResponseDto;
 import com.sparta.kidscafe.common.dto.ResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
+import com.sparta.kidscafe.common.util.valid.CafeValidationCheck;
+import com.sparta.kidscafe.common.util.valid.UserValidationCheck;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeCreateRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeSimpleRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafesSimpleCreateRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeDetailResponseDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeResponseDto;
-import com.sparta.kidscafe.domain.cafe.dto.searchCondition.SearchCondition;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
 import com.sparta.kidscafe.domain.cafe.entity.CafeImage;
 import com.sparta.kidscafe.domain.cafe.repository.CafeImageRepository;
 import com.sparta.kidscafe.domain.cafe.repository.CafeRepository;
+import com.sparta.kidscafe.domain.cafe.repository.condition.CafeSearchCondition;
 import com.sparta.kidscafe.domain.fee.entity.Fee;
 import com.sparta.kidscafe.domain.fee.repository.FeeRepository;
 import com.sparta.kidscafe.domain.pricepolicy.entity.PricePolicy;
@@ -40,12 +42,12 @@ public class CafeService {
   private final RoomRepository roomRepository;
   private final FeeRepository feeRepository;
   private final PricePolicyRepository pricePolicyRepository;
-  private final UserRepository userRepository;
+  private final UserValidationCheck userValidationCheck;
+  private final CafeValidationCheck cafeValidationCheck;
 
   @Transactional
   public StatusDto createCafe(AuthUser authUser, CafeCreateRequestDto requestDto) {
-    CafeValidationCheck.validOwner(authUser);
-    User user = findByUserId(authUser.getId());
+    User user = userValidationCheck.validMy(authUser.getId());
     Cafe cafe = saveCafe(requestDto, user);
     saveCafeImage(cafe, requestDto.getImages());
     saveCafeDetailInfo(requestDto, cafe);
@@ -56,8 +58,7 @@ public class CafeService {
   }
 
   public StatusDto creatCafe(AuthUser authUser, CafesSimpleCreateRequestDto requestDto) {
-    CafeValidationCheck.validAdmin(authUser);
-    User user = findByUserId(authUser.getId());
+    User user = userValidationCheck.validMy(authUser.getId());
     List<Cafe> cafes = requestDto.convertDtoToEntity(user);
     cafeRepository.saveAll(cafes);
     return createStatusDto(
@@ -66,19 +67,7 @@ public class CafeService {
     );
   }
 
-  public PageResponseDto<CafeResponseDto> searchCafeByAdmin(AuthUser authUser,
-      SearchCondition condition) {
-    CafeValidationCheck.validAdmin(authUser);
-    return searchCafe(condition);
-  }
-
-  public PageResponseDto<CafeResponseDto> searchCafeByOwner(AuthUser authUser,
-      SearchCondition condition) {
-    CafeValidationCheck.validOwner(authUser);
-    return searchCafe(condition);
-  }
-
-  public PageResponseDto<CafeResponseDto> searchCafe(SearchCondition condition) {
+  public PageResponseDto<CafeResponseDto> searchCafe(CafeSearchCondition condition) {
     Page<CafeResponseDto> cafes = cafeRepository.findAllByCafe(condition);
     return PageResponseDto.success(
         cafes,
@@ -100,9 +89,7 @@ public class CafeService {
 
   @Transactional
   public StatusDto updateCafe(AuthUser authUser, Long cafeId, CafeSimpleRequestDto requestDto) {
-    CafeValidationCheck.validOwner(authUser);
-    Cafe cafe = findByCafe(cafeId, authUser.getId());
-    CafeValidationCheck.validMyCafe(authUser, cafe);
+    Cafe cafe = cafeValidationCheck.validMyCafe(cafeId, authUser.getId());
     cafe.update(requestDto);
     return createStatusDto(
         HttpStatus.OK,
@@ -112,10 +99,8 @@ public class CafeService {
 
   @Transactional
   public void deleteCafe(AuthUser authUser, Long cafeId) {
-    CafeValidationCheck.validOwner(authUser);
-    Cafe cafe = findByCafe(cafeId, authUser.getId());
+    Cafe cafe = cafeValidationCheck.validMyCafe(cafeId, authUser.getId());
     cafeRepository.delete(cafe);
-
     List<CafeImage> cafeImages = cafeImageRepository.findAllByCafeId(cafeId);
     for (CafeImage cafeImage : cafeImages) {
       cafeImage.delete();
@@ -124,19 +109,8 @@ public class CafeService {
 
   @Transactional
   public void deleteCafe(AuthUser authUser, List<Long> cafeIds) {
-    CafeValidationCheck.validAdmin(authUser);
     List<Cafe> cafes = cafeRepository.findAllByUserIdAndIdIn(authUser.getId(), cafeIds);
     cafeRepository.deleteAll(cafes);
-  }
-
-  private User findByUserId(Long userId) {
-    return userRepository.findById(userId)
-        .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
-  }
-
-  private Cafe findByCafe(Long cafeId, Long userId) {
-    return cafeRepository.findByIdAndUserId(cafeId, userId)
-        .orElseThrow(() -> new BusinessException(ErrorCode.CAFE_NOT_FOUND));
   }
 
   public void saveCafeImage(Cafe cafe, List<Long> images) {

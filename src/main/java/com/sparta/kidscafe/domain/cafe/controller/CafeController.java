@@ -5,6 +5,7 @@ import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.PageResponseDto;
 import com.sparta.kidscafe.common.dto.ResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
+import com.sparta.kidscafe.common.util.valid.AuthValidationCheck;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeCreateRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeSearchRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeSimpleRequestDto;
@@ -38,6 +39,7 @@ public class CafeController {
       @Auth AuthUser authUser,
       @Valid @RequestBody CafeCreateRequestDto requestDto
   ) {
+    AuthValidationCheck.validOwner(authUser);
     return ResponseEntity
         .status(HttpStatus.CREATED)
         .body(cafeService.createCafe(authUser, requestDto));
@@ -48,6 +50,7 @@ public class CafeController {
       @Auth AuthUser authUser,
       @Valid @RequestBody CafesSimpleCreateRequestDto requestDto
   ) {
+    AuthValidationCheck.validAdmin(authUser);
     return ResponseEntity
         .status(HttpStatus.CREATED)
         .body(cafeService.creatCafe(authUser, requestDto));
@@ -67,9 +70,10 @@ public class CafeController {
       @Auth AuthUser authUser,
       @RequestBody CafeSearchRequestDto requestDto
   ) {
+    AuthValidationCheck.validOwner(authUser);
     return ResponseEntity
         .status(HttpStatus.OK)
-        .body(cafeService.searchCafeByOwner(authUser, requestDto.getSearchCondition()));
+        .body(cafeService.searchCafe(requestDto.getSearchCondition()));
   }
 
   @GetMapping("admin/cafes")
@@ -77,9 +81,10 @@ public class CafeController {
       @Auth AuthUser authUser,
       @RequestBody CafeSearchRequestDto requestDto
   ) {
+    AuthValidationCheck.validAdmin(authUser);
     return ResponseEntity
         .status(HttpStatus.OK)
-        .body(cafeService.searchCafeByAdmin(authUser, requestDto.getSearchCondition()));
+        .body(cafeService.searchCafe(requestDto.getSearchCondition()));
   }
 
   @GetMapping("/cafes/{cafeId}")
@@ -97,25 +102,28 @@ public class CafeController {
       @PathVariable Long cafeId,
       @Valid @RequestBody CafeSimpleRequestDto requestDto
   ) {
+    AuthValidationCheck.validOwner(authUser);
     return ResponseEntity
         .status(HttpStatus.OK)
         .body(cafeService.updateCafe(authUser, cafeId, requestDto));
   }
 
   @DeleteMapping("owners/cafes/{cafeId}")
-  public ResponseEntity<?> deleteCafe(
+  public ResponseEntity<Void> deleteCafe(
       @Auth AuthUser authUser,
       @PathVariable Long cafeId
   ) {
+    AuthValidationCheck.validOwner(authUser);
     cafeService.deleteCafe(authUser, cafeId);
     return ResponseEntity.noContent().build();
   }
 
   @DeleteMapping("admin/cafes")
-  public ResponseEntity<?> deleteCafe(
+  public ResponseEntity<Void> deleteCafe(
       @Auth AuthUser authUser,
       @RequestBody List<Long> cafes
   ) {
+    AuthValidationCheck.validAdmin(authUser);
     cafeService.deleteCafe(authUser, cafes);
     return ResponseEntity.noContent().build();
   }

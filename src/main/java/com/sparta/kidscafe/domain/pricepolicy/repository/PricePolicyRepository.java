@@ -4,7 +4,7 @@ import com.sparta.kidscafe.domain.pricepolicy.entity.PricePolicy;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface PricePolicyRepository extends JpaRepository<PricePolicy, Long> {
+public interface PricePolicyRepository extends JpaRepository<PricePolicy, Long>, PricePolicyDslRepository {
 
   List<PricePolicy> findAllByCafeId(Long cafeId);
 
