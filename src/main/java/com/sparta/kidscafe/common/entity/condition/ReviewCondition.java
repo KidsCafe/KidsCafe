@@ -1,7 +1,7 @@
-package com.sparta.kidscafe.domain.cafe.repository.condition;
+package com.sparta.kidscafe.common.entity.condition;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.sparta.kidscafe.domain.cafe.dto.searchCondition.SearchCondition;
+import com.sparta.kidscafe.domain.cafe.repository.condition.CafeSearchCondition;
 import com.sparta.kidscafe.domain.review.entity.QReview;
 import org.springframework.stereotype.Component;
 
@@ -10,7 +10,7 @@ public class ReviewCondition {
 
   private final QReview review = QReview.review;
 
-  public BooleanExpression betweenAvgStar(SearchCondition condition) {
+  public BooleanExpression betweenAvgStar(CafeSearchCondition condition) {
     if(condition.getMinStar() == null || condition.getMaxStar() == null) {
       return null;
     }

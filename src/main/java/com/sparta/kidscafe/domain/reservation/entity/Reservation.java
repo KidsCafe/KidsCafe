@@ -109,8 +109,4 @@ public class Reservation extends Timestamped {
     this.status = ReservationStatus.COMPLETED;
     return this;
   }
-
-  public boolean isDeleted() {
-    return isDeleted;
-  }
 }
