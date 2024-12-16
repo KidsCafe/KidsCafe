@@ -19,7 +19,6 @@ public class ReservationResponseDto {
   private Long cafeId;
   private String userName;
   private String cafeName;
-  private String roomName;
   private LocalDateTime startedAt;
   private LocalDateTime finishedAt;
   private int totalPrice;
@@ -33,6 +32,7 @@ public class ReservationResponseDto {
   public static class ReservationDetailResponseDto {
     private TargetType targetType;
     private Long targetId;
+    private String targetName;
     private int price;
     private Long count;
   }

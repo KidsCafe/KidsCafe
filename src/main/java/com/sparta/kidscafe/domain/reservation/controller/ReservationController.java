@@ -3,6 +3,7 @@ package com.sparta.kidscafe.domain.reservation.controller;
 import com.sparta.kidscafe.common.annotation.Auth;
 import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.PageResponseDto;
+import com.sparta.kidscafe.common.dto.ResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
 import com.sparta.kidscafe.common.util.valid.AuthValidationCheck;
 import com.sparta.kidscafe.domain.reservation.dto.request.ReservationCreateRequestDto;
@@ -60,6 +61,24 @@ public class ReservationController {
       @RequestParam(defaultValue = "10") int size) {
     PageResponseDto<ReservationResponseDto> response = reservationService.getReservationsByOwner(
         authUser, cafeId, page, size);
+    return ResponseEntity.ok(response);
+  }
+
+  // 예약 상세 조회(User용)
+  @GetMapping("/users/reservations/{reservationId}")
+  public ResponseEntity<ResponseDto<ReservationResponseDto>> getReservationDetailByUser(
+      @Auth AuthUser authUser,
+      @PathVariable Long reservationId) {
+    ResponseDto<ReservationResponseDto> response = reservationService.getReservationDetailByUser(authUser, reservationId);
+    return ResponseEntity.ok(response);
+  }
+
+  // 예약 상세 조회(Owner용)
+  @GetMapping("/owners/reservations/{reservationId}")
+  public ResponseEntity<ResponseDto<ReservationResponseDto>> getReservationDetailByOwner(
+      @Auth AuthUser authUser,
+      @PathVariable Long reservationId) {
+    ResponseDto<ReservationResponseDto> response = reservationService.getReservationDetailByOwner(authUser, reservationId);
     return ResponseEntity.ok(response);
   }
 
