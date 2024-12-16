@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public enum ReservationStatus {
   PENDING(false, true, true),
-  APPROVED(false, true, false),
+  APPROVED(false, true, true),
   COMPLETED(false, false, false),
   CANCELLED_BY_USER(true, false, false),
   CANCELLED_BY_OWNER(true, false, false),
@@ -13,8 +13,6 @@ public enum ReservationStatus {
 
   private final boolean isCancelled;
   private final boolean canBeCancelledByUser;
-
-  @Getter
   private final boolean canBeCancelledByOwner;
 
   ReservationStatus(boolean isCancelled, boolean canBeCancelledByUser,

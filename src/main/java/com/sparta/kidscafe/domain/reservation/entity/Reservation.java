@@ -98,6 +98,9 @@ public class Reservation extends Timestamped {
   }
 
   public void cancelByOwner() {
+    if (this.status != ReservationStatus.COMPLETED) {
+      throw new BusinessException(ErrorCode.INVALID_STATUS);
+    }
     this.status = ReservationStatus.CANCELLED_BY_OWNER;
     this.isDeleted = true;
   }
