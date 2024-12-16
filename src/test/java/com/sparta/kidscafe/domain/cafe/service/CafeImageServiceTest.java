@@ -13,7 +13,7 @@ import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.ListResponseDto;
 import com.sparta.kidscafe.common.enums.ImageType;
 import com.sparta.kidscafe.common.enums.RoleType;
-import com.sparta.kidscafe.common.util.FileUtil;
+import com.sparta.kidscafe.common.util.LocalFileStorageUtil;
 import com.sparta.kidscafe.common.util.valid.CafeValidationCheck;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeImageDeleteRequestDto;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
@@ -50,17 +50,17 @@ public class CafeImageServiceTest {
   private CafeImageRepository cafeImageRepository;
 
   @Mock
-  private FileUtil fileUtil;
+  private LocalFileStorageUtil fileUtil;
 
-  private final String dirPath = "http://sparta.com/mock/";
+  private final String dirPath = "http://sparta.com/mock/images";
 
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
-    ReflectionTestUtils.setField(
-        cafeImageService,
-        "defaultImagePath",
-        dirPath);
+//    ReflectionTestUtils.setField(
+//        cafeImageService,
+//        "defaultImagePath",
+//        dirPath);
   }
 
   private AuthUser createAuthUser() {
@@ -77,14 +77,13 @@ public class CafeImageServiceTest {
     Cafe cafe = DummyCafe.createDummyCafe(user, cafeId);
 
     // given - image
+    String imagePath = dirPath + "image.jpg";
     MultipartFile mockImage = mock(MultipartFile.class);
     List<MultipartFile> images = List.of(mockImage);
-    String imageDirPath = dirPath + "images/";
-    String imagePath = imageDirPath + "image.jpg";
     CafeImage cafeImage = DummyCafeImage.createDummyCafeImage(cafe, imagePath);
 
-    when(fileUtil.makeDirectory(dirPath, ImageType.CAFE, authUser.getId())).thenReturn(imageDirPath);
-    when(fileUtil.makeFileName(imageDirPath, mockImage)).thenReturn(imagePath);
+    when(fileUtil.makeDirectory(ImageType.CAFE, authUser.getId())).thenReturn(dirPath);
+    when(fileUtil.makeFileName(dirPath, mockImage)).thenReturn(imagePath);
     doNothing().when(mockImage).transferTo(any(File.class));
     when(cafeImageRepository.save(cafeImage)).thenReturn(cafeImage);
 
@@ -94,8 +93,8 @@ public class CafeImageServiceTest {
     // then
     assertEquals(HttpStatus.CREATED.value(), result.getStatus());
     assertEquals(1, result.getData().size());
-    verify(fileUtil, times(1)).makeDirectory(dirPath, ImageType.CAFE, authUser.getId());
-    verify(fileUtil, times(1)).makeFileName(imageDirPath, mockImage);
+    verify(fileUtil, times(1)).makeDirectory(ImageType.CAFE, authUser.getId());
+    verify(fileUtil, times(1)).makeFileName(dirPath, mockImage);
     verify(fileUtil, times(1)).uploadImage(imagePath, mockImage);
     verify(cafeImageRepository, times(1)).save(any());
   }

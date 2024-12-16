@@ -21,10 +21,11 @@ public class ReviewImageController {
 
   @PostMapping("/reviews/images")
     public ResponseEntity<StatusDto> uploadImage (
+      @Auth AuthUser authUser,
       @RequestParam Long reviewId,
       @RequestPart List<MultipartFile> reviewImages
   ) {
-    StatusDto response = reviewImageService.uploadImage(reviewId, reviewImages);
+    StatusDto response = reviewImageService.uploadImage(authUser.getId(), reviewId, reviewImages);
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 

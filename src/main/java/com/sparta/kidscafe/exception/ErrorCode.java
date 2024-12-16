@@ -17,8 +17,10 @@ public enum ErrorCode {
 
     // Image 관련 에러
     IMAGE_UPLOAD_FAILED("IMAGE_UPLOAD_FAILED", "카페 이미지 업로드에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
+    IMAGE_S3_UPLOAD_FAILED("IMAGE_UPLOAD_FAILED", "S3 파일 업로드 중 오류 발생", HttpStatus.INTERNAL_SERVER_ERROR),
     IMAGE_REMOVE_FAILED("IMAGE_REMOVE_FAILED", "카페 이미지 삭제에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
     IMAGE_NOT_EXIST("IMAGE_NOT_EXIST", "이미지가 존재하지 않습니다.",HttpStatus.INTERNAL_SERVER_ERROR),
+    IMAGE_SDK_ERROR("IMAGE_UPLOAD_FAILED", "SDK 오류로 인한 파일 업로드 실패", HttpStatus.INTERNAL_SERVER_ERROR),
 
     // Review 관련 에러
     REVIEW_NOT_FOUND("REVIEW_NOT_FOUND", "리뷰를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
