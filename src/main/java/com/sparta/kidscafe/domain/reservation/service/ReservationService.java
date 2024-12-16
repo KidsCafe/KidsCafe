@@ -233,32 +233,38 @@ public class ReservationService {
     Long userId = authUser.getId();
     Reservation reservation = reservationRepository.findById(reservationId)
         .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
-
+    // 유저 권한 확인
     if (!userId.equals(reservation.getUser().getId())) {
       throw new BusinessException(ErrorCode.FORBIDDEN);
     }
-
+    // 취소는 PENDING 상태에만 가능
     if (reservation.getStatus() != ReservationStatus.PENDING) {
       throw new BusinessException(ErrorCode.INVALID_STATUS);
     }
+    double totalPrice = 0;
+    for (ReservationDetailUpdateRequestDto detailDto : requestDto.getDetails()) {
+      ReservationDetail details = reservationDetailRepository.findById(detailDto.getId())
+          .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
 
+      details.updateCount(detailDto.getCount());
+
+      totalPrice += reservationCalculationService.calcReservation(reservation, details);
+    }
+    reservation.updateTotalPrice((int) totalPrice);
     reservation.updateTime(LocalDateTime.parse(requestDto.getStartedAt()),
         LocalDateTime.parse(requestDto.getFinishedAt()));
 
-    for (ReservationDetailUpdateRequestDto detailDto : requestDto.getDetails()) {
-      ReservationDetail detail = reservation.getReservationDetails().stream()
-          .filter(d -> d.getTargetId().equals(detailDto.getTargetId()) &&
-              d.getTargetType() == TargetType.FEE)
-          .findFirst()
-          .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_UPDATE_FAILURE));
-      detail.updateCount(detailDto.getCount());
+    ReservationSearchCondition condition = requestDto.createSearchCondition(
+        reservation.getCafe().getId());
+    if (!reservationRepository.isRoomAvailable(condition)) {
+      throw new BusinessException(ErrorCode.RESERVATION_UPDATE_FAILURE);
     }
-
     return StatusDto.builder()
         .status(HttpStatus.OK.value())
         .message("예약이 성공적으로 수정되었습니다.")
         .build();
   }
+
 
   // 예약 승인
   @Transactional
