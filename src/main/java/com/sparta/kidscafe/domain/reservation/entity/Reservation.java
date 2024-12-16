@@ -84,14 +84,14 @@ public class Reservation extends Timestamped {
 
   public void approve() {
     if (this.status != ReservationStatus.PENDING) {
-      throw new BusinessException(ErrorCode.INVALID_STATUS_CHANGE);
+      throw new BusinessException(ErrorCode.INVALID_STATUS);
     }
     this.status = ReservationStatus.APPROVED;
   }
 
   public void cancelByUser() {
     if (this.status != ReservationStatus.PENDING) {
-      throw new BusinessException(ErrorCode.INVALID_STATUS_CHANGE);
+      throw new BusinessException(ErrorCode.INVALID_STATUS);
     }
     this.status = ReservationStatus.CANCELLED_BY_USER;
     this.isDeleted = true;
@@ -104,7 +104,7 @@ public class Reservation extends Timestamped {
 
   public Reservation confirmPayment() {
     if (this.status != ReservationStatus.APPROVED) {
-      throw new BusinessException(ErrorCode.INVALID_STATUS_CHANGE);
+      throw new BusinessException(ErrorCode.INVALID_STATUS);
     }
     this.isPaymentConfirmed = true;
     this.status = ReservationStatus.COMPLETED;
