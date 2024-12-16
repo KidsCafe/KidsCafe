@@ -238,6 +238,10 @@ public class ReservationService {
       throw new BusinessException(ErrorCode.FORBIDDEN);
     }
 
+    if (reservation.getStatus() != ReservationStatus.PENDING) {
+      throw new BusinessException(ErrorCode.INVALID_STATUS);
+    }
+
     reservation.updateTime(LocalDateTime.parse(requestDto.getStartedAt()),
         LocalDateTime.parse(requestDto.getFinishedAt()));
 
@@ -265,7 +269,7 @@ public class ReservationService {
     Reservation reservation = reservationRepository.findById(reservationId)
         .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
     if (reservation.getStatus() != ReservationStatus.PENDING) {
-      throw new BusinessException(ErrorCode.INVALID_STATUS_CHANGE);
+      throw new BusinessException(ErrorCode.INVALID_STATUS);
     }
     reservation.approve();
     reservationRepository.save(reservation);
