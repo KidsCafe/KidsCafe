@@ -16,6 +16,17 @@ public class UserResponseDto {
     private String imagePath;  // 프로필 이미지 경로
     private String role;       // 회원 역할 (USER, ADMIN)
 
+    // 기존 생성자에 `public` 추가
+    public UserResponseDto(Long id, String email, String name, String nickname, String address, String imagePath, String role) {
+        this.id = id;
+        this.email = email;
+        this.name = name;
+        this.nickname = nickname;
+        this.address = address;
+        this.imagePath = imagePath;
+        this.role = role;
+    }
+
     public static UserResponseDto fromEntity(User user) {
         return UserResponseDto.builder()
                 .id(user.getId())
