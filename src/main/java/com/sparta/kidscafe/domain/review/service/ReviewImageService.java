@@ -36,7 +36,7 @@ public class ReviewImageService {
     for (MultipartFile image : reviewImages) {
       String dirPath = fileStorage.makeDirectory(ImageType.REVIEW, userId);
       String imagePath = fileStorage.makeFileName(dirPath, image);
-      fileStorage.uploadImage(imagePath, image);
+      imagePath = fileStorage.uploadImage(imagePath, image);
       ReviewImage reviewImage = ReviewImage.builder()
           .reviewId(reviewId)
           .imagePath(imagePath)

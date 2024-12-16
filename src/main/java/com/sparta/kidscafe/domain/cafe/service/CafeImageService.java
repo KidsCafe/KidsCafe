@@ -58,7 +58,7 @@ public class CafeImageService {
   private ImageResponseDto uploadCafeImage(Long userId, MultipartFile image) {
     String dirPath = fileStorage.makeDirectory(ImageType.CAFE, userId);
     String imagePath = fileStorage.makeFileName(dirPath, image);
-    fileStorage.uploadImage(imagePath, image);
+    imagePath = fileStorage.uploadImage(imagePath, image);
     return new ImageResponseDto(imagePath);
   }
 
