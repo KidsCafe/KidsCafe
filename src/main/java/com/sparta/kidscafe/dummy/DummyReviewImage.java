@@ -1,6 +1,10 @@
 package com.sparta.kidscafe.dummy;
 
+import static com.sparta.kidscafe.domain.review.entity.QReview.review;
+
 import com.sparta.kidscafe.common.util.TestUtil;
+import com.sparta.kidscafe.domain.cafe.entity.Cafe;
+import com.sparta.kidscafe.domain.cafe.entity.CafeImage;
 import com.sparta.kidscafe.domain.review.entity.Review;
 import com.sparta.kidscafe.domain.review.entity.ReviewImage;
 import java.util.ArrayList;
@@ -22,5 +26,28 @@ public class DummyReviewImage {
       images.add(createDummyReviewImage(review));
     }
     return images;
+  }
+
+  public static ReviewImage createDummyReviewImage(Review review, String path) {
+    return ReviewImage.builder()
+        .reviewId(review.getId())
+        .imagePath(path)
+        .build();
+  }
+
+  public static List<ReviewImage> createDummyReviewImages(Review review, List<Long> ids) {
+    List<ReviewImage> images = new ArrayList<>();
+    for (Long id : ids) {
+      images.add(createDummyReviewImage(id, review));
+    }
+    return images;
+  }
+
+  public static ReviewImage createDummyReviewImage(Long id, Review review) {
+    return ReviewImage.builder()
+        .id(id)
+        .reviewId(review.getId())
+        .imagePath(TestUtil.getRandomString(10) + ".jpg")
+        .build();
   }
 }
