@@ -53,11 +53,6 @@ public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
 			return new AuthUser(userId, email, roleType);
 		}
 
-		// 소셜 로그인 사용자
-		if (loginType == LoginType.OAUTH) {
-			return new AuthUser(userId, email, roleType);
-		}
-
 		throw new IllegalArgumentException("유효하지 않은 LoginType 입니다.");
 	}
 
