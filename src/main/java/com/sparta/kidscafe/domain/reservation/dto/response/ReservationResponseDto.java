@@ -33,7 +33,6 @@ public class ReservationResponseDto {
   public static class ReservationDetailResponseDto {
     private TargetType targetType;
     private Long targetId;
-    private String targetName;
     private int price;
     private Long count;
   }

@@ -1,4 +1,4 @@
-package com.sparta.kidscafe.domain.cafe.enums;
+package com.sparta.kidscafe.common.entity.sort;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum SearchSortBy {
+public enum CafeSearchSortBy {
   NONE,
   CAFE_NAME,
   REVIEW_COUNT,
@@ -17,8 +17,8 @@ public enum SearchSortBy {
   CLOSED_AT;
 
   @JsonCreator
-  public static SearchSortBy getSortBy(String name) {
-    for (SearchSortBy sortBy : SearchSortBy.values()) {
+  public static CafeSearchSortBy getSortBy(String name) {
+    for (CafeSearchSortBy sortBy : CafeSearchSortBy.values()) {
       if (sortBy.toString().equals(name)) {
         return sortBy;
       }

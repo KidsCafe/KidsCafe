@@ -25,7 +25,6 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Where;
 
 @Getter
@@ -35,6 +34,7 @@ import org.hibernate.annotations.Where;
 @Entity
 @Table(name = "reservation")
 public class Reservation extends Timestamped {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -51,8 +51,6 @@ public class Reservation extends Timestamped {
   @Enumerated(EnumType.STRING)
   private ReservationStatus status;
 
-  private boolean isDeleted;
-
   @Column(updatable = false)
   private LocalDateTime startedAt;
 
@@ -61,6 +59,10 @@ public class Reservation extends Timestamped {
 
   @Column(updatable = false)
   private int totalPrice;
+
+  private boolean isDeleted;
+
+  private boolean isPaymentConfirmed;
 
   @Builder.Default
   @OneToMany(mappedBy = "reservation", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
@@ -73,31 +75,38 @@ public class Reservation extends Timestamped {
   public Reservation() {
     this.status = ReservationStatus.PENDING;
     this.isDeleted = false;
+    this.isPaymentConfirmed = false;
   }
+
   public void approve() {
     if (this.status != ReservationStatus.PENDING) {
       throw new BusinessException(ErrorCode.INVALID_STATUS_CHANGE);
-    } this.status = ReservationStatus.APPROVED;
-  }
-
-  public void updateStatus(ReservationStatus status) {
-    if (status == ReservationStatus.PENDING) {
-      throw new BusinessException(ErrorCode.INVALID_STATUS_CHANGE);
-    } this.status = status;
+    }
+    this.status = ReservationStatus.APPROVED;
   }
 
   public void cancelByUser() {
     if (this.status != ReservationStatus.PENDING) {
       throw new BusinessException(ErrorCode.INVALID_STATUS_CHANGE);
-    } this.status = ReservationStatus.CANCELLED_BY_USER;
+    }
+    this.status = ReservationStatus.CANCELLED_BY_USER;
+    this.isDeleted = true;
   }
 
   public void cancelByOwner() {
+    if (this.status == ReservationStatus.COMPLETED) {
+      throw new BusinessException(ErrorCode.INVALID_STATUS_CHANGE);
+    }
     this.status = ReservationStatus.CANCELLED_BY_OWNER;
     this.isDeleted = true;
   }
 
-  public boolean isDeleted() {
-    return isDeleted;
+  public Reservation confirmPayment() {
+    if (this.status != ReservationStatus.APPROVED) {
+      throw new BusinessException(ErrorCode.INVALID_STATUS_CHANGE);
+    }
+    this.isPaymentConfirmed = true;
+    this.status = ReservationStatus.COMPLETED;
+    return this;
   }
 }

@@ -1,6 +1,6 @@
-package com.sparta.kidscafe.domain.cafe.dto.searchCondition;
+package com.sparta.kidscafe.domain.cafe.repository.condition;
 
-import com.sparta.kidscafe.domain.cafe.enums.SearchSortBy;
+import com.sparta.kidscafe.common.entity.sort.CafeSearchSortBy;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,9 +11,9 @@ import org.springframework.data.domain.Pageable;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SearchPageCondition {
+public class CafeSearchPageCondition {
 
   private Pageable pageable;
-  private SearchSortBy sortBy;
+  private CafeSearchSortBy sortBy;
   private boolean asc;
 }

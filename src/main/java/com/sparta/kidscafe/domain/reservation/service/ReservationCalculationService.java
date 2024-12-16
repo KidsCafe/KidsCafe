@@ -1,19 +1,16 @@
 package com.sparta.kidscafe.domain.reservation.service;
 
 import com.sparta.kidscafe.common.enums.TargetType;
-import com.sparta.kidscafe.domain.cafe.entity.Cafe;
-import com.sparta.kidscafe.domain.fee.entity.Fee;
 import com.sparta.kidscafe.domain.fee.repository.FeeRepository;
-import com.sparta.kidscafe.domain.pricepolicy.entity.PricePolicy;
 import com.sparta.kidscafe.domain.pricepolicy.repository.PricePolicyRepository;
-import com.sparta.kidscafe.domain.reservation.dto.request.ReservationCreateRequestDto;
-import com.sparta.kidscafe.domain.room.entity.Room;
+import com.sparta.kidscafe.domain.pricepolicy.searchcondition.PricePolicySearchCondition;
+import com.sparta.kidscafe.domain.reservation.entity.Reservation;
+import com.sparta.kidscafe.domain.reservation.entity.ReservationDetail;
+import com.sparta.kidscafe.domain.room.repository.RoomRepository;
 import com.sparta.kidscafe.exception.BusinessException;
 import com.sparta.kidscafe.exception.ErrorCode;
-import java.time.LocalDate;
-import java.time.format.TextStyle;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,35 +20,37 @@ public class ReservationCalculationService {
 
   private final PricePolicyRepository pricePolicyRepository;
   private final FeeRepository feeRepository;
+  private final RoomRepository roomRepository;
 
-  public int calculateTotalPrice(Cafe cafe, Room room,
-      List<ReservationCreateRequestDto.ReservationDetailRequestDto> details) {
-    // 기본 룸 가격 추가
-    int totalPrice = room.getPrice();
+  public void calcReservation(
+      Reservation reservation,
+      List<ReservationDetail> reservationDetails) {
+    double totalPrice = 0;
+    for (ReservationDetail reservationdetail : reservationDetails) {
+      double price;
+      PricePolicySearchCondition condition =
+          PricePolicySearchCondition.create(reservation, reservationdetail);
 
-    for (ReservationCreateRequestDto.ReservationDetailRequestDto detail : details) {
-      if (detail.getTargetType() == TargetType.FEE) {
-        Fee fee = feeRepository.findById(detail.getTargetId())
-            .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_FEE_ID));
-        totalPrice += fee.getFee() * detail.getCount();
+      List<Double> rates = new ArrayList<>();
+      if (reservationdetail.getTargetType().equals(TargetType.FEE)) {
+        price = feeRepository.findById(condition.getTargetId())
+            .orElseThrow(() -> new BusinessException(ErrorCode.FEE_NOT_FOUND)).getFee();
+        rates = pricePolicyRepository.findPricePolicyWithFee(condition);
       } else {
-        throw new BusinessException(ErrorCode.UNSUPPORTED_TARGET_TYPE);
+        price = roomRepository.findById(condition.getTargetId())
+            .orElseThrow(() -> new BusinessException(ErrorCode.ROOM_NOT_FOUND)).getPrice();
+        rates = pricePolicyRepository.findPricePolicyWithRoom(condition);
       }
-    }
-    // PricePolicy에 따른 배율 적용
-    List<PricePolicy> policies = pricePolicyRepository.findByCafeIdAndDayTypeContains(cafe.getId(),
-        getCurrentDayType());
-    for (PricePolicy policy : policies) {
-      totalPrice *= policy.getRate();
-    }
-    return totalPrice;
-  }
 
-  private String getCurrentDayType() {
-    String today = LocalDate
-        .now()
-        .getDayOfWeek()
-        .getDisplayName(TextStyle.SHORT, Locale.KOREAN);
-    return today;
+      price = reservationdetail.getPrice() * reservationdetail.getCount();
+      for (Double rate : rates) {
+        price *= rate;
+      }
+
+      reservationdetail.updatePrice((int) price);
+      totalPrice += price;
+    }
+
+    reservation.updateTotalPrice((int) totalPrice);
   }
 }

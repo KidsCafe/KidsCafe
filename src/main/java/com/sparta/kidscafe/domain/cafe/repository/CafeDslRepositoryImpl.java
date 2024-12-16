@@ -8,15 +8,15 @@ import com.querydsl.core.types.dsl.ComparableExpressionBase;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.sparta.kidscafe.domain.cafe.dto.searchCondition.SearchCondition;
+import com.sparta.kidscafe.domain.cafe.repository.condition.CafeSearchCondition;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeResponseDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.QCafeResponseDto;
 import com.sparta.kidscafe.domain.cafe.entity.QCafe;
-import com.sparta.kidscafe.domain.cafe.enums.SearchSortBy;
-import com.sparta.kidscafe.domain.cafe.repository.condition.CafeCondition;
-import com.sparta.kidscafe.domain.cafe.repository.condition.FeeCondition;
-import com.sparta.kidscafe.domain.cafe.repository.condition.ReviewCondition;
-import com.sparta.kidscafe.domain.cafe.repository.condition.RoomCondition;
+import com.sparta.kidscafe.common.entity.sort.CafeSearchSortBy;
+import com.sparta.kidscafe.common.entity.condition.CafeCondition;
+import com.sparta.kidscafe.common.entity.condition.FeeCondition;
+import com.sparta.kidscafe.common.entity.condition.ReviewCondition;
+import com.sparta.kidscafe.common.entity.condition.RoomCondition;
 import com.sparta.kidscafe.domain.fee.entity.QFee;
 import com.sparta.kidscafe.domain.review.entity.QReview;
 import com.sparta.kidscafe.domain.room.entity.QRoom;
@@ -33,6 +33,7 @@ public class CafeDslRepositoryImpl implements CafeDslRepository {
   private final ReviewCondition reviewCondition;
   private final CafeCondition cafeCondition;
   private final FeeCondition feeCondition;
+
   private final QCafe cafe = QCafe.cafe;
   private final QRoom room = QRoom.room;
   private final QReview review = QReview.review;
@@ -47,7 +48,7 @@ public class CafeDslRepositoryImpl implements CafeDslRepository {
   }
 
   @Override
-  public Page<CafeResponseDto> findAllByCafe(SearchCondition condition) {
+  public Page<CafeResponseDto> findAllByCafe(CafeSearchCondition condition) {
     long cntTotal = searchCafeTotalCount(condition);
     if (cntTotal == 0) {
       return Page.empty();
@@ -64,7 +65,7 @@ public class CafeDslRepositoryImpl implements CafeDslRepository {
     return new PageImpl<>(cafes, condition.getPageable(), cntTotal);
   }
 
-  private long searchCafeTotalCount(SearchCondition condition) {
+  private long searchCafeTotalCount(CafeSearchCondition condition) {
     Long cntTotal = queryFactory
         .select(cafe.id.countDistinct())
         .from(cafe)
@@ -99,7 +100,7 @@ public class CafeDslRepositoryImpl implements CafeDslRepository {
         .leftJoin(room).on(room.cafe.eq(cafe));
   }
 
-  private BooleanBuilder makeWhere(SearchCondition condition) {
+  private BooleanBuilder makeWhere(CafeSearchCondition condition) {
     return new BooleanBuilder()
         .and(cafeCondition.likeName(condition.getName()))
         .and(cafeCondition.eqRegion(condition.getRegion()))
@@ -115,14 +116,14 @@ public class CafeDslRepositoryImpl implements CafeDslRepository {
         .and(cafeCondition.eqUserId(condition.getUserId()));
   }
 
-  private BooleanBuilder makeHaving(SearchCondition condition) {
+  private BooleanBuilder makeHaving(CafeSearchCondition condition) {
     BooleanBuilder builder = new BooleanBuilder();
     builder.and(reviewCondition.betweenAvgStar(condition));
     builder.and(roomCondition.existRoom(condition.getExistRoom()));
     return builder;
   }
 
-  private OrderSpecifier<?> makeOrderBy(SearchCondition condition) {
+  private OrderSpecifier<?> makeOrderBy(CafeSearchCondition condition) {
     Order order = condition.isAsc() ? Order.ASC : Order.DESC;
     Expression<?> expression = makeOrderBy(condition.getSortBy());
     if (expression instanceof ComparableExpressionBase<?> orderExpression) {
@@ -132,7 +133,7 @@ public class CafeDslRepositoryImpl implements CafeDslRepository {
     return new OrderSpecifier<>(Order.ASC, Expressions.constant(1));
   }
 
-  private Expression<?> makeOrderBy(SearchSortBy sortBy) {
+  private Expression<?> makeOrderBy(CafeSearchSortBy sortBy) {
     return switch (sortBy) {
       case REVIEW_COUNT -> review.id.count();
       case REVIEW_AVG -> review.star.avg();
@@ -141,7 +142,7 @@ public class CafeDslRepositoryImpl implements CafeDslRepository {
     };
   }
 
-  private JPAQuery<CafeResponseDto> makePaging(JPAQuery<CafeResponseDto> query, SearchCondition condition) {
+  private JPAQuery<CafeResponseDto> makePaging(JPAQuery<CafeResponseDto> query, CafeSearchCondition condition) {
     if(condition.getPageable() != null) {
       query
           .limit(condition.getPageable().getPageSize())

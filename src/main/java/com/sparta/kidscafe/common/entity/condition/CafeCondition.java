@@ -1,10 +1,11 @@
-package com.sparta.kidscafe.domain.cafe.repository.condition;
+package com.sparta.kidscafe.common.entity.condition;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.sparta.kidscafe.domain.cafe.entity.QCafe;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.TextStyle;
 import java.util.Locale;
@@ -74,11 +75,21 @@ public class CafeCondition {
     return innerBuilder.getValue();
   }
 
+  public Predicate notHoliday(LocalDateTime reservationDay) {
+    BooleanBuilder innerBuilder = new BooleanBuilder();
+    String reservationDayByKorean = LocalDate
+        .now()
+        .getDayOfWeek()
+        .getDisplayName(TextStyle.SHORT, Locale.KOREAN);
+    innerBuilder.and(cafe.dayOff.notLike("%"+reservationDayByKorean+"%"));
+    return innerBuilder.getValue();
+  }
+
   public Predicate dayOff(String dayOff) {
     BooleanBuilder innerBuilder = new BooleanBuilder();
     String[] days = dayOff.split(", ");
     for (String day : days) {
-      innerBuilder.and(cafe.dayOff.eq(day));
+      innerBuilder.and(cafe.dayOff.contains(day));
     }
     return innerBuilder.getValue();
   }
@@ -108,10 +119,26 @@ public class CafeCondition {
   }
 
   public BooleanExpression goeOpenedAt(LocalTime openedAt) {
+    // goe 크거나 같음, loe 작거나 같음
     if (openedAt == null) {
       return null;
     }
     return cafe.openedAt.goe(openedAt);
+  }
+
+  public BooleanExpression loeOpenedAt(LocalTime openedAt) {
+    // goe 크거나 같음, loe 작거나 같음
+    if (openedAt == null) {
+      return null;
+    }
+    return cafe.openedAt.loe(openedAt);
+  }
+
+  public BooleanExpression goeClosedAt(LocalTime closedAt) {
+    if (closedAt == null) {
+      return null;
+    }
+    return cafe.closedAt.goe(closedAt);
   }
 
   public BooleanExpression loeClosedAt(LocalTime closedAt) {

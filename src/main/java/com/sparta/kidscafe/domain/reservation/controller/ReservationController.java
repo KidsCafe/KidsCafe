@@ -4,6 +4,7 @@ import com.sparta.kidscafe.common.annotation.Auth;
 import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.PageResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
+import com.sparta.kidscafe.common.util.valid.AuthValidationCheck;
 import com.sparta.kidscafe.domain.reservation.dto.request.ReservationCreateRequestDto;
 import com.sparta.kidscafe.domain.reservation.dto.response.ReservationResponseDto;
 import com.sparta.kidscafe.domain.reservation.service.ReservationService;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -27,22 +29,14 @@ public class ReservationController {
 
   private final ReservationService reservationService;
 
-  @PostMapping("/temp/reservations/cafes/{cafeId}")
-  public ResponseEntity<StatusDto> tempCreateReservation(
-      @Auth AuthUser authUser,
-      @PathVariable Long cafeId,
-      @Valid @RequestBody ReservationCreateRequestDto requestDto) {
-    StatusDto response = reservationService.createReservation(authUser, cafeId, requestDto);
-    return ResponseEntity.status(HttpStatus.CREATED).body(response);
-  }
-
   // 예약 생성
   @PostMapping("/reservations/cafes/{cafeId}")
   public ResponseEntity<StatusDto> createReservation(
       @Auth AuthUser authUser,
       @PathVariable Long cafeId,
       @Valid @RequestBody ReservationCreateRequestDto requestDto) {
-    StatusDto response = reservationService.tempCreateReservation(authUser, cafeId, requestDto);
+    AuthValidationCheck.validUser(authUser);
+    StatusDto response = reservationService.createReservation(authUser, cafeId, requestDto);
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 
@@ -75,6 +69,35 @@ public class ReservationController {
       @Auth AuthUser authUser,
       @PathVariable Long reservationId) {
     StatusDto response = reservationService.approveReservation(authUser, reservationId);
+    return ResponseEntity.status(HttpStatus.OK).body(response);
+  }
+
+  // 예약 상태 변경
+  @PatchMapping("/admin/reservations/{reservationId}/complete")
+  public ResponseEntity<StatusDto> completeReservation(
+      @Auth AuthUser authUser,
+      @PathVariable Long reservationId) {
+    StatusDto response = reservationService.confirmPayment(authUser, reservationId);
+    return ResponseEntity.status(HttpStatus.OK).body(response);
+  }
+
+  // 예약 취소: User용
+  @PutMapping("/users/reservations/{reservationId}/cancel")
+  public ResponseEntity<StatusDto> cancelReservationByUser(
+      @Auth AuthUser authUser,
+      @PathVariable Long reservationId) {
+    StatusDto response = reservationService.cancelReservationByUser(authUser, reservationId);
+    return ResponseEntity.status(HttpStatus.OK).body(response);
+  }
+
+  // 예약 취소: Owner용
+  @PutMapping("/owners/reservations/{reservationId}/{cafeId}/cancel")
+  public ResponseEntity<StatusDto> cancelReservationByOwner(
+      @Auth AuthUser authUser,
+      @PathVariable Long reservationId,
+      @PathVariable Long cafeId) {
+    StatusDto response = reservationService.cancelReservationByOwner(authUser, reservationId,
+        cafeId);
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 
