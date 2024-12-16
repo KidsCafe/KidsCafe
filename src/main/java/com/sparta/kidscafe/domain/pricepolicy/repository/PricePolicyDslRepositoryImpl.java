@@ -2,8 +2,8 @@ package com.sparta.kidscafe.domain.pricepolicy.repository;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.sparta.kidscafe.common.entity.condition.FeeCondition;
-import com.sparta.kidscafe.common.entity.condition.PricePolicyCondition;
+import com.sparta.kidscafe.domain.fee.repository.condition.FeeCondition;
+import com.sparta.kidscafe.domain.pricepolicy.repository.condition.PricePolicyCondition;
 import com.sparta.kidscafe.domain.fee.entity.QFee;
 import com.sparta.kidscafe.domain.pricepolicy.entity.QPricePolicy;
 import com.sparta.kidscafe.domain.pricepolicy.searchcondition.PricePolicySearchCondition;

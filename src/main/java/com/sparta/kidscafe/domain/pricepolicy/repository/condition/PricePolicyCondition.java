@@ -1,4 +1,4 @@
-package com.sparta.kidscafe.common.entity.condition;
+package com.sparta.kidscafe.domain.pricepolicy.repository.condition;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.sparta.kidscafe.common.enums.TargetType;

@@ -1,4 +1,4 @@
-package com.sparta.kidscafe.common.entity.sort;
+package com.sparta.kidscafe.domain.cafe.repository.sort;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
