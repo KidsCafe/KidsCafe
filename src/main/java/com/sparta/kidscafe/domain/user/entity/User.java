@@ -78,7 +78,7 @@ public class User extends Timestamped implements OAuthMember {
     this.role = role;
   }
 
-  public User update(String email, String name, String nickname) {
+  public User updateOAuth(String email, String name, String nickname) {
     this.email = email;
     if(name != null && !name.isBlank()){
       this.name = name;
