@@ -62,8 +62,9 @@ public class ReviewImageService {
 
     String filePath = reviewImage.getImagePath();
     if (filePath != null && !filePath.isEmpty()) {
-      fileStorage.deleteImage(filePath);
-      reviewImageRepository.deleteById(reviewImageId);
+//      fileStorage.deleteImage(filePath);
+//      reviewImageRepository.deleteById(reviewImageId);
+      reviewImage.deleteReviewId();
     }
   }
 }
