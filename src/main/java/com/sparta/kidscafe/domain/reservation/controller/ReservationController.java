@@ -105,7 +105,7 @@ public class ReservationController {
   }
 
   // 예약 상태 변경
-  @PatchMapping("/admin/reservations/{reservationId}/complete")
+  @PatchMapping("/owners/reservations/{reservationId}/complete")
   public ResponseEntity<StatusDto> completeReservation(
       @Auth AuthUser authUser,
       @PathVariable Long reservationId) {

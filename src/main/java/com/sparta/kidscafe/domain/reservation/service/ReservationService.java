@@ -283,7 +283,7 @@ public class ReservationService {
   // 예약 상태 변경: 결제 완료 상황 (결제 여부 확인 메서드 사용) -> Complete)
   @Transactional
   public StatusDto confirmPayment(AuthUser authUser, Long reservationId) {
-    if (!authUser.getRoleType().equals(RoleType.USER)) {
+    if (!authUser.getRoleType().equals(RoleType.OWNER)) {
       throw new BusinessException(ErrorCode.FORBIDDEN);
     }
     Reservation reservation = reservationRepository.findById(reservationId)
