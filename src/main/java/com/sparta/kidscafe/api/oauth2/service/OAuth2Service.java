@@ -60,7 +60,7 @@ public class OAuth2Service {
 
 	private User saveOrUpdate(OAuth2UserProfileDto userProfileDto) {
 		User user = userRepository.findByOauthId(userProfileDto.getOauthId())
-			.map(entity -> entity.update(userProfileDto.getName(), userProfileDto.getEmail()))
+			.map(entity -> entity.update( userProfileDto.getEmail(), userProfileDto.getName()))
 			.orElseGet(userProfileDto::toUser);
 		return userRepository.save(user);
 	}
