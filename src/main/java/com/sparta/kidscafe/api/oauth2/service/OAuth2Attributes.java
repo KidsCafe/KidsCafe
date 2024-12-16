@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 import com.sparta.kidscafe.api.oauth2.controller.dto.OAuth2UserProfileDto;
+import com.sparta.kidscafe.common.enums.LoginType;
 
 public enum OAuth2Attributes {
 	GITHUB("github"){
@@ -14,6 +15,8 @@ public enum OAuth2Attributes {
 				.email((String) attributes.get("email"))
 				.name((String) attributes.get("name"))
 				.nickname((String) attributes.getOrDefault("nickname", "[default_nickname]"))
+				.address((String) attributes.getOrDefault("address", "[default_address]"))
+				.loginType(LoginType.GITHUB)
 				.build();
 		}
 	},
@@ -26,6 +29,8 @@ public enum OAuth2Attributes {
 				.email((String) response.get("email"))
 				.name((String) response.get("name"))
 				.nickname((String) response.getOrDefault("nickname", "[default_nickname]"))
+				.address((String) response.getOrDefault("address", "[default_address]"))
+				.loginType(LoginType.NAVER)
 				.build();
 		}
 	};
