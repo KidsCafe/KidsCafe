@@ -48,15 +48,14 @@ public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
 		RoleType roleType = RoleType.valueOf(jwtUtil.extractRoleType(accessToken));
 		LoginType loginType = LoginType.valueOf(jwtUtil.extractLoginType(accessToken));
 
-		// 일반 로그인 사용자 처리
+		// 일반 로그인 사용자
 		if (loginType == LoginType.BASIC) {
 			return new AuthUser(userId, email, roleType);
 		}
 
-		// 소셜 로그인 사용자 처리
+		// 소셜 로그인 사용자
 		if (loginType == LoginType.OAUTH) {
-			// 필요 시 AuthUser 대신 소셜 사용자를 처리하는 객체 반환
-			return new AuthUser(userId, email, roleType); // 현재는 동일 반환
+			return new AuthUser(userId, email, roleType);
 		}
 
 		throw new IllegalArgumentException("유효하지 않은 LoginType 입니다.");
