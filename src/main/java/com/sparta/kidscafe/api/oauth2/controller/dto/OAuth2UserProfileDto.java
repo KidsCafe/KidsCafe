@@ -11,16 +11,16 @@ import lombok.Getter;
 public class OAuth2UserProfileDto {
 
 	private final String oauthId;
-	private final String email;
 	private final String name;
+	private final String email;
 	private final String address;
 	private final String nickname;
 
 	@Builder
-	public OAuth2UserProfileDto(String oauthId, String email, String name, String address, String nickname) {
+	public OAuth2UserProfileDto(String oauthId, String name, String email,  String address, String nickname) {
 		this.oauthId = oauthId;
-		this.email = email;
 		this.name = name;
+		this.email = email;
 		this.address = address;
 		this.nickname = nickname;
 	}
@@ -31,7 +31,7 @@ public class OAuth2UserProfileDto {
 			.email(email != null ? email : "")
 			.password("UNKNOWN")
 			.nickname(nickname != null ? nickname : "")
-			.name(name)
+			.name(name != null ? name : "")
 			.address(address != null ? address : "")
 			.role(RoleType.USER)
 			.loginType(LoginType.OAUTH)
