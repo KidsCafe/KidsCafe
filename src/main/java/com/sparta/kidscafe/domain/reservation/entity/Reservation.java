@@ -30,7 +30,7 @@ import org.hibernate.annotations.Where;
 @Getter
 @Builder
 @AllArgsConstructor
-@Where(clause = "is_deleted = false")
+//@Where(clause = "is_deleted = false")
 @Entity
 @Table(name = "reservation")
 public class Reservation extends Timestamped {

@@ -57,6 +57,12 @@ public class ReviewService {
 
     reviewRepository.save(newReview);
 
+    List<ReviewImage> images = reviewImageRepository.findAllById(request.imageId());
+
+    for (ReviewImage reviewImage : images) {
+      reviewImage.updateReviewImages(newReview.getId());
+    }
+
     return StatusDto.builder()
         .status(HttpStatus.CREATED.value())
         .message("리뷰 등록 성공")

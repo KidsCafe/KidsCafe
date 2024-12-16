@@ -36,4 +36,8 @@ public class ReviewImage extends Timestamped {
   public void deleteReviewId (){
     this.reviewId = null;
   }
+
+  public void updateReviewImages (Long reviewId){
+    this.reviewId = reviewId;
+  }
 }

@@ -1,6 +1,12 @@
 package com.sparta.kidscafe.domain.review.service;
 
-import com.sparta.kidscafe.common.util.S3FileUploader;
+
+import static com.sparta.kidscafe.exception.ErrorCode.FORBIDDEN;
+import static com.sparta.kidscafe.exception.ErrorCode.IMAGE_NOT_FOUND;
+import static com.sparta.kidscafe.exception.ErrorCode.REVIEW_NOT_FOUND;
+
+import com.sparta.kidscafe.common.client.S3FileUploader;
+
 import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.StatusDto;
 import com.sparta.kidscafe.domain.review.entity.Review;
@@ -8,16 +14,13 @@ import com.sparta.kidscafe.domain.review.entity.ReviewImage;
 import com.sparta.kidscafe.domain.review.repository.ReviewImageRepository;
 import com.sparta.kidscafe.domain.review.repository.ReviewRepository;
 import com.sparta.kidscafe.exception.BusinessException;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.sparta.kidscafe.exception.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
