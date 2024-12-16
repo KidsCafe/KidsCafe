@@ -2,10 +2,13 @@ package com.sparta.kidscafe.domain.reservation.service;
 
 import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.PageResponseDto;
+import com.sparta.kidscafe.common.dto.ResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
 import com.sparta.kidscafe.common.enums.RoleType;
+import com.sparta.kidscafe.common.enums.TargetType;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
 import com.sparta.kidscafe.domain.cafe.repository.CafeRepository;
+import com.sparta.kidscafe.domain.fee.repository.FeeRepository;
 import com.sparta.kidscafe.domain.pricepolicy.repository.PricePolicyRepository;
 import com.sparta.kidscafe.domain.reservation.dto.request.ReservationCreateRequestDto;
 import com.sparta.kidscafe.domain.reservation.dto.response.ReservationResponseDto;
@@ -21,6 +24,7 @@ import com.sparta.kidscafe.domain.user.repository.UserRepository;
 import com.sparta.kidscafe.exception.BusinessException;
 import com.sparta.kidscafe.exception.ErrorCode;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -42,6 +46,7 @@ public class ReservationService {
   private final UserRepository userRepository;
   private final PricePolicyRepository pricePolicyRepository;
   private final ReservationDetailRepository reservationDetailRepository;
+  private final FeeRepository feeRepository;
 
   @Transactional
   public StatusDto createReservation(AuthUser authUser, Long cafeId,
@@ -130,6 +135,90 @@ public class ReservationService {
             .build()
     );
     return PageResponseDto.success(responseDto, HttpStatus.OK, "예약 내역 조회(카페용) 성공");
+  }
+
+  // 예약 상세 조회: User용
+  @Transactional(readOnly = true)
+  public ResponseDto<ReservationResponseDto> getReservationDetailByUser(AuthUser authUser,
+      Long reservationId) {
+    Long userId = authUser.getId();
+    if (!authUser.getRoleType().equals(RoleType.USER)) {
+      throw new BusinessException(ErrorCode.FORBIDDEN);
+    }
+    Reservation reservation = reservationRepository.findByUserIdAndId(userId, reservationId)
+        .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
+
+    ReservationResponseDto responseDto = ReservationResponseDto.builder()
+        .reservationId(reservation.getId())
+        .cafeId(reservation.getCafe().getId())
+        .cafeName(reservation.getCafe().getName())
+        .startedAt(reservation.getStartedAt())
+        .finishedAt(reservation.getFinishedAt())
+        .totalPrice(reservation.getTotalPrice())
+        .status(String.valueOf(reservation.getStatus()))
+        .details(reservation.getReservationDetails().stream()
+            .map(detail -> ReservationResponseDto.ReservationDetailResponseDto.builder()
+                .targetType(detail.getTargetType())
+                .targetId(detail.getTargetId())
+                .targetName(getTargetName(detail.getTargetType(), detail.getTargetId()))
+                .price(detail.getPrice())
+                .count(detail.getCount())
+                .build())
+            .collect(Collectors.toList()))
+        .build();
+    return ResponseDto.success(
+        responseDto,
+        HttpStatus.OK,
+        "예약 상세 조회(User) 성공"
+    );
+  }
+
+  public String getTargetName(TargetType targetType, Long targetId) {
+    if (targetType == TargetType.ROOM) {
+      return roomRepository.findById(targetId)
+          .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND)).getName();
+    } else {
+      return feeRepository.findById(targetId)
+          .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND)).getAgeGroup()
+          .getName();
+    }
+  }
+
+  // 예약 상세 조회: Owner용
+  @Transactional(readOnly = true)
+  public ResponseDto<ReservationResponseDto> getReservationDetailByOwner(AuthUser authUser,
+      Long reservationId) {
+    if (!authUser.getRoleType().equals(RoleType.OWNER)) {
+      throw new BusinessException(ErrorCode.FORBIDDEN);
+    }
+    Reservation reservation = reservationRepository.findById(reservationId)
+        .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
+    if (!reservation.getCafe().getId().equals(authUser.getId())) {
+      throw new BusinessException(ErrorCode.FORBIDDEN);
+    }
+
+    ReservationResponseDto responseDto = ReservationResponseDto.builder()
+        .reservationId(reservation.getId())
+        .userId(reservation.getUser().getId())
+        .userName(reservation.getUser().getName())
+        .startedAt(reservation.getStartedAt())
+        .finishedAt(reservation.getFinishedAt())
+        .totalPrice(reservation.getTotalPrice())
+        .status(String.valueOf(reservation.getStatus()))
+        .details(reservation.getReservationDetails().stream()
+            .map(detail -> ReservationResponseDto.ReservationDetailResponseDto.builder()
+                .targetType(detail.getTargetType())
+                .targetId(detail.getTargetId())
+                .price(detail.getPrice())
+                .count(detail.getCount())
+                .build())
+            .collect(Collectors.toList()))
+        .build();
+    return ResponseDto.success(
+        responseDto,
+        HttpStatus.OK,
+        "예약 상세 조회(Owner) 성공"
+    );
   }
 
   // 예약 승인
