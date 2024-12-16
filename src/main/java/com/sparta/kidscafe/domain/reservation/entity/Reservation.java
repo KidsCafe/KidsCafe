@@ -25,7 +25,6 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import org.hibernate.annotations.Where;
 
 @Getter
 @Builder
@@ -72,6 +71,11 @@ public class Reservation extends Timestamped {
     totalPrice = price;
   }
 
+  public void updateTime(LocalDateTime startedAt, LocalDateTime finishedAt) {
+    this.startedAt = startedAt;
+    this.finishedAt = finishedAt;
+  }
+
   public Reservation() {
     this.status = ReservationStatus.PENDING;
     this.isDeleted = false;
@@ -94,9 +98,6 @@ public class Reservation extends Timestamped {
   }
 
   public void cancelByOwner() {
-    if (this.status == ReservationStatus.COMPLETED) {
-      throw new BusinessException(ErrorCode.INVALID_STATUS_CHANGE);
-    }
     this.status = ReservationStatus.CANCELLED_BY_OWNER;
     this.isDeleted = true;
   }
