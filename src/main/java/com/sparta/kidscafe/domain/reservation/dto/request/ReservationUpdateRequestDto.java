@@ -1,5 +1,6 @@
 package com.sparta.kidscafe.domain.reservation.dto.request;
 
+import com.sparta.kidscafe.common.enums.TargetType;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
@@ -28,6 +29,8 @@ public class ReservationUpdateRequestDto {
   @AllArgsConstructor
   public static class ReservationDetailUpdateRequestDto {
 
+    @NotNull
+    private TargetType targetType;
     @NotNull
     private Long targetId;
     @NotNull
