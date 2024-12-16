@@ -34,7 +34,7 @@ public enum ErrorCode {
 
   // Reservation 관련 에러
   RESERVATION_NOT_FOUND("RESERVATION_NOT_FOUND", "예약을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
-  INVALID_STATUS_CHANGE("INVALID_STATUS_CHANGE", "유효하지 않은 상태입니다.", HttpStatus.BAD_REQUEST),
+  INVALID_STATUS("INVALID_STATUS", "유효하지 않은 상태입니다.", HttpStatus.BAD_REQUEST),
   RESERVATION_FAILURE("RESERVATION_FAILURE", "예약을 할 수 없습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
   RESERVATION_UPDATE_FAILURE("RESERVATION_UPDATE_FAILURE", "수정할 수 없는 정보입니다.",
       HttpStatus.BAD_REQUEST),
