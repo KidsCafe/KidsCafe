@@ -78,11 +78,14 @@ public class User extends Timestamped implements OAuthMember {
     this.role = role;
   }
 
-  public User update(String email, String name) {
+  public User update(String email, String name, String nickname) {
+    this.email = email;
     if(name != null && !name.isBlank()){
       this.name = name;
     }
-    this.email = email;
+    if(nickname != null && !nickname.isBlank()){
+      this.nickname = nickname;
+    }
     return this;
   }
 }

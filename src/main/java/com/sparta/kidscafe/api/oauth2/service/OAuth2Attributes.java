@@ -6,7 +6,6 @@ import java.util.Map;
 import com.sparta.kidscafe.api.oauth2.controller.dto.OAuth2UserProfileDto;
 
 public enum OAuth2Attributes {
-	// 일단 깃헙만 추가 -> 테스트 완료되면 다른 소셜도 추가 예정
 	GITHUB("github"){
 		@Override
 		public OAuth2UserProfileDto of(Map<String, Object> attributes){
@@ -14,9 +13,23 @@ public enum OAuth2Attributes {
 				.oauthId(String.valueOf(attributes.get("id")))
 				.email((String) attributes.get("email"))
 				.name((String) attributes.get("name"))
+				.nickname((String) attributes.getOrDefault("nickname", "[default_nickname]"))
+				.build();
+		}
+	},
+	NAVER("naver"){
+		@Override
+		public OAuth2UserProfileDto of(Map<String, Object> attributes){
+			Map<String, Object> response = (Map<String, Object>) attributes.get("response");
+			return OAuth2UserProfileDto.builder()
+				.oauthId(String.valueOf(response.get("id")))
+				.email((String) response.get("email"))
+				.name((String) response.get("name"))
+				.nickname((String) response.getOrDefault("nickname", "[default_nickname]"))
 				.build();
 		}
 	};
+
 
 	private final String providerName;
 
@@ -28,7 +41,7 @@ public enum OAuth2Attributes {
 		return Arrays.stream(values())
 			.filter(provider -> providerName.equals(provider.providerName))
 			.findFirst()
-			.orElseThrow(IllegalArgumentException::new)
+			.orElseThrow(() -> new IllegalArgumentException("지원하지 않는 OAuth2 제공자입니다: " + providerName))
 			.of(attributes);
 	}
 
