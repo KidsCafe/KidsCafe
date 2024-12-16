@@ -33,7 +33,7 @@ public class ReportController {
   public ResponseEntity<StatusDto> createReport (
       @Auth AuthUser authUser,
       @Valid @RequestBody ReportRequestDto request,
-      @PathVariable Long reviewId
+      @PathVariable ("reviewId")Long reviewId
   ) {
     StatusDto response = reportService.createReport(authUser, request, reviewId);
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -41,8 +41,8 @@ public class ReportController {
 
   @GetMapping("/owners/reports")
   public ResponseEntity<PageResponseDto<ReportResponseDto>> getMyReports (
-      @RequestParam(defaultValue = "0") int page,
-      @RequestParam(defaultValue = "10") int size,
+      @RequestParam(defaultValue = "0",name = "page") int page,
+      @RequestParam(defaultValue = "10",name = "size") int size,
       @Auth AuthUser authUser
   ) {
     return ResponseEntity
@@ -52,8 +52,8 @@ public class ReportController {
 
   @GetMapping("/admin/reports")
   public ResponseEntity<PageResponseDto<ReportResponseDto>> getReports (
-      @RequestParam(defaultValue = "0") int page,
-      @RequestParam(defaultValue = "10") int size
+      @RequestParam(defaultValue = "0",name = "page") int page,
+      @RequestParam(defaultValue = "10",name = "size") int size
   ) {
     return ResponseEntity
         .status(HttpStatus.OK)
@@ -63,7 +63,7 @@ public class ReportController {
   @PatchMapping("/reports/{reportId}")
   public ResponseEntity<StatusDto> updateReport (
       @Valid @RequestBody ReportUpdateDto request,
-      @PathVariable Long reportId
+      @PathVariable ("reportId") Long reportId
   ) {
     StatusDto response = reportService.updateReport(request, reportId);
     return ResponseEntity.status(HttpStatus.RESET_CONTENT).body(response);

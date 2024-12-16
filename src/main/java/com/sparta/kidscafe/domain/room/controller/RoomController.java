@@ -33,15 +33,15 @@ public class RoomController {
   public ResponseEntity<StatusDto> createRoom (
       @Auth AuthUser authUser,
       @Valid @RequestBody RoomCreateRequestDto request,
-      @PathVariable Long cafeId
+      @PathVariable ("cafeId") Long cafeId
   ) {
     StatusDto response = roomService.createRoom(authUser, request, cafeId);
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 
-  @GetMapping("/cafes/{cafeid}/rooms")
+  @GetMapping("/cafes/{cafeId}/rooms")
   public ResponseEntity<ListResponseDto<RoomResponseDto>> getRooms(
-      @PathVariable Long cafeId
+      @PathVariable ("cafeId") Long cafeId
   ) {
     return ResponseEntity
         .status(HttpStatus.OK)
@@ -51,7 +51,7 @@ public class RoomController {
   @PatchMapping("/cafes/rooms/{roomId}")
   public ResponseEntity<StatusDto> updateRoom (
       @Auth AuthUser authUser,
-      @PathVariable Long roomId,
+      @PathVariable ("roomId") Long roomId,
       @Valid @RequestBody RoomCreateRequestDto request
   ) {
     StatusDto response = roomService.updateRoom(authUser, roomId, request);
@@ -61,7 +61,7 @@ public class RoomController {
   @DeleteMapping("/cafes/room/{roomId}")
   public ResponseEntity<Void> deleteRoom (
       @Auth AuthUser authUser,
-      @PathVariable Long roomId
+      @PathVariable ("roomId") Long roomId
   ) {
     roomService.deleteRoom(authUser, roomId);
     return ResponseEntity.noContent().build();
