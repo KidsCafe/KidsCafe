@@ -1,4 +1,4 @@
-package com.sparta.kidscafe.common.entity.condition;
+package com.sparta.kidscafe.domain.cafe.repository.condition;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;

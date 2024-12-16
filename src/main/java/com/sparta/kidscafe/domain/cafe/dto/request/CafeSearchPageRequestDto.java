@@ -1,6 +1,6 @@
 package com.sparta.kidscafe.domain.cafe.dto.request;
 
-import com.sparta.kidscafe.common.entity.sort.CafeSearchSortBy;
+import com.sparta.kidscafe.domain.cafe.repository.sort.CafeSearchSortBy;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -18,8 +18,9 @@ import org.springframework.web.multipart.MultipartFile;
 @Slf4j(topic = "FileUtil")
 @Component
 @RequiredArgsConstructor
-public class FileUtil {
+public class FileUtil implements ImageUtil {
 
+  @Override
   public String makeDirectory(String dirPath, ImageType imageType, Long id) {
     StringBuilder dirDetailPath = new StringBuilder(dirPath);
     dirDetailPath.append(id);
@@ -33,6 +34,7 @@ public class FileUtil {
     return dirDetailPath.toString();
   }
 
+  @Override
   public String makeFileName(String dirPath, MultipartFile image) {
     LocalDateTime now = LocalDateTime.now();
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
@@ -45,6 +47,7 @@ public class FileUtil {
     return imagePath.toString();
   }
 
+  @Override
   public void uploadImage(String uploadPath, MultipartFile image) {
     try {
       image.transferTo(new File(uploadPath));
@@ -54,6 +57,7 @@ public class FileUtil {
     }
   }
 
+  @Override
   public void deleteImage(String deleteImagePath) {
     File file = new File(deleteImagePath);
     if (file.exists()) {
