@@ -13,6 +13,7 @@ import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.ListResponseDto;
 import com.sparta.kidscafe.common.enums.ImageType;
 import com.sparta.kidscafe.common.enums.RoleType;
+import com.sparta.kidscafe.common.util.FileStorageUtil;
 import com.sparta.kidscafe.common.util.LocalFileStorageUtil;
 import com.sparta.kidscafe.common.util.valid.CafeValidationCheck;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeImageDeleteRequestDto;
@@ -50,17 +51,13 @@ public class CafeImageServiceTest {
   private CafeImageRepository cafeImageRepository;
 
   @Mock
-  private LocalFileStorageUtil fileUtil;
+  private FileStorageUtil fileUtil;
 
   private final String dirPath = "http://sparta.com/mock/images";
 
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
-//    ReflectionTestUtils.setField(
-//        cafeImageService,
-//        "defaultImagePath",
-//        dirPath);
   }
 
   private AuthUser createAuthUser() {
@@ -68,7 +65,7 @@ public class CafeImageServiceTest {
   }
 
   @Test
-  @DisplayName("이미지 업로드 성공")
+  @DisplayName("카페 이미지 업로드 성공")
   void uploadCafeImage_Success() throws IOException {
     // given - user
     Long cafeId = 1L;
@@ -100,7 +97,7 @@ public class CafeImageServiceTest {
   }
 
   @Test
-  @DisplayName("이미지 삭제 성공 (soft-delete)")
+  @DisplayName("카페 이미지 삭제 성공 (soft-delete)")
   void deleteImage_Success() {
     // given - user
     Long cafeId = 1L;
