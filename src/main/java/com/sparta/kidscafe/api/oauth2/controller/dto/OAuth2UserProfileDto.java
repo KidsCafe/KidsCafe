@@ -17,7 +17,7 @@ public class OAuth2UserProfileDto {
 	private final String nickname;
 
 	@Builder
-	public OAuth2UserProfileDto(String oauthId, String name, String email,  String address, String nickname) {
+	public OAuth2UserProfileDto(String oauthId, String name, String email, String address, String nickname) {
 		this.oauthId = oauthId;
 		this.name = name;
 		this.email = email;
@@ -32,7 +32,7 @@ public class OAuth2UserProfileDto {
 			.password("UNKNOWN")
 			.nickname(nickname != null ? nickname : "")
 			.name(name != null ? name : "")
-			.address(address != null ? address : "")
+			.address("UNKNOWN")
 			.role(RoleType.USER)
 			.loginType(LoginType.OAUTH)
 			.build();
