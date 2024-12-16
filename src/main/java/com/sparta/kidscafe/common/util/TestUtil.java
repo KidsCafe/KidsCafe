@@ -17,7 +17,8 @@ public class TestUtil {
 
   public static double getRandomDouble(int min, int max) {
     int range = max - min;
-    return Math.random() * range;
+    double randomValue = Math.random() * range;
+    return Math.round(randomValue * 10) / 10.0;
   }
 
   public static int getRandomPrice(int min, int max) {
