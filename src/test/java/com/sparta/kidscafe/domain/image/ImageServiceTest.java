@@ -10,7 +10,7 @@ import static org.mockito.Mockito.when;
 
 import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.enums.RoleType;
-import com.sparta.kidscafe.common.util.FileUtil;
+import com.sparta.kidscafe.common.util.LocalFileStorageUtil;
 import com.sparta.kidscafe.domain.cafe.entity.CafeImage;
 import com.sparta.kidscafe.domain.cafe.repository.CafeImageRepository;
 import com.sparta.kidscafe.domain.image.service.ImageService;
@@ -34,7 +34,7 @@ public class ImageServiceTest {
   private CafeImageRepository cafeImageRepository;
 
   @Mock
-  private FileUtil fileUtil;
+  private LocalFileStorageUtil fileUtil;
 
   @BeforeEach
   void setUp() {

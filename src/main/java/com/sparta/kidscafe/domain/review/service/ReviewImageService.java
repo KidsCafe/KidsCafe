@@ -5,10 +5,10 @@ import static com.sparta.kidscafe.exception.ErrorCode.FORBIDDEN;
 import static com.sparta.kidscafe.exception.ErrorCode.IMAGE_NOT_FOUND;
 import static com.sparta.kidscafe.exception.ErrorCode.REVIEW_NOT_FOUND;
 
-import com.sparta.kidscafe.common.client.S3FileUploader;
-
 import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.StatusDto;
+import com.sparta.kidscafe.common.enums.ImageType;
+import com.sparta.kidscafe.common.util.FileStorageUtil;
 import com.sparta.kidscafe.domain.review.entity.Review;
 import com.sparta.kidscafe.domain.review.entity.ReviewImage;
 import com.sparta.kidscafe.domain.review.repository.ReviewImageRepository;
@@ -27,49 +27,43 @@ import org.springframework.web.multipart.MultipartFile;
 @Transactional
 public class ReviewImageService {
 
-    private ReviewImageRepository reviewImageRepository;
-    private final S3FileUploader s3FileUploader;
-    private ReviewRepository reviewRepository;
+  private final ReviewImageRepository reviewImageRepository;
+  private final FileStorageUtil fileStorage;
+  private final ReviewRepository reviewRepository;
 
-    public StatusDto uploadImage(Long reviewId, List<MultipartFile> reviewImages) {
+  public StatusDto uploadImage(Long userId, Long reviewId, List<MultipartFile> reviewImages) {
+    List<ReviewImage> images = new ArrayList<>();
+    for (MultipartFile image : reviewImages) {
+      String dirPath = fileStorage.makeDirectory(ImageType.REVIEW, userId);
+      String imagePath = fileStorage.makeFileName(dirPath, image);
+      fileStorage.uploadImage(imagePath, image);
+      ReviewImage reviewImage = ReviewImage.builder()
+          .reviewId(reviewId)
+          .imagePath(imagePath)
+          .build();
+      images.add(reviewImage);
+    }
+    reviewImageRepository.saveAll(images);
 
-        List<String> uploads = s3FileUploader.uploadFiles(reviewImages);
+    return StatusDto.builder()
+        .status(HttpStatus.CREATED.value())
+        .message("리뷰 이미지 등록 성공")
+        .build();
+  }
 
-        List<ReviewImage> images = new ArrayList<>();
+  public void deleteImage(AuthUser authUser, Long reviewImageId) {
+    ReviewImage reviewImage = reviewImageRepository.findById(reviewImageId).orElseThrow(() -> new BusinessException(IMAGE_NOT_FOUND));
+    Review review = reviewRepository.findById(reviewImage.getReviewId()).orElseThrow(() -> new BusinessException(REVIEW_NOT_FOUND));
+    Long id = authUser.getId();
 
-        for (String upload : uploads) {
-            ReviewImage reviewImage = ReviewImage.builder()
-                    .reviewId(reviewId)
-                    .imagePath(upload)
-                    .build();
-            images.add(reviewImage);
-        }
-
-        reviewImageRepository.saveAll(images);
-
-        return StatusDto.builder()
-                .status(HttpStatus.CREATED.value())
-                .message("리뷰 이미지 등록 성공")
-                .build();
+    if (!id.equals(review.getUser().getId())) {
+      throw new BusinessException(FORBIDDEN);
     }
 
-    public void deleteImage(AuthUser authUser, Long reviewImageId) {
-
-        ReviewImage reviewImage = reviewImageRepository.findById(reviewImageId).orElseThrow(() -> new BusinessException(IMAGE_NOT_FOUND));
-
-        Review review = reviewRepository.findById(reviewImage.getReviewId()).orElseThrow(() -> new BusinessException(REVIEW_NOT_FOUND));
-
-        Long id = authUser.getId();
-
-        if (!id.equals(review.getUser().getId())) {
-            throw new BusinessException(FORBIDDEN);
-        }
-
-        String s3Key = reviewImage.getImagePath();
-        if (s3Key != null && !s3Key.isEmpty()) {
-            s3FileUploader.deleteFile(s3Key);
-
-            reviewImageRepository.deleteById(reviewImageId);
-        }
+    String filePath = reviewImage.getImagePath();
+    if (filePath != null && !filePath.isEmpty()) {
+      fileStorage.deleteImage(filePath);
+      reviewImageRepository.deleteById(reviewImageId);
     }
+  }
 }
