@@ -52,9 +52,9 @@ public class HeaderTokenValidFilter extends OncePerRequestFilter {
 			url.startsWith("/oauth2") ||
 			url.startsWith("/error") ||
 			url.contains("api/cafes") ||
-			url.startsWith("/css") ||
-			url.startsWith("/index.html") ||
 			url.equals("/") ||
-			url.startsWith("/js");
+			url.startsWith("/index.html") ||
+			url.startsWith("/js") ||
+			url.startsWith("/css");
 	}
 }
