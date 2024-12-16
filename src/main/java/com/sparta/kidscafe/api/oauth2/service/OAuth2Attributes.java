@@ -1,6 +1,7 @@
 package com.sparta.kidscafe.api.oauth2.service;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
 
 import com.sparta.kidscafe.api.oauth2.controller.dto.OAuth2UserProfileDto;
@@ -33,8 +34,23 @@ public enum OAuth2Attributes {
 				.loginType(LoginType.NAVER)
 				.build();
 		}
+	},
+	KAKAO("kakao"){
+		@Override
+		public OAuth2UserProfileDto of(Map<String, Object> attributes){
+			Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
+			Map<String, Object> profile = kakaoAccount != null ? (Map<String, Object>) kakaoAccount.get("profile") :
+				Collections.emptyMap();
+			return OAuth2UserProfileDto.builder()
+				.oauthId(String.valueOf(attributes.get("id")))
+				.email(kakaoAccount != null ? (String) kakaoAccount.get("email") : null)
+				.name(profile != null ? (String) profile.getOrDefault("nickname", "[default_name]") : "[default_name]")
+				.nickname(profile != null ? (String) profile.getOrDefault("nickname", "[default_nickname]") : "[default_nickname]")
+				.address("[default_address]")
+				.loginType(LoginType.KAKAO)
+				.build();
+		}
 	};
-
 
 	private final String providerName;
 

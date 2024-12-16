@@ -10,7 +10,8 @@ import lombok.RequiredArgsConstructor;
 public enum LoginType {
   BASIC("BASIC"),
   GITHUB("GITHUB"),
-  NAVER("NAVER");
+  NAVER("NAVER"),
+  KAKAO("KAKAO");
 
   private final String LoginTypeValue;
 
