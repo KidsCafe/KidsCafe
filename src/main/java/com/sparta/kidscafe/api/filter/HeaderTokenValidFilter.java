@@ -29,6 +29,7 @@ public class HeaderTokenValidFilter extends OncePerRequestFilter {
 		}
 
 		String accessToken = Optional.ofNullable(request.getHeader("Authorization"))
+			.filter(header -> header.startsWith("Bearer "))
 			.map(header -> header.substring("Bearer ".length()))
 			.orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "토큰이 존재하지 않습니다."));
 		filterChain.doFilter(request, response);
