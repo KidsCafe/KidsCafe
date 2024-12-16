@@ -1,11 +1,13 @@
 package com.sparta.kidscafe.api.auth.controller.resolver;
 
 import org.springframework.core.MethodParameter;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.sparta.kidscafe.common.annotation.Auth;
 import com.sparta.kidscafe.common.dto.AuthUser;
@@ -35,8 +37,8 @@ public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
 	) {
 		String authorizationHeader = webRequest.getHeader("Authorization");
 
-		if(authorizationHeader == null){
-			throw new IllegalArgumentException("유효하지 않은 Authorization 헤더입니다.");
+		if(authorizationHeader == null || authorizationHeader.isBlank()){
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "유효하지 않은 Authorization 헤더입니다.");
 		}
 
 		String accessToken = extractToken(authorizationHeader);
