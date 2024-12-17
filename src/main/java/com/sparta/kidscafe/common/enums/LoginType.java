@@ -9,9 +9,15 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum LoginType {
   BASIC("BASIC"),
-  OAUTH("OAUTH");
+  GITHUB("GITHUB"),
+  NAVER("NAVER"),
+  KAKAO("KAKAO");
 
   private final String LoginTypeValue;
+
+  public String getValue(){
+    return LoginTypeValue;
+  }
 
   @JsonCreator
   public static LoginType parsing(String inputValue){
