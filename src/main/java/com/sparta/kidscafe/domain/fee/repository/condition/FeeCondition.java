@@ -35,13 +35,6 @@ public class FeeCondition {
     return fee.cafe.id.eq(cafeId);
   }
 
-  public BooleanExpression inAgeGroup(AgeGroup[] ageGroups) {
-    if(ageGroups == null)
-      return null;
-
-    return fee.ageGroup.in(ageGroups);
-  }
-
   public BooleanExpression eqAgeGroup(String ageGroup) {
     if (ageGroup == null || ageGroup.isEmpty()) {
       return null;
@@ -56,10 +49,14 @@ public class FeeCondition {
     return fee.fee.between(minPrice, maxPrice);
   }
 
-  public BooleanExpression adultPrice(Boolean isAdultPrice) {
+  public Predicate adultPrice(Boolean isAdultPrice) {
     if (isAdultPrice == null || !isAdultPrice) {
       return null;
     }
-    return fee.ageGroup.notIn(Arrays.asList(AgeGroup.BABY, AgeGroup.TEENAGER));
+
+    BooleanBuilder builder = new BooleanBuilder();
+    builder.and(fee.ageGroup.eq(AgeGroup.ADULT));
+    builder.and(fee.fee.isNull());
+    return builder.getValue();
   }
 }
