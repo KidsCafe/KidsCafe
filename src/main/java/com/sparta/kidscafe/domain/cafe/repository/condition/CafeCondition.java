@@ -69,19 +69,25 @@ public class CafeCondition {
         .getDisplayName(TextStyle.SHORT, Locale.KOREAN);
 
     BooleanBuilder innerBuilder = new BooleanBuilder();
-    innerBuilder.and(cafe.dayOff.contains(today));
-    innerBuilder.and(cafe.openedAt.goe(currentTime));
+    innerBuilder.and(cafe.dayOff.contains(today).not());
     innerBuilder.and(cafe.openedAt.loe(currentTime));
+    innerBuilder.and(cafe.closedAt.goe(currentTime));
     return innerBuilder.getValue();
   }
 
-  public Predicate notHoliday(LocalDateTime reservationDay) {
-    BooleanBuilder innerBuilder = new BooleanBuilder();
-    String reservationDayByKorean = LocalDate
-        .now()
+  public Predicate isOpening(LocalDateTime reservationDay) {
+    if (reservationDay == null) {
+      return null;
+    }
+
+    String korDay = reservationDay
         .getDayOfWeek()
         .getDisplayName(TextStyle.SHORT, Locale.KOREAN);
-    innerBuilder.and(cafe.dayOff.notLike("%"+reservationDayByKorean+"%"));
+
+    BooleanBuilder innerBuilder = new BooleanBuilder();
+    innerBuilder.and(cafe.dayOff.contains(korDay).not());
+    innerBuilder.and(cafe.openedAt.loe(reservationDay.toLocalTime()));
+    innerBuilder.and(cafe.closedAt.goe(reservationDay.toLocalTime()));
     return innerBuilder.getValue();
   }
 
