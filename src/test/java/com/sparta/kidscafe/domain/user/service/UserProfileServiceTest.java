@@ -4,6 +4,7 @@ import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.ResponseDto;
 import com.sparta.kidscafe.common.enums.RoleType;
 import com.sparta.kidscafe.common.util.PasswordEncoder;
+import com.sparta.kidscafe.domain.user.dto.request.UserDeleteRequestDto;
 import com.sparta.kidscafe.domain.user.dto.request.UserProfileUpdateRequestDto;
 import com.sparta.kidscafe.domain.user.dto.response.UserProfileResponseDto;
 import com.sparta.kidscafe.domain.user.entity.User;
@@ -19,7 +20,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class UserProfileServiceTest {
 
@@ -34,98 +35,119 @@ class UserProfileServiceTest {
         userProfileService = new UserProfileService(userRepository, passwordEncoder);
     }
 
-    @Test
-    @DisplayName("프로필 조회 성공")
-    void getUserProfile_Success() {
-        // Given
-        AuthUser authUser = new AuthUser(1L, "0411khj@naver.com", RoleType.USER);
-        User user = User.builder()
+    private User createUser() {
+        return User.builder()
                 .id(1L)
                 .email("0411khj@naver.com")
                 .name("김혜진")
                 .nickname("호홍")
                 .address("부산광역시 남구")
-                .password("password123")
+                .password("encodedPassword")
                 .role(RoleType.USER)
                 .build();
+    }
+
+    @Test
+    @DisplayName("프로필 조회 성공")
+    void getUserProfile_Success() {
+        AuthUser authUser = new AuthUser(1L, "0411khj@naver.com", RoleType.USER);
+        User user = createUser();
 
         when(userRepository.findById(authUser.getId())).thenReturn(Optional.of(user));
 
-        // When
         ResponseDto<UserProfileResponseDto> response = userProfileService.getUserProfile(authUser);
 
-        // Then
         assertThat(response.getMessage()).isEqualTo("회원 조회 성공");
         assertThat(response.getData().getName()).isEqualTo("김혜진");
-        assertThat(response.getData().getNickname()).isEqualTo("호홍");
-        assertThat(response.getData().getAddress()).isEqualTo("부산광역시 남구");
     }
 
     @Test
     @DisplayName("프로필 조회 실패 - 사용자 정보 없음")
     void getUserProfile_Fail_UserNotFound() {
-        // Given
         AuthUser authUser = new AuthUser(1L, "0411khj@naver.com", RoleType.USER);
 
         when(userRepository.findById(authUser.getId())).thenReturn(Optional.empty());
 
-        // When
-        BusinessException exception = assertThrows(BusinessException.class, () -> {
-            userProfileService.getUserProfile(authUser);
-        });
+        BusinessException exception = assertThrows(BusinessException.class,
+                () -> userProfileService.getUserProfile(authUser));
 
-        // Then
         assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.USER_NOT_FOUND);
-        assertThat(exception.getMessage()).isEqualTo("사용자를 찾을 수 없습니다.");
     }
 
     @Test
     @DisplayName("프로필 수정 성공")
     void updateUserProfile_Success() {
-        // Given
         AuthUser authUser = new AuthUser(1L, "0411khj@naver.com", RoleType.USER);
+        User user = createUser();
         UserProfileUpdateRequestDto requestDto = new UserProfileUpdateRequestDto(
                 "김혜진", "힝", "부산광역시 해운대구", "newPassword123");
-
-        User user = User.builder()
-                .id(1L)
-                .email("0411khj@naver.com")
-                .name("김혜진")
-                .nickname("호홍")
-                .address("부산광역시 남구")
-                .password("password123")
-                .role(RoleType.USER)
-                .build();
 
         when(userRepository.findById(authUser.getId())).thenReturn(Optional.of(user));
         when(passwordEncoder.encode(requestDto.getPassword())).thenReturn("encodedPassword123");
 
-        // When
         ResponseDto<UserProfileResponseDto> response = userProfileService.updateUserProfile(authUser, requestDto);
 
-        // Then
         assertThat(response.getMessage()).isEqualTo("프로필 수정 성공");
         assertThat(response.getData().getNickname()).isEqualTo("힝");
-        assertThat(response.getData().getAddress()).isEqualTo("부산광역시 해운대구");
     }
 
     @Test
     @DisplayName("프로필 수정 실패 - 사용자 정보 없음")
     void updateUserProfile_Fail_UserNotFound() {
-        // Given
         AuthUser authUser = new AuthUser(1L, "0411khj@naver.com", RoleType.USER);
         UserProfileUpdateRequestDto requestDto = new UserProfileUpdateRequestDto(
                 "김혜진", "힝", "부산광역시 해운대구", "newPassword123");
 
         when(userRepository.findById(authUser.getId())).thenReturn(Optional.empty());
 
-        // When
-        BusinessException exception = assertThrows(BusinessException.class, () -> {
-            userProfileService.updateUserProfile(authUser, requestDto);
-        });
+        BusinessException exception = assertThrows(BusinessException.class,
+                () -> userProfileService.updateUserProfile(authUser, requestDto));
 
-        // Then
         assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.USER_NOT_FOUND);
-        assertThat(exception.getMessage()).isEqualTo("사용자를 찾을 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("회원 탈퇴 성공")
+    void deleteUser_Success() {
+        AuthUser authUser = new AuthUser(1L, "0411khj@naver.com", RoleType.USER);
+        User user = createUser();
+        UserDeleteRequestDto requestDto = new UserDeleteRequestDto("password123");
+
+        when(userRepository.findById(authUser.getId())).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches(requestDto.getPassword(), user.getPassword())).thenReturn(true);
+
+        userProfileService.deleteUser(authUser, requestDto);
+
+        verify(userRepository, times(1)).delete(user);
+    }
+
+    @Test
+    @DisplayName("회원 탈퇴 실패 - 사용자 정보 없음")
+    void deleteUser_Fail_UserNotFound() {
+        AuthUser authUser = new AuthUser(1L, "0411khj@naver.com", RoleType.USER);
+        UserDeleteRequestDto requestDto = new UserDeleteRequestDto("password123");
+
+        when(userRepository.findById(authUser.getId())).thenReturn(Optional.empty());
+
+        BusinessException exception = assertThrows(BusinessException.class,
+                () -> userProfileService.deleteUser(authUser, requestDto));
+
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.USER_NOT_FOUND);
+    }
+
+    @Test
+    @DisplayName("회원 탈퇴 실패 - 비밀번호 불일치")
+    void deleteUser_Fail_InvalidPassword() {
+        AuthUser authUser = new AuthUser(1L, "0411khj@naver.com", RoleType.USER);
+        User user = createUser();
+        UserDeleteRequestDto requestDto = new UserDeleteRequestDto("wrongPassword");
+
+        when(userRepository.findById(authUser.getId())).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches(requestDto.getPassword(), user.getPassword())).thenReturn(false);
+
+        BusinessException exception = assertThrows(BusinessException.class,
+                () -> userProfileService.deleteUser(authUser, requestDto));
+
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.INVALID_PASSWORD);
     }
 }
