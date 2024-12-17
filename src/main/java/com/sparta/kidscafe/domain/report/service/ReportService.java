@@ -112,7 +112,7 @@ public class ReportService {
     // 상태 변경 로직
     switch (currentStatus) {
       case PENDING:
-        // PENDING 상태에서 IN_PROGRESS로 변경
+        // PENDING 상태에서 IN_PROGRESS로 변경 또는 REJECTED로 변경
         if (requestedStatus == ReportType.IN_PROGRESS) {
           report.UpdateReportType(ReportType.IN_PROGRESS);
         } else if (requestedStatus == ReportType.REJECTED) {
@@ -123,7 +123,7 @@ public class ReportService {
         break;
 
       case IN_PROGRESS:
-        // IN_PROGRESS 상태에서 COMPLETED 또는 REJECTED로 변경
+        // IN_PROGRESS 상태에서 COMPLETED 변경
         if (requestedStatus == ReportType.COMPLETED) {
           report.UpdateReportType(ReportType.COMPLETED);
         }  else {
