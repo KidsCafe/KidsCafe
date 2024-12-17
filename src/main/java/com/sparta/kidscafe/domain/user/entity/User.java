@@ -60,6 +60,9 @@ public class User extends Timestamped implements OAuthMember {
   @Column
   private String oauthId;
 
+  @Column
+  private String provider;
+
   @Builder.Default
   @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
   private List<Bookmark> bookmarks = new ArrayList<>();

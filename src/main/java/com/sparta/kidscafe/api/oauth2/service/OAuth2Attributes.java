@@ -39,15 +39,14 @@ public enum OAuth2Attributes {
 		@Override
 		public OAuth2UserProfileDto of(Map<String, Object> attributes){
 			Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
-			Map<String, Object> profile = kakaoAccount != null ? (Map<String, Object>) kakaoAccount.get("profile") :
-				Collections.emptyMap();
+			Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
+
 			return OAuth2UserProfileDto.builder()
 				.oauthId(String.valueOf(attributes.get("id")))
-				.email(kakaoAccount != null ? (String) kakaoAccount.get("email") : null)
-				.name(profile != null ? (String) profile.getOrDefault("nickname", "[default_name]") : "[default_name]")
-				.nickname(profile != null ? (String) profile.getOrDefault("nickname", "[default_nickname]") : "[default_nickname]")
-				.address("[default_address]")
-				.loginType(LoginType.KAKAO)
+				.email((String) kakaoAccount.get("email"))
+				.name((String) profile.get("nickname"))
+				.nickname((String) profile.get("nickname"))
+				.provider("KAKAO")
 				.build();
 		}
 	};

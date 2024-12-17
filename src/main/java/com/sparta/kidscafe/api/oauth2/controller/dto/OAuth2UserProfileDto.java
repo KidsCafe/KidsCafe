@@ -16,15 +16,17 @@ public class OAuth2UserProfileDto {
 	private final String address;
 	private final String nickname;
 	private final LoginType loginType;
+	private final String provider;
 
 	@Builder
-	public OAuth2UserProfileDto(String oauthId, String name, String email, String address, String nickname, LoginType loginType) {
+	public OAuth2UserProfileDto(String oauthId, String name, String email, String address, String nickname, LoginType loginType, String provider) {
 		this.oauthId = oauthId;
 		this.name = name;
 		this.email = email;
 		this.address = address;
 		this.nickname = nickname;
 		this.loginType = loginType;
+		this.provider = provider;
 	}
 
 	public User toUser(){
@@ -37,6 +39,7 @@ public class OAuth2UserProfileDto {
 			.address(address != null ? address : "")
 			.role(RoleType.USER)
 			.loginType(loginType != null ? loginType :LoginType.BASIC)
+			.provider(provider)
 			.build();
 	}
 }
