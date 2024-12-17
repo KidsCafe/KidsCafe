@@ -15,6 +15,9 @@ public class PricePolicyUpdateRequestDto {
     @Positive(message = "Target ID는 양수만 허용됩니다.")
     private Long targetId;
 
+    @NotBlank(message = "정책 이름은 필수 입력값입니다.")
+    private String title;
+
     @NotBlank(message = "DayType은 필수 입력값입니다.")
     @Pattern(regexp = "^(월|화|수|목|금|토|일)(,\\s*(월|화|수|목|금|토|일))*$",
             message = "DayType은 요일을 쉼표로 구분하여 입력해야 합니다. (예: '월, 화, 수')")
@@ -27,6 +30,6 @@ public class PricePolicyUpdateRequestDto {
     private Double rate;
 
     public void updateEntity(PricePolicy pricePolicy) {
-        pricePolicy.updateDetails(targetId, dayType, rate);
+        pricePolicy.updateDetails(targetId, title, dayType, rate);
     }
 }

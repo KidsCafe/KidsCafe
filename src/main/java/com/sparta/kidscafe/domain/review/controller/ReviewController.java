@@ -51,7 +51,7 @@ public class ReviewController {
   ) {
     return ResponseEntity
         .status(HttpStatus.OK)
-        .body(reviewService.getReviews(cafeId, PageRequest.of(page,size)));
+        .body(reviewService.getReviews(cafeId, PageRequest.of(page - 1,size)));
   }
 
   @GetMapping("/reviews")
@@ -62,7 +62,7 @@ public class ReviewController {
   ) {
     return ResponseEntity
         .status(HttpStatus.OK)
-        .body(reviewService.getMyReviews(authUser, PageRequest.of(page,size)));
+        .body(reviewService.getMyReviews(authUser, PageRequest.of(page - 1,size)));
   }
 
   @PutMapping("/reviews/{reviewId}")
@@ -72,7 +72,7 @@ public class ReviewController {
         @Valid @RequestBody ReviewCreateRequestDto request
   ) {
     StatusDto response = reviewService.updateReview(authUser, reviewId, request);
-    return ResponseEntity.status(HttpStatus.RESET_CONTENT).body(response);
+    return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 
   @DeleteMapping("/reviews/{reviewId}")
