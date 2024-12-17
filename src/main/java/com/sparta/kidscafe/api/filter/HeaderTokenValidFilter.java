@@ -28,10 +28,22 @@ public class HeaderTokenValidFilter extends OncePerRequestFilter {
 			return;
 		}
 
-		String accessToken = Optional.ofNullable(request.getHeader("Authorization"))
+		// Authorization 헤더 유무 검사
+		String authorizationHeader = request.getHeader("Authorization");
+		if (!StringUtils.hasText(authorizationHeader)) {
+			filterChain.doFilter(request, response);
+			return;
+		}
+
+		String accessToken = Optional.ofNullable(authorizationHeader)
 			.filter(header -> header.startsWith("Bearer "))
 			.map(header -> header.substring("Bearer ".length()))
-			.orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "토큰이 존재하지 않습니다."));
+			.orElse(null);
+
+		if (accessToken == null) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "유효한 토큰이 존재하지 않습니다.");
+		}
+
 		filterChain.doFilter(request, response);
 	}
 
@@ -43,6 +55,11 @@ public class HeaderTokenValidFilter extends OncePerRequestFilter {
 		if (!StringUtils.hasText(url)) {
 			return true;
 		}
+
+		if(url.equals("/") || url.equals("/index.html") || url.equals("/favicon.ico")){
+			return true;
+		}
+
 		if (url.startsWith("/login/oauth/authorize") ||
 			(url.startsWith("/redirect/oauth") && queryString != null && queryString.contains("code="))) {
 			return true;
@@ -53,8 +70,7 @@ public class HeaderTokenValidFilter extends OncePerRequestFilter {
 			url.startsWith("/oauth2") ||
 			url.startsWith("/error") ||
 			url.contains("api/cafes") ||
-			url.equals("/") ||
-			url.startsWith("/index.html") ||
+			// url.startsWith("/index.html") ||
 			url.startsWith("/js") ||
 			url.startsWith("/css");
 	}
