@@ -70,10 +70,8 @@ public class ReservationDslRepositoryImpl implements ReservationDslRepository {
   private BooleanBuilder isRoomAvailableMakeWhere(ReservationSearchCondition condition) {
     return new BooleanBuilder()
         .and(reservationCondition.notEqId(condition.getReservationId()))
-        .and(reservationDetail.reservation.id.in(reservationRoomIdQuery(condition)))
+        .and(reservationCondition.inReservationDetailId(reservationRoomIdQuery(condition)))
         .and(reservationCondition.eqTargetType(TargetType.FEE))
-        .and(cafeCondition.loeOpenedAt(condition.getStartedAt().toLocalTime()))
-        .and(cafeCondition.goeClosedAt(condition.getFinishedAt().toLocalTime()))
-        .and(cafeCondition.notHoliday(condition.getStartedAt()));
+        .and(cafeCondition.isOpening(condition.getStartedAt()));
   }
 }

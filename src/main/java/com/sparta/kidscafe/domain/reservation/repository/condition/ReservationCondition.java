@@ -2,11 +2,11 @@ package com.sparta.kidscafe.domain.reservation.repository.condition;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
+import com.querydsl.core.types.SubQueryExpression;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.sparta.kidscafe.common.enums.TargetType;
 import com.sparta.kidscafe.domain.reservation.entity.QReservation;
 import com.sparta.kidscafe.domain.reservation.entity.QReservationDetail;
-import com.sparta.kidscafe.domain.reservation.repository.condition.ReservationSearchCondition;
 import java.time.LocalDateTime;
 import org.springframework.stereotype.Component;
 
@@ -48,5 +48,12 @@ public class ReservationCondition {
     innerBuilder.and(reservation.finishedAt.goe(startedAt));
     innerBuilder.and(reservation.startedAt.loe(finishedAt));
     return innerBuilder.getValue();
+  }
+
+  public BooleanExpression inReservationDetailId(SubQueryExpression<Long> ids) {
+    if(ids == null)
+      return null;
+
+    return reservationDetail.reservation.id.in(ids);
   }
 }
