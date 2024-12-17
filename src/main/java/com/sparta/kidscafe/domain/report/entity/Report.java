@@ -51,3 +51,4 @@ public class Report extends Timestamped {
     this.status = status;
   }
 }
+

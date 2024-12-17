@@ -18,6 +18,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.util.StringUtils;
 
 @Getter
 @Builder
@@ -62,9 +63,12 @@ public class PricePolicy extends Timestamped {
         return targetType.getName();
     }
 
-    public void updateDetails(Long targetId, String dayType, Double rate) {
+    public void updateDetails(Long targetId, String title, String dayType, Double rate) {
         if (targetId != null) {
             this.targetId = targetId;
+        }
+        if(title != null) {
+            this.title = title;
         }
         if (dayType != null) {
             this.dayType = dayType;

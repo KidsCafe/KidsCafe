@@ -7,6 +7,7 @@ import com.sparta.kidscafe.domain.review.service.ReviewImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,10 +23,11 @@ public class ReviewImageController {
   @PostMapping("/reviews/images")
     public ResponseEntity<StatusDto> uploadImage (
       @Auth AuthUser authUser,
-      @RequestParam Long reviewId,
+      @RequestParam(value = "reviewId", required = false) String reviewId,
       @RequestPart List<MultipartFile> reviewImages
   ) {
-    StatusDto response = reviewImageService.uploadImage(authUser.getId(), reviewId, reviewImages);
+    Long parseId = StringUtils.hasText(reviewId) ? Long.parseLong(reviewId) : null;
+    StatusDto response = reviewImageService.uploadImage(authUser.getId(), parseId, reviewImages);
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 

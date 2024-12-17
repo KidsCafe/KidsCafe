@@ -62,7 +62,7 @@ public class BookmarkService {
     if (!authUser.getRoleType().equals(RoleType.USER)) {
       throw new BusinessException(ErrorCode.UNAUTHORIZED);
     }
-    Pageable pageable = PageRequest.of(page, size, Sort.by(Direction.DESC, "createdAt"));
+    Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Direction.DESC, "createdAt"));
     Page<Bookmark> bookmarksForUser = bookmarkRepository.findAllByUserId(authUser.getId(),
         pageable);
 
@@ -85,7 +85,7 @@ public class BookmarkService {
     if (!authUser.getRoleType().equals(RoleType.OWNER)) {
       throw new BusinessException(ErrorCode.UNAUTHORIZED);
     }
-    Pageable pageable = PageRequest.of(page, size, Sort.by(Direction.DESC, "createdAt"));
+    Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Direction.DESC, "createdAt"));
     Page<Bookmark> bookmarksForCafe = bookmarkRepository.findAllByCafeId(cafeId, pageable);
 
     Page<BookmarkOwnerRetreiveResponseDto> bookmarkDtoForCafe = bookmarksForCafe.map(

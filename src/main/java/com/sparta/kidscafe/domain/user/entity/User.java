@@ -31,7 +31,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name = "user")
-public class User extends Timestamped {
+public class User extends Timestamped implements OAuthMember {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -62,6 +62,12 @@ public class User extends Timestamped {
   @Column(nullable = false)
   private LoginType loginType;
 
+  @Column
+  private String oauthId;
+
+  @Column
+  private String provider;
+
   @Builder.Default
   @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
   private List<Bookmark> bookmarks = new ArrayList<>();
@@ -80,6 +86,16 @@ public class User extends Timestamped {
     this.email = email;
     this.role = role;
   }
+
+  public User updateOAuth(String email, String name, String nickname) {
+    this.email = email;
+    if(name != null && !name.isBlank()){
+      this.name = name;
+    }
+    if(nickname != null && !nickname.isBlank()){
+      this.nickname = nickname;
+    }
+    return this;
 
   // 프로필 업데이트 메서드
   public void updateProfile(String name, String nickname, String address) {

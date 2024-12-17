@@ -112,21 +112,21 @@ public class ReportService {
     // 상태 변경 로직
     switch (currentStatus) {
       case PENDING:
-        // PENDING 상태에서 IN_PROGRESS로 변경
-        if (requestedStatus == ReportType.PENDING) {
+        // PENDING 상태에서 IN_PROGRESS로 변경 또는 REJECTED로 변경
+        if (requestedStatus == ReportType.IN_PROGRESS) {
           report.UpdateReportType(ReportType.IN_PROGRESS);
+        } else if (requestedStatus == ReportType.REJECTED) {
+          report.UpdateReportType(ReportType.REJECTED);
         } else {
           throw new BusinessException(REPORT_STATUS_NOT_CHANGEABLE);
         }
         break;
 
       case IN_PROGRESS:
-        // IN_PROGRESS 상태에서 COMPLETED 또는 REJECTED로 변경
-        if (requestedStatus == ReportType.IN_PROGRESS) {
+        // IN_PROGRESS 상태에서 COMPLETED 변경
+        if (requestedStatus == ReportType.COMPLETED) {
           report.UpdateReportType(ReportType.COMPLETED);
-        } else if (requestedStatus == ReportType.PENDING) {
-          report.UpdateReportType(ReportType.REJECTED);
-        } else {
+        }  else {
           throw new BusinessException(REPORT_STATUS_NOT_CHANGEABLE);
         }
         break;

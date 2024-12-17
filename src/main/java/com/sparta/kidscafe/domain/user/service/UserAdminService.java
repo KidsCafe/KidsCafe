@@ -30,7 +30,7 @@ public class UserAdminService {
         PageRequest pageRequest = PageRequest.of(page - 1, size);
 
         // RoleType.USER 필터링된 사용자 조회 및 페이징 처리
-        Page<User> userPage = userRepository.findAllByRole(RoleType.USER, pageRequest);
+        Page<User> userPage = userRepository.findAll(pageRequest);
 
         // 사용자 목록을 DTO로 변환
         List<UserResponseDto> users = userPage.getContent().stream()

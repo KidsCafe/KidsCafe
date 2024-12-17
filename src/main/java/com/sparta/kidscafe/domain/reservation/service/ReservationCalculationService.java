@@ -42,7 +42,7 @@ public class ReservationCalculationService {
         rates = pricePolicyRepository.findPricePolicyWithRoom(condition);
       }
 
-      price = reservationdetail.getPrice() * reservationdetail.getCount();
+      price *= reservationdetail.getCount();
       for (Double rate : rates) {
         price *= rate;
       }
@@ -52,5 +52,30 @@ public class ReservationCalculationService {
     }
 
     reservation.updateTotalPrice((int) totalPrice);
+  }
+
+  public int calcReservation(Reservation reservation, ReservationDetail reservationDetail) {
+    double price;
+    PricePolicySearchCondition condition =
+        PricePolicySearchCondition.create(reservation, reservationDetail);
+
+    List<Double> rates = new ArrayList<>();
+    if (reservationDetail.getTargetType().equals(TargetType.FEE)) {
+      price = feeRepository.findById(condition.getTargetId())
+          .orElseThrow(() -> new BusinessException(ErrorCode.FEE_NOT_FOUND)).getFee();
+      rates = pricePolicyRepository.findPricePolicyWithFee(condition);
+    } else {
+      price = roomRepository.findById(condition.getTargetId())
+          .orElseThrow(() -> new BusinessException(ErrorCode.ROOM_NOT_FOUND)).getPrice();
+      rates = pricePolicyRepository.findPricePolicyWithRoom(condition);
+    }
+
+    price = price * reservationDetail.getCount();
+    for (Double rate : rates) {
+      price *= rate;
+    }
+
+    reservationDetail.updatePrice((int) price);
+    return (int) price;
   }
 }

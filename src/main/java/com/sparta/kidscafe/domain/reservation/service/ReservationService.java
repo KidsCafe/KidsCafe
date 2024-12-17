@@ -6,11 +6,14 @@ import com.sparta.kidscafe.common.dto.ResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
 import com.sparta.kidscafe.common.enums.RoleType;
 import com.sparta.kidscafe.common.enums.TargetType;
+import com.sparta.kidscafe.common.util.valid.CafeValidationCheck;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
 import com.sparta.kidscafe.domain.cafe.repository.CafeRepository;
 import com.sparta.kidscafe.domain.fee.repository.FeeRepository;
 import com.sparta.kidscafe.domain.pricepolicy.repository.PricePolicyRepository;
 import com.sparta.kidscafe.domain.reservation.dto.request.ReservationCreateRequestDto;
+import com.sparta.kidscafe.domain.reservation.dto.request.ReservationUpdateRequestDto;
+import com.sparta.kidscafe.domain.reservation.dto.request.ReservationUpdateRequestDto.ReservationDetailUpdateRequestDto;
 import com.sparta.kidscafe.domain.reservation.dto.response.ReservationResponseDto;
 import com.sparta.kidscafe.domain.reservation.entity.Reservation;
 import com.sparta.kidscafe.domain.reservation.entity.ReservationDetail;
@@ -18,11 +21,13 @@ import com.sparta.kidscafe.domain.reservation.enums.ReservationStatus;
 import com.sparta.kidscafe.domain.reservation.repository.ReservationDetailRepository;
 import com.sparta.kidscafe.domain.reservation.repository.ReservationRepository;
 import com.sparta.kidscafe.domain.reservation.repository.condition.ReservationSearchCondition;
+import com.sparta.kidscafe.domain.room.entity.Room;
 import com.sparta.kidscafe.domain.room.repository.RoomRepository;
 import com.sparta.kidscafe.domain.user.entity.User;
 import com.sparta.kidscafe.domain.user.repository.UserRepository;
 import com.sparta.kidscafe.exception.BusinessException;
 import com.sparta.kidscafe.exception.ErrorCode;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +52,7 @@ public class ReservationService {
   private final PricePolicyRepository pricePolicyRepository;
   private final ReservationDetailRepository reservationDetailRepository;
   private final FeeRepository feeRepository;
+  private final CafeValidationCheck cafeValidationCheck;
 
   @Transactional
   public StatusDto createReservation(AuthUser authUser, Long cafeId,
@@ -173,6 +179,7 @@ public class ReservationService {
     );
   }
 
+  // Detail용 TargetName 관련 데이터
   public String getTargetName(TargetType targetType, Long targetId) {
     if (targetType == TargetType.ROOM) {
       return roomRepository.findById(targetId)
@@ -186,16 +193,17 @@ public class ReservationService {
 
   // 예약 상세 조회: Owner용
   @Transactional(readOnly = true)
-  public ResponseDto<ReservationResponseDto> getReservationDetailByOwner(AuthUser authUser,
-      Long reservationId) {
+  public ResponseDto<ReservationResponseDto> getReservationDetailByOwner(AuthUser authUser, Long reservationId) {
     if (!authUser.getRoleType().equals(RoleType.OWNER)) {
       throw new BusinessException(ErrorCode.FORBIDDEN);
     }
+
     Reservation reservation = reservationRepository.findById(reservationId)
         .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
-    if (!reservation.getCafe().getId().equals(authUser.getId())) {
-      throw new BusinessException(ErrorCode.FORBIDDEN);
-    }
+    Cafe cafe = reservation.getCafe();
+
+    // 예약 카페가 사장님 소유인지 검증
+    cafeValidationCheck.validMyCafe(cafe.getId(), authUser.getId());
 
     ReservationResponseDto responseDto = ReservationResponseDto.builder()
         .reservationId(reservation.getId())
@@ -209,6 +217,7 @@ public class ReservationService {
             .map(detail -> ReservationResponseDto.ReservationDetailResponseDto.builder()
                 .targetType(detail.getTargetType())
                 .targetId(detail.getTargetId())
+                .targetName(getTargetName(detail.getTargetType(), detail.getTargetId()))
                 .price(detail.getPrice())
                 .count(detail.getCount())
                 .build())
@@ -221,6 +230,47 @@ public class ReservationService {
     );
   }
 
+  // 예약 수정(User용)
+  @Transactional
+  public StatusDto updateReservation(AuthUser authUser, Long reservationId,
+      ReservationUpdateRequestDto requestDto) {
+
+    Long userId = authUser.getId();
+    Reservation reservation = reservationRepository.findById(reservationId)
+        .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
+    // 유저 권한 확인
+    if (!userId.equals(reservation.getUser().getId())) {
+      throw new BusinessException(ErrorCode.FORBIDDEN);
+    }
+    // 취소는 PENDING 상태에만 가능
+    if (reservation.getStatus() != ReservationStatus.PENDING) {
+      throw new BusinessException(ErrorCode.INVALID_STATUS);
+    }
+    double totalPrice = 0;
+    for (ReservationDetailUpdateRequestDto detailDto : requestDto.getDetails()) {
+      ReservationDetail details = reservationDetailRepository.findById(detailDto.getId())
+          .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
+
+      details.updateCount(detailDto.getCount());
+
+      totalPrice += reservationCalculationService.calcReservation(reservation, details);
+    }
+    reservation.updateTotalPrice((int) totalPrice);
+    reservation.updateTime(LocalDateTime.parse(requestDto.getStartedAt()),
+        LocalDateTime.parse(requestDto.getFinishedAt()));
+
+    ReservationSearchCondition condition = requestDto.createSearchCondition(
+        reservation.getCafe().getId(), reservationId);
+    if (!reservationRepository.isRoomAvailable(condition)) {
+      throw new BusinessException(ErrorCode.RESERVATION_UPDATE_FAILURE);
+    }
+    return StatusDto.builder()
+        .status(HttpStatus.OK.value())
+        .message("예약이 성공적으로 수정되었습니다.")
+        .build();
+  }
+
+
   // 예약 승인
   @Transactional
   public StatusDto approveReservation(AuthUser authUser, Long reservationId) {
@@ -230,7 +280,7 @@ public class ReservationService {
     Reservation reservation = reservationRepository.findById(reservationId)
         .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
     if (reservation.getStatus() != ReservationStatus.PENDING) {
-      throw new BusinessException(ErrorCode.INVALID_STATUS_CHANGE);
+      throw new BusinessException(ErrorCode.INVALID_STATUS);
     }
     reservation.approve();
     reservationRepository.save(reservation);
@@ -244,7 +294,7 @@ public class ReservationService {
   // 예약 상태 변경: 결제 완료 상황 (결제 여부 확인 메서드 사용) -> Complete)
   @Transactional
   public StatusDto confirmPayment(AuthUser authUser, Long reservationId) {
-    if (!authUser.getRoleType().equals(RoleType.USER)) {
+    if (!authUser.getRoleType().equals(RoleType.OWNER)) {
       throw new BusinessException(ErrorCode.FORBIDDEN);
     }
     Reservation reservation = reservationRepository.findById(reservationId)
@@ -295,10 +345,6 @@ public class ReservationService {
     if (!cafe.getUser().getId().equals(authUser.getId())) {
       throw new BusinessException(ErrorCode.UNAUTHORIZED);
     }
-    // 에약 상태 검증(Complete 상태는 취소 불가)
-    if (reservation.getStatus() == ReservationStatus.COMPLETED) {
-      throw new BusinessException(ErrorCode.INVALID_STATUS_CHANGE);
-    }
     reservation.cancelByOwner();
     reservationRepository.save(reservation);
 
@@ -307,6 +353,4 @@ public class ReservationService {
         .message("사장님이 예약을 취소했습니다.")
         .build();
   }
-
-
 }
