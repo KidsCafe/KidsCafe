@@ -43,6 +43,7 @@ public class Report extends Timestamped {
   @Column(nullable = false)
   private String content;
 
+  @Builder.Default
   @Enumerated(value = EnumType.STRING)
   private ReportType status = ReportType.PENDING;
 
@@ -50,3 +51,4 @@ public class Report extends Timestamped {
     this.status = status;
   }
 }
+

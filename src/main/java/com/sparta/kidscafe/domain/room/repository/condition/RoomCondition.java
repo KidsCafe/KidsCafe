@@ -1,4 +1,4 @@
-package com.sparta.kidscafe.domain.cafe.repository.condition;
+package com.sparta.kidscafe.domain.room.repository.condition;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
@@ -9,6 +9,13 @@ import org.springframework.stereotype.Component;
 public class RoomCondition {
 
   private final QRoom room = QRoom.room;
+
+  public BooleanExpression eqId(Long id) {
+    if(id == null)
+      return null;
+
+    return room.id.eq(id);
+  }
 
   public BooleanExpression existRoom() {
     return new CaseBuilder()

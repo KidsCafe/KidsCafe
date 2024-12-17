@@ -3,6 +3,7 @@ package com.sparta.kidscafe.domain.cafe.controller;
 import com.sparta.kidscafe.common.annotation.Auth;
 import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.StatusDto;
+import com.sparta.kidscafe.common.util.valid.AuthValidationCheck;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeImageDeleteRequestDto;
 import com.sparta.kidscafe.domain.cafe.service.CafeImageService;
 import java.util.List;
@@ -29,13 +30,13 @@ public class CafeImageController {
   @PostMapping("/cafes/images")
   public ResponseEntity<StatusDto> uploadCafeImage(
       @Auth AuthUser authUser,
-      @RequestParam(value = "targetId", required = false) String targetId,
+      @RequestParam(value = "cafeId", required = false) String cafeId,
       @RequestPart(value = "images") List<MultipartFile> images
   ) {
-    Long cafeId = StringUtils.hasText(targetId) ? Long.parseLong(targetId) : null;
+    Long parseId = StringUtils.hasText(cafeId) ? Long.parseLong(cafeId) : null;
     return ResponseEntity
         .status(HttpStatus.CREATED)
-        .body(cafeImageService.uploadCafeImage(authUser, cafeId, images));
+        .body(cafeImageService.uploadCafeImage(authUser, parseId, images));
   }
 
   @DeleteMapping("/cafes/images")
@@ -43,6 +44,7 @@ public class CafeImageController {
       @Auth AuthUser authUser,
       @RequestBody CafeImageDeleteRequestDto requestDto
   ) {
+    AuthValidationCheck.validNotUser(authUser);
     cafeImageService.deleteImage(authUser, requestDto);
     return ResponseEntity.noContent().build();
   }

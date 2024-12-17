@@ -33,22 +33,21 @@ public class ReviewController {
 
   private final ReviewService reviewService;
 
-  @PostMapping(value = "/cafes/{cafeId}/reviews",consumes = MediaType.MULTIPART_FORM_DATA_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
+  @PostMapping( "/cafes/{cafeId}/reviews")
     public ResponseEntity<StatusDto> createReview (
         @Auth AuthUser authUser,
-        @Valid @RequestPart ReviewCreateRequestDto request,
-        @RequestPart List<MultipartFile> reviewImages,
-        @PathVariable Long cafeId
+        @Valid @RequestBody ReviewCreateRequestDto request,
+        @PathVariable ("cafeId") Long cafeId
   ) {
-    StatusDto response = reviewService.createReview(authUser, request, reviewImages, cafeId);
+    StatusDto response = reviewService.createReview(authUser, request, cafeId);
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 
   @GetMapping("/cafes/{cafeId}/reviews")
     public ResponseEntity<PageResponseDto<ReviewResponseDto>> getReviews (
-        @PathVariable Long cafeId,
-        @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "10") int size
+        @PathVariable ("cafeId") Long cafeId,
+        @RequestParam(defaultValue = "0",name = "page") int page,
+        @RequestParam(defaultValue = "10",name = "size") int size
   ) {
     return ResponseEntity
         .status(HttpStatus.OK)
@@ -58,8 +57,8 @@ public class ReviewController {
   @GetMapping("/reviews")
     public ResponseEntity<PageResponseDto<ReviewResponseDto>> getMyReviews (
         @Auth AuthUser authUser,
-        @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "10") int size
+        @RequestParam(defaultValue = "0",name = "page") int page,
+        @RequestParam(defaultValue = "10",name = "size") int size
   ) {
     return ResponseEntity
         .status(HttpStatus.OK)
@@ -69,7 +68,7 @@ public class ReviewController {
   @PutMapping("/reviews/{reviewId}")
     public ResponseEntity<StatusDto> updateReview (
         @Auth AuthUser authUser,
-        @PathVariable Long reviewId,
+        @PathVariable ("reviewId") Long reviewId,
         @Valid @RequestBody ReviewCreateRequestDto request
   ) {
     StatusDto response = reviewService.updateReview(authUser, reviewId, request);
@@ -77,7 +76,7 @@ public class ReviewController {
   }
 
   @DeleteMapping("/reviews/{reviewId}")
-    public ResponseEntity<Void> deleteReview (@Auth AuthUser authUser, @PathVariable Long reviewId) {
+    public ResponseEntity<Void> deleteReview (@Auth AuthUser authUser, @PathVariable ("reviewId")Long reviewId) {
     reviewService.deleteReview(authUser, reviewId);
     return ResponseEntity.noContent().build();
   }

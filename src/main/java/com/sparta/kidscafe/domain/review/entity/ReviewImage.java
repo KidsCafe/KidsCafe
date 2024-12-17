@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.sql.Update;
 
 @Getter
 @Builder
@@ -26,10 +27,17 @@ public class ReviewImage extends Timestamped {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "review_id")
-  private Review review;
+  @Column
+  private Long reviewId;
 
   @Column(nullable = false)
   private String imagePath;
+
+  public void deleteReviewId (){
+    this.reviewId = null;
+  }
+
+  public void updateReviewImages (Long reviewId){
+    this.reviewId = reviewId;
+  }
 }

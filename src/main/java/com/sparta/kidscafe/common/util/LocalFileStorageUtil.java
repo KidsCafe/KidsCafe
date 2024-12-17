@@ -5,23 +5,24 @@ import com.sparta.kidscafe.exception.BusinessException;
 import com.sparta.kidscafe.exception.ErrorCode;
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
  * S3대신 임시로 테스트 할 업로드용 클래스
  */
 @Slf4j(topic = "FileUtil")
-@Component
 @RequiredArgsConstructor
-public class FileUtil {
+public class LocalFileStorageUtil implements FileStorageUtil {
 
-  public String makeDirectory(String dirPath, ImageType imageType, Long id) {
-    StringBuilder dirDetailPath = new StringBuilder(dirPath);
+  @Value("${filePath.cafe}")
+  private String defaultImagePath;
+
+  @Override
+  public String makeDirectory(ImageType imageType, Long id) {
+    StringBuilder dirDetailPath = new StringBuilder(defaultImagePath);
     dirDetailPath.append(id);
     dirDetailPath.append("/");
     dirDetailPath.append(imageType.toString().toLowerCase());
@@ -33,27 +34,18 @@ public class FileUtil {
     return dirDetailPath.toString();
   }
 
-  public String makeFileName(String dirPath, MultipartFile image) {
-    LocalDateTime now = LocalDateTime.now();
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
-    String formattedDateTime = now.format(formatter);
-
-    StringBuilder imagePath = new StringBuilder(dirPath);
-    imagePath.append(formattedDateTime);
-    imagePath.append("_");
-    imagePath.append(image.getOriginalFilename());
-    return imagePath.toString();
-  }
-
-  public void uploadImage(String uploadPath, MultipartFile image) {
+  @Override
+  public String uploadImage(String uploadPath, MultipartFile image) {
     try {
       image.transferTo(new File(uploadPath));
+      return uploadPath;
     } catch (IOException ex) {
       ex.printStackTrace();
       throw new BusinessException(ErrorCode.IMAGE_UPLOAD_FAILED);
     }
   }
 
+  @Override
   public void deleteImage(String deleteImagePath) {
     File file = new File(deleteImagePath);
     if (file.exists()) {

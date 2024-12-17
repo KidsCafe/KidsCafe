@@ -1,11 +1,5 @@
 package com.sparta.kidscafe.domain.review.service;
 
-import static com.sparta.kidscafe.exception.ErrorCode.CAFE_NOT_FOUND;
-import static com.sparta.kidscafe.exception.ErrorCode.FORBIDDEN;
-import static com.sparta.kidscafe.exception.ErrorCode.REVIEW_NOT_FOUND;
-import static com.sparta.kidscafe.exception.ErrorCode.USER_NOT_FOUND;
-
-import com.sparta.kidscafe.common.client.S3FileUploader;
 import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.PageResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
@@ -17,13 +11,9 @@ import com.sparta.kidscafe.domain.review.entity.Review;
 import com.sparta.kidscafe.domain.review.entity.ReviewImage;
 import com.sparta.kidscafe.domain.review.repository.ReviewImageRepository;
 import com.sparta.kidscafe.domain.review.repository.ReviewRepository;
-import com.sparta.kidscafe.domain.room.repository.RoomRepository;
 import com.sparta.kidscafe.domain.user.entity.User;
 import com.sparta.kidscafe.domain.user.repository.UserRepository;
 import com.sparta.kidscafe.exception.BusinessException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -33,6 +23,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+import java.util.Optional;
+
+import static com.sparta.kidscafe.exception.ErrorCode.*;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -40,13 +35,10 @@ public class ReviewService {
 
   private final UserRepository userRepository;
   private final CafeRepository cafeRepository;
-  private final S3FileUploader s3FileUploader;
   private final ReviewRepository reviewRepository;
   private final ReviewImageRepository reviewImageRepository;
-  private final RoomRepository roomRepository;
 
-  public StatusDto createReview(AuthUser authUser, ReviewCreateRequestDto request,
-      List<MultipartFile> reviewImages, Long cafeId) {
+  public StatusDto createReview(AuthUser authUser, ReviewCreateRequestDto request, Long cafeId) {
 
     Long id = authUser.getId();
 
@@ -65,19 +57,11 @@ public class ReviewService {
 
     reviewRepository.save(newReview);
 
-    // 이미지 업로드
-    List<String> uploads = s3FileUploader.uploadFiles(reviewImages);
+    List<ReviewImage> images = reviewImageRepository.findAllById(request.imageId());
 
-    // 이미지 리스트를 리뷰이미지 객체로 변환
-    List<ReviewImage> images = new ArrayList<>();
-    for (String upload : uploads) {
-      ReviewImage reviewImage = ReviewImage.builder()
-          .review(newReview)
-          .imagePath(upload)
-          .build();
-      images.add(reviewImage);
+    for (ReviewImage reviewImage : images) {
+      reviewImage.updateReviewImages(newReview.getId());
     }
-    reviewImageRepository.saveAll(images);
 
     return StatusDto.builder()
         .status(HttpStatus.CREATED.value())
@@ -149,13 +133,19 @@ public class ReviewService {
 
   public void deleteReview(AuthUser authUser, Long reviewId) {
     // 리뷰확인
-    Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new BusinessException (REVIEW_NOT_FOUND));
+    Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new BusinessException(REVIEW_NOT_FOUND));
 
     // 리뷰 사용자 확인
     Long id = authUser.getId();
 
     if (!id.equals(review.getUser().getId())) {
-      throw new BusinessException (FORBIDDEN);
+      throw new BusinessException(FORBIDDEN);
+    }
+
+    List<ReviewImage> allByReviewId = reviewImageRepository.findAllByReviewId(reviewId);
+
+    for(ReviewImage reviewImage : allByReviewId) {
+      reviewImage.deleteReviewId();
     }
 
     reviewRepository.delete(review);

@@ -36,7 +36,7 @@ public class User extends Timestamped implements OAuthMember {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(nullable = false, length = 50)
+  @Column(nullable = false, length = 50, unique = true)
   private String email;
 
   @Column(nullable = false)
@@ -51,10 +51,15 @@ public class User extends Timestamped implements OAuthMember {
   @Column(nullable = false)
   private String address;
 
+  @Column
+  private String imagePath;
+
   @Enumerated(value = EnumType.STRING)
+  @Column(nullable = false)
   private RoleType role;
 
   @Enumerated(value = EnumType.STRING)
+  @Column(nullable = false)
   private LoginType loginType;
 
   @Column
@@ -64,17 +69,18 @@ public class User extends Timestamped implements OAuthMember {
   private String provider;
 
   @Builder.Default
-  @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+  @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
   private List<Bookmark> bookmarks = new ArrayList<>();
 
   @Builder.Default
-  @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+  @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
   private List<Review> reviews = new ArrayList<>();
 
   @Builder.Default
-  @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+  @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
   private List<Reservation> reservations = new ArrayList<>();
 
+  // 최소 필드로 생성자를 추가
   public User (Long id, String email, RoleType role) {
     this.id = id;
     this.email = email;
@@ -90,5 +96,24 @@ public class User extends Timestamped implements OAuthMember {
       this.nickname = nickname;
     }
     return this;
+
+  // 프로필 업데이트 메서드
+  public void updateProfile(String name, String nickname, String address) {
+    if (name != null && !name.isBlank()) {
+      this.name = name;
+    }
+    if (nickname != null && !nickname.isBlank()) {
+      this.nickname = nickname;
+    }
+    if (address != null && !address.isBlank()) {
+      this.address = address;
+    }
+  }
+
+  // 비밀번호 변경 메서드
+  public void changePassword(String newPassword) {
+    if (newPassword != null && !newPassword.isBlank()) {
+      this.password = newPassword;
+    }
   }
 }

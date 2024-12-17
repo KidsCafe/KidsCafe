@@ -1,7 +1,6 @@
 package com.sparta.kidscafe.domain.reservation.entity;
 
 import com.sparta.kidscafe.common.enums.TargetType;
-import com.sparta.kidscafe.domain.user.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -25,6 +24,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "reservation_detail")
 public class ReservationDetail {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -45,8 +45,11 @@ public class ReservationDetail {
   @Column(nullable = false)
   private Long count;
 
-  public void updatePrice(double rate) {
-    double tempPrice = price * rate;
-    price *= (int) tempPrice;
+  public void updatePrice(int price) {
+    this.price = price;
+  }
+
+  public void updateCount(Long count) {
+    this.count = count;
   }
 }

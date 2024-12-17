@@ -37,9 +37,6 @@ public class Review extends Timestamped {
   @JoinColumn(name = "user_id")
   private User user;
 
-  @Column(nullable = false)
-  private String imageList;
-
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "cafe_id")
   private Cafe cafe;
@@ -50,12 +47,9 @@ public class Review extends Timestamped {
   @Column(nullable = false)
   private String content;
 
-  @OneToMany(mappedBy = "review", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
-  private List<Report> report = new ArrayList<>();
-
   @Builder.Default
   @OneToMany(mappedBy = "review", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
-  private List<ReviewImage> reviewImages = new ArrayList<>();
+  private List<Report> report = new ArrayList<>();
 
   public Review(Long id, User user, Cafe cafe, double star, String content) {
     this.id = id;

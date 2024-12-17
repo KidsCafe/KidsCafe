@@ -21,7 +21,6 @@ public enum TargetType {
             }
         }
         return ROOM; // 기본값 설정
-
     }
 
     @JsonValue

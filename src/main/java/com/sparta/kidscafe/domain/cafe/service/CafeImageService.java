@@ -3,17 +3,15 @@ package com.sparta.kidscafe.domain.cafe.service;
 import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.ListResponseDto;
 import com.sparta.kidscafe.common.enums.ImageType;
-import com.sparta.kidscafe.common.util.FileUtil;
+import com.sparta.kidscafe.common.util.FileStorageUtil;
+import com.sparta.kidscafe.common.util.valid.CafeValidationCheck;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeImageDeleteRequestDto;
-import com.sparta.kidscafe.domain.cafe.entity.Cafe;
 import com.sparta.kidscafe.domain.cafe.entity.CafeImage;
 import com.sparta.kidscafe.domain.cafe.repository.CafeImageRepository;
-import com.sparta.kidscafe.domain.cafe.repository.CafeRepository;
 import com.sparta.kidscafe.domain.image.dto.ImageResponseDto;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,16 +21,14 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class CafeImageService {
 
-  @Value("${filePath.cafe}")
-  private String defaultImagePath;
-  private final CafeRepository cafeRepository;
+  private final CafeValidationCheck cafeValidationCheck;
   private final CafeImageRepository cafeImageRepository;
-  private final FileUtil fileUtil;
+  private final FileStorageUtil fileStorage;
 
   @Transactional
   public ListResponseDto<ImageResponseDto> uploadCafeImage(AuthUser authUser,
       Long cafeId, List<MultipartFile> images) {
-    List<ImageResponseDto> responseImages = saveCafeImage(authUser.getId(), cafeId, images);
+    List<ImageResponseDto> responseImages = uploadCafeImage(authUser.getId(), cafeId, images);
     return ListResponseDto.success(
         responseImages,
         HttpStatus.CREATED,
@@ -41,20 +37,14 @@ public class CafeImageService {
 
   @Transactional
   public void deleteImage(AuthUser authUser, CafeImageDeleteRequestDto requestDto) {
-    Long cafeId = requestDto.getCafeId();
-    Long userId = authUser.getId();
-
-    CafeValidationCheck.validNotUser(authUser);
-    Cafe cafe = cafeRepository.findByIdAndUserId(cafeId, userId).orElse(null);
-    CafeValidationCheck.validMyCafe(authUser, cafe);
-
+    cafeValidationCheck.validMyCafe(requestDto.getCafeId(), authUser.getId());
     List<CafeImage> deleteImages = cafeImageRepository.findAllById(requestDto.getImages());
     for (CafeImage deleteImage : deleteImages) {
       deleteImage.delete();
     }
   }
 
-  private List<ImageResponseDto> saveCafeImage(Long userId, Long cafeId,
+  private List<ImageResponseDto> uploadCafeImage(Long userId, Long cafeId,
       List<MultipartFile> images) {
     List<ImageResponseDto> responseImages = new ArrayList<>();
     for (MultipartFile image : images) {
@@ -66,9 +56,9 @@ public class CafeImageService {
   }
 
   private ImageResponseDto uploadCafeImage(Long userId, MultipartFile image) {
-    String dirPath = fileUtil.makeDirectory(defaultImagePath, ImageType.CAFE, userId);
-    String imagePath = fileUtil.makeFileName(dirPath, image);
-    fileUtil.uploadImage(imagePath, image);
+    String dirPath = fileStorage.makeDirectory(ImageType.CAFE, userId);
+    String imagePath = fileStorage.makeFileName(dirPath, image);
+    imagePath = fileStorage.uploadImage(imagePath, image);
     return new ImageResponseDto(imagePath);
   }
 
