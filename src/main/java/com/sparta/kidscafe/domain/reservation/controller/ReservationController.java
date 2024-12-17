@@ -7,6 +7,7 @@ import com.sparta.kidscafe.common.dto.ResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
 import com.sparta.kidscafe.common.util.valid.AuthValidationCheck;
 import com.sparta.kidscafe.domain.reservation.dto.request.ReservationCreateRequestDto;
+import com.sparta.kidscafe.domain.reservation.dto.request.ReservationUpdateRequestDto;
 import com.sparta.kidscafe.domain.reservation.dto.response.ReservationResponseDto;
 import com.sparta.kidscafe.domain.reservation.service.ReservationService;
 import jakarta.validation.Valid;
@@ -69,7 +70,8 @@ public class ReservationController {
   public ResponseEntity<ResponseDto<ReservationResponseDto>> getReservationDetailByUser(
       @Auth AuthUser authUser,
       @PathVariable Long reservationId) {
-    ResponseDto<ReservationResponseDto> response = reservationService.getReservationDetailByUser(authUser, reservationId);
+    ResponseDto<ReservationResponseDto> response = reservationService.getReservationDetailByUser(
+        authUser, reservationId);
     return ResponseEntity.ok(response);
   }
 
@@ -78,7 +80,18 @@ public class ReservationController {
   public ResponseEntity<ResponseDto<ReservationResponseDto>> getReservationDetailByOwner(
       @Auth AuthUser authUser,
       @PathVariable Long reservationId) {
-    ResponseDto<ReservationResponseDto> response = reservationService.getReservationDetailByOwner(authUser, reservationId);
+    ResponseDto<ReservationResponseDto> response = reservationService.getReservationDetailByOwner(
+        authUser, reservationId);
+    return ResponseEntity.ok(response);
+  }
+
+  // 예약 수정(User용)
+  @PatchMapping("/users/reservations/{reservationId}/update")
+  public ResponseEntity<StatusDto> updateReservation(
+      @Auth AuthUser authUser,
+      @PathVariable Long reservationId,
+      @Valid @RequestBody ReservationUpdateRequestDto requestDto) {
+    StatusDto response = reservationService.updateReservation(authUser, reservationId, requestDto);
     return ResponseEntity.ok(response);
   }
 
@@ -92,7 +105,7 @@ public class ReservationController {
   }
 
   // 예약 상태 변경
-  @PatchMapping("/admin/reservations/{reservationId}/complete")
+  @PatchMapping("/owners/reservations/{reservationId}/complete")
   public ResponseEntity<StatusDto> completeReservation(
       @Auth AuthUser authUser,
       @PathVariable Long reservationId) {

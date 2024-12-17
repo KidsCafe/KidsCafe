@@ -4,23 +4,22 @@ import lombok.Getter;
 
 @Getter
 public enum ReservationStatus {
-  PENDING(false, true),
-  APPROVED(false, true),
-  COMPLETED(false, false),
-  CANCELLED_BY_USER(true, false),
-  CANCELLED_BY_OWNER(true, false);
+  PENDING(false, true, true),
+  APPROVED(false, true, true),
+  COMPLETED(false, false, false),
+  CANCELLED_BY_USER(true, false, false),
+  CANCELLED_BY_OWNER(true, false, false),
+  ;
 
   private final boolean isCancelled;
-
-  @Getter
+  private final boolean canBeCancelledByUser;
   private final boolean canBeCancelledByOwner;
 
-  ReservationStatus(boolean isCancelled, boolean canBeCancelledByOwner) {
+  ReservationStatus(boolean isCancelled, boolean canBeCancelledByUser,
+      boolean canBeCancelledByOwner) {
     this.isCancelled = isCancelled;
+    this.canBeCancelledByUser = canBeCancelledByUser;
     this.canBeCancelledByOwner = canBeCancelledByOwner;
   }
 
-  public boolean isCancelled() {
-    return isCancelled;
-  }
 }

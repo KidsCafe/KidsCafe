@@ -25,7 +25,6 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import org.hibernate.annotations.Where;
 
 @Getter
 @Builder
@@ -72,6 +71,11 @@ public class Reservation extends Timestamped {
     totalPrice = price;
   }
 
+  public void updateTime(LocalDateTime startedAt, LocalDateTime finishedAt) {
+    this.startedAt = startedAt;
+    this.finishedAt = finishedAt;
+  }
+
   public Reservation() {
     this.status = ReservationStatus.PENDING;
     this.isDeleted = false;
@@ -80,22 +84,22 @@ public class Reservation extends Timestamped {
 
   public void approve() {
     if (this.status != ReservationStatus.PENDING) {
-      throw new BusinessException(ErrorCode.INVALID_STATUS_CHANGE);
+      throw new BusinessException(ErrorCode.INVALID_STATUS);
     }
     this.status = ReservationStatus.APPROVED;
   }
 
   public void cancelByUser() {
     if (this.status != ReservationStatus.PENDING) {
-      throw new BusinessException(ErrorCode.INVALID_STATUS_CHANGE);
+      throw new BusinessException(ErrorCode.INVALID_STATUS);
     }
     this.status = ReservationStatus.CANCELLED_BY_USER;
     this.isDeleted = true;
   }
 
   public void cancelByOwner() {
-    if (this.status == ReservationStatus.COMPLETED) {
-      throw new BusinessException(ErrorCode.INVALID_STATUS_CHANGE);
+    if (this.status != ReservationStatus.COMPLETED) {
+      throw new BusinessException(ErrorCode.INVALID_STATUS);
     }
     this.status = ReservationStatus.CANCELLED_BY_OWNER;
     this.isDeleted = true;
@@ -103,7 +107,7 @@ public class Reservation extends Timestamped {
 
   public Reservation confirmPayment() {
     if (this.status != ReservationStatus.APPROVED) {
-      throw new BusinessException(ErrorCode.INVALID_STATUS_CHANGE);
+      throw new BusinessException(ErrorCode.INVALID_STATUS);
     }
     this.isPaymentConfirmed = true;
     this.status = ReservationStatus.COMPLETED;
