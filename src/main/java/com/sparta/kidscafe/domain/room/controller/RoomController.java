@@ -58,7 +58,7 @@ public class RoomController {
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 
-  @DeleteMapping("/cafes/room/{roomId}")
+  @DeleteMapping("/cafes/rooms/{roomId}")
   public ResponseEntity<Void> deleteRoom (
       @Auth AuthUser authUser,
       @PathVariable ("roomId") Long roomId

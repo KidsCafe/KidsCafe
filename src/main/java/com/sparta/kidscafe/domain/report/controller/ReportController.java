@@ -47,7 +47,7 @@ public class ReportController {
   ) {
     return ResponseEntity
         .status(HttpStatus.OK)
-        .body(reportService.getMyReports(authUser, PageRequest.of(page,size)));
+        .body(reportService.getMyReports(authUser, PageRequest.of(page - 1,size)));
   }
 
   @GetMapping("/admin/reports")
@@ -57,7 +57,7 @@ public class ReportController {
   ) {
     return ResponseEntity
         .status(HttpStatus.OK)
-        .body(reportService.getReports(PageRequest.of(page,size)));
+        .body(reportService.getReports(PageRequest.of(page - 1,size)));
   }
 
   @PatchMapping("/reports/{reportId}")
@@ -66,6 +66,6 @@ public class ReportController {
       @PathVariable ("reportId") Long reportId
   ) {
     StatusDto response = reportService.updateReport(request, reportId);
-    return ResponseEntity.status(HttpStatus.RESET_CONTENT).body(response);
+    return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 }

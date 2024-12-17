@@ -42,7 +42,7 @@ public class ReservationCalculationService {
         rates = pricePolicyRepository.findPricePolicyWithRoom(condition);
       }
 
-      price = reservationdetail.getPrice() * reservationdetail.getCount();
+      price *= reservationdetail.getCount();
       for (Double rate : rates) {
         price *= rate;
       }

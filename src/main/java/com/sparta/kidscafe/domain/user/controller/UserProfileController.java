@@ -56,7 +56,6 @@ public class UserProfileController {
             @RequestBody @Valid UserDeleteRequestDto requestDto) {
         // 서비스 계층에서 회원 탈퇴 처리
         userProfileService.deleteUser(authUser, requestDto);
-
-        return ResponseEntity.ok(ResponseDto.success(null, HttpStatus.OK, "회원 탈퇴 성공"));
+        return ResponseEntity.noContent().build();
     }
 }

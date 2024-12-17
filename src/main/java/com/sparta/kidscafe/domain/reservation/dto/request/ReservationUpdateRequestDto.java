@@ -42,8 +42,9 @@ public class ReservationUpdateRequestDto {
     @NotNull
     private Long count;
   }
-  public ReservationSearchCondition createSearchCondition(Long cafeId) {
+  public ReservationSearchCondition createSearchCondition(Long cafeId, Long reservationId) {
     return ReservationSearchCondition.builder()
+        .reservationId(reservationId)
         .cafeId(cafeId)
         .roomId(getRoomId())
         .userCount(getCount())

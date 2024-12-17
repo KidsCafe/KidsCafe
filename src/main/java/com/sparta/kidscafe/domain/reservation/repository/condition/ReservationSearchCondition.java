@@ -7,6 +7,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class ReservationSearchCondition {
+  private Long reservationId;
   private Long cafeId;
   private Long roomId;
   private Integer userCount;

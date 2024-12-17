@@ -80,8 +80,8 @@ public class ReservationController {
   public ResponseEntity<ResponseDto<ReservationResponseDto>> getReservationDetailByOwner(
       @Auth AuthUser authUser,
       @PathVariable Long reservationId) {
-    ResponseDto<ReservationResponseDto> response = reservationService.getReservationDetailByOwner(
-        authUser, reservationId);
+    ResponseDto<ReservationResponseDto> response =
+        reservationService.getReservationDetailByOwner(authUser, reservationId);
     return ResponseEntity.ok(response);
   }
 
@@ -105,7 +105,7 @@ public class ReservationController {
   }
 
   // 예약 상태 변경
-  @PatchMapping("/owners/reservations/{reservationId}/complete")
+  @PutMapping("/owners/reservations/{reservationId}/complete")
   public ResponseEntity<StatusDto> completeReservation(
       @Auth AuthUser authUser,
       @PathVariable Long reservationId) {
@@ -132,6 +132,4 @@ public class ReservationController {
         cafeId);
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }
-
-
 }
