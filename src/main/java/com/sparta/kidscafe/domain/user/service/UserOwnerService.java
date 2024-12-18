@@ -2,6 +2,7 @@ package com.sparta.kidscafe.domain.user.service;
 
 import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.ListResponseDto;
+import com.sparta.kidscafe.common.enums.RoleType;
 import com.sparta.kidscafe.domain.user.dto.response.UserResponseDto;
 import com.sparta.kidscafe.domain.user.entity.User;
 import com.sparta.kidscafe.domain.user.repository.UserRepository;
@@ -21,6 +22,11 @@ public class UserOwnerService {
     private final UserRepository userRepository;
 
     public ListResponseDto<UserResponseDto> getUsersWhoFavoritedOwner(AuthUser authUser, int page, int size) {
+        // 권한 확인: OWNER만 접근 가능
+        if (authUser.getRoleType() != RoleType.OWNER) {
+            throw new IllegalArgumentException("접근 권한이 없습니다.");
+        }
+
         // authUser에서 ownerId 가져오기
         Long ownerId = authUser.getId();
 

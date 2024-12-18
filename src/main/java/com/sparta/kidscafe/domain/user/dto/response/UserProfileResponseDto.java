@@ -2,6 +2,7 @@ package com.sparta.kidscafe.domain.user.dto.response;
 
 import com.sparta.kidscafe.common.enums.RoleType;
 import com.sparta.kidscafe.domain.user.entity.User;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
@@ -25,6 +26,7 @@ public class UserProfileResponseDto {
         );
     }
 
+    @Builder
     private UserProfileResponseDto(Long id, String email, String name, String nickname, String address, RoleType role) {
         this.id = id;
         this.email = email;
