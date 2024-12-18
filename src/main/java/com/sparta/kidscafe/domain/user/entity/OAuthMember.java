@@ -4,20 +4,20 @@ import com.sparta.kidscafe.common.enums.LoginType;
 import com.sparta.kidscafe.common.enums.RoleType;
 
 public interface OAuthMember {
-	Long getId();
+    Long getId();
 
-	String getEmail();
+    String getEmail();
 
-	String getAddress();
+    String getAddress();
 
-	LoginType getLoginType();
+    LoginType getLoginType();
 
-	String getOauthId();
+    String getOauthId();
 
-	String getName();
+    String getName();
 
-	RoleType getRole();
+    RoleType getRole();
 
-	String getPassword();
+    String getPassword();
 
 }

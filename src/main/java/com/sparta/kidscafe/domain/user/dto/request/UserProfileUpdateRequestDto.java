@@ -1,9 +1,13 @@
 package com.sparta.kidscafe.domain.user.dto.request;
 
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserProfileUpdateRequestDto {
 
     @Size(max = 30, message = "이름은 최대 30자까지 가능합니다.")
