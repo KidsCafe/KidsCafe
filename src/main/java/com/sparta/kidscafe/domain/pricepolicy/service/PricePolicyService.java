@@ -2,7 +2,6 @@ package com.sparta.kidscafe.domain.pricepolicy.service;
 
 
 import com.sparta.kidscafe.common.dto.ListResponseDto;
-import com.sparta.kidscafe.common.dto.PageResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
 import com.sparta.kidscafe.domain.cafe.repository.CafeRepository;
@@ -47,9 +46,9 @@ public class PricePolicyService {
         // 3. 저장
         pricePolicyRepository.save(pricePolicy);
         return StatusDto.builder()
-            .status(HttpStatus.CREATED.value())
-            .message("가격 정책 추가")
-            .build();
+                .status(HttpStatus.CREATED.value())
+                .message("가격 정책 추가")
+                .build();
     }
 
     @Transactional(readOnly = true)
@@ -61,13 +60,13 @@ public class PricePolicyService {
 
         // 정책 조회 및 변환
         List<PricePolicyResponseDto> collect = pricePolicyRepository.findAllByCafeId(cafeId)
-            .stream()
-            .map(PricePolicyResponseDto::from)
-            .collect(Collectors.toList());
+                .stream()
+                .map(PricePolicyResponseDto::from)
+                .collect(Collectors.toList());
         return ListResponseDto.success(
-            collect,
-            HttpStatus.OK,
-            "카페 조회 성공"
+                collect,
+                HttpStatus.OK,
+                "카페 조회 성공"
         );
     }
 
@@ -89,9 +88,9 @@ public class PricePolicyService {
         // 4. 업데이트
         pricePolicy.updateDetails(requestDto.getTargetId(), requestDto.getTitle(), requestDto.getDayType(), requestDto.getRate());
         return StatusDto.builder()
-            .status(HttpStatus.OK.value())
-            .message("가격 정책 수정 성공")
-            .build();
+                .status(HttpStatus.OK.value())
+                .message("가격 정책 수정 성공")
+                .build();
     }
 
     @Transactional

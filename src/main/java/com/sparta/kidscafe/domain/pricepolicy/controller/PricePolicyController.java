@@ -12,8 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/cafes/{cafeId}/prices")
 @RequiredArgsConstructor
@@ -28,15 +26,15 @@ public class PricePolicyController {
     ) {
         StatusDto statusDto = pricePolicyService.addPricePolicy(cafeId, requestDto);
         return ResponseEntity
-            .status(HttpStatus.CREATED)
-            .body(statusDto);
+                .status(HttpStatus.CREATED)
+                .body(statusDto);
     }
 
     @GetMapping
     public ResponseEntity<ListResponseDto<PricePolicyResponseDto>> getPricePolicies(@PathVariable Long cafeId) {
         return ResponseEntity
-            .status(HttpStatus.OK)
-            .body(pricePolicyService.getPricePolicies(cafeId));
+                .status(HttpStatus.OK)
+                .body(pricePolicyService.getPricePolicies(cafeId));
     }
 
     @PatchMapping("/{priceId}")
@@ -46,8 +44,8 @@ public class PricePolicyController {
             @RequestBody @Valid PricePolicyUpdateRequestDto requestDto
     ) {
         return ResponseEntity
-            .status(HttpStatus.OK)
-            .body(pricePolicyService.updatePricePolicy(cafeId, priceId, requestDto));
+                .status(HttpStatus.OK)
+                .body(pricePolicyService.updatePricePolicy(cafeId, priceId, requestDto));
     }
 
     @DeleteMapping("/{priceId}")
