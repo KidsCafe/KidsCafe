@@ -1,14 +1,15 @@
 package com.sparta.kidscafe.domain.image.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Data
-@Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class ImageResponseDto {
+  private Long id;
   private String imagePath;
 }

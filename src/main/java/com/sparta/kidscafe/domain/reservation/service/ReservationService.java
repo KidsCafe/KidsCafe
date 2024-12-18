@@ -63,16 +63,31 @@ public class ReservationService {
     if (!authUser.getRoleType().equals(RoleType.USER)) {
       throw new BusinessException(ErrorCode.BAD_REQUEST);
     }
+
     // 2. 카페 확인
     Cafe cafe = cafeRepository.findById(cafeId)
         .orElseThrow(() -> new BusinessException(ErrorCode.CAFE_NOT_FOUND));
+
     // 3. 예약 가능한 상태인지 조회
     ReservationSearchCondition condition = requestDto.createSearchCondition(cafeId);
     if (!reservationRepository.isRoomAvailable(condition)) {
       throw new BusinessException(ErrorCode.RESERVATION_FAILURE);
     }
+
+    int count = requestDto.getCount();
+    Room room = roomRepository.findById(requestDto.getRoomId())
+        .orElseThrow(() -> new BusinessException(ErrorCode.ROOM_NOT_FOUND));
+    if(room.getMinCount() > count) {
+      throw new BusinessException(ErrorCode.RESERVATION_FAILURE);
+    }
+
+    if(room.getMaxCount() < count) {
+      throw new BusinessException(ErrorCode.RESERVATION_FAILURE);
+    }
+
     // 4. 예약
     saveReservations(user, cafe, requestDto);
+
     // 5. 반환
     return StatusDto.builder()
         .status(HttpStatus.CREATED.value())

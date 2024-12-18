@@ -113,8 +113,7 @@ from cafe c
          left join room ro on ro.cafe_id = c.id
          left join fee f on f.cafe_id = c.id
 where c.user_id = 2
-group by c.id
-order by c.name asc;
+group by c.id;
 
 
 # 해당 시간대에
@@ -151,7 +150,7 @@ where rd.target_id = 1
     r.started_at >= '2024-12-05 16:00:00'
         and r.finished_at <= '2024-12-05 16:00:00'
     )
-group by rd.target_id
+group by rd.target_id;
 
 select *
 from room ro
@@ -221,11 +220,12 @@ from reservation_detail rd
 where rd.reservation_id in (select re.id
                             from reservation re
                                      left join reservation_detail rd on re.id = rd.reservation_id
-                            where rd.target_id = 1 and rd.target_type = 'ROOM')
+                            where rd.target_id = 1
+                                  and rd.target_type = 'ROOM'
+                                  and ( re.finished_at >= '2024-12-05 14:00:00' and re.started_at <= '2024-12-05 16:00:00'))
   and target_type='FEE'
-  and ( re.finished_at >= '2024-12-05 14:00:00' and re.started_at <= '2024-12-05 16:00:00')
-  and c.closed_at >= '2024-12-05 14:00:00' and c.opened_at <= '2024-12-05 16:00:00'
-  and c.day_off not like '%화%';
+  and c.closed_at >= '2024-12-05 14:00:00' and c.opened_at <= '2024-12-05 16:00:00' # 1번카페가 영업중일 때고
+  and c.day_off not like '%화%'; # 1번카페가 영업중일 때고
 # 필요한 조건 변수 ..
 # 1. 총 인원
 # 2. 방 번호
@@ -248,3 +248,27 @@ from room r left join price_policy p on r.id = p.target_id
 where target_type = 'ROOM'
   and day_type like '%토%'
   and target_id = 1;
+
+# 다시 초기화
+#  1번카페가 영업중일 때고, 1번방에 14~16시 사이에 예약한 인원과 방의 정원을 찾는다. [새로운 주문 3명]
+# select sum(rd.count) + 3 <= (select min_count from room where room.id = 1) as isAvailable
+select count(distinct re.id)
+from reservation_detail rd
+         left join reservation re on rd.reservation_id = re.id
+         left join cafe c on c.id = re.cafe_id
+         left join room ro on c.id = ro.cafe_id
+where rd.reservation_id in (select re.id
+                            from reservation re
+                                     left join reservation_detail rd on re.id = rd.reservation_id
+                            where rd.target_id = 1
+                              and rd.target_type = 'ROOM'
+                              and ( re.finished_at >= '2024-12-15 17:00:00' and re.started_at <= '2024-12-15 19:00:00'))
+  and target_type='FEE'
+  and c.closed_at >= '2024-12-15 19:00:00' and c.opened_at <= '2024-12-15 17:00:00' # 1번카페가 영업중일 때고
+  and c.day_off not like '%일%'; # 1번카페가 영업중일 때고
+# 필요한 조건 변수 ..
+# 1. 총 인원
+# 2. 방 번호
+# 3. 예매 시작 시간
+# 4. 예매 마감 시간
+

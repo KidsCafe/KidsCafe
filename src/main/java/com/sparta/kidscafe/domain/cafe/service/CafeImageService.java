@@ -48,25 +48,29 @@ public class CafeImageService {
       List<MultipartFile> images) {
     List<ImageResponseDto> responseImages = new ArrayList<>();
     for (MultipartFile image : images) {
-      ImageResponseDto imageResponseDto = uploadCafeImage(userId, image);
-      saveCafeImage(imageResponseDto.getImagePath(), cafeId);
-      responseImages.add(imageResponseDto);
+      String imagePath = uploadCafeImage(userId, image);
+      Long id = saveCafeImage(imagePath, cafeId);
+      ImageResponseDto responseDto = ImageResponseDto.builder()
+          .id(id)
+          .imagePath(imagePath)
+          .build();
+      responseImages.add(responseDto);
     }
     return responseImages;
   }
 
-  private ImageResponseDto uploadCafeImage(Long userId, MultipartFile image) {
+  private String uploadCafeImage(Long userId, MultipartFile image) {
     String dirPath = fileStorage.makeDirectory(ImageType.CAFE, userId);
     String imagePath = fileStorage.makeFileName(dirPath, image);
-    imagePath = fileStorage.uploadImage(imagePath, image);
-    return new ImageResponseDto(imagePath);
+    return fileStorage.uploadImage(imagePath, image);
   }
 
-  private void saveCafeImage(String imagePath, Long cafeId) {
+  private Long saveCafeImage(String imagePath, Long cafeId) {
     CafeImage cafeImage = CafeImage.builder()
         .cafeId(cafeId)
         .imagePath(imagePath)
         .build();
     cafeImageRepository.save(cafeImage);
+    return cafeImage.getId();
   }
 }

@@ -89,7 +89,9 @@ public class ReservationCreateRequestDto {
   public int getCount() {
     int totalCount = 0;
     for (ReservationDetailRequestDto detail : details) {
-      totalCount += detail.getCount();
+      if (detail.getTargetType().equals(TargetType.FEE)) {
+        totalCount += detail.getCount();
+      }
     }
     return totalCount;
   }
