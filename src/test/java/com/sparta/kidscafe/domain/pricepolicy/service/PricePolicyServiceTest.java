@@ -78,10 +78,10 @@ class PricePolicyServiceTest {
 
         when(cafeRepository.findById(cafe.getId())).thenReturn(Optional.empty());
 
-        BusinessException exception = assertThrows(BusinessException.class, () ->
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
                 pricePolicyService.addPricePolicy(cafe.getId(), requestDto));
 
-        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.CAFE_NOT_FOUND);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCode.CAFE_NOT_FOUND.getMessage());
     }
 
     @Test
