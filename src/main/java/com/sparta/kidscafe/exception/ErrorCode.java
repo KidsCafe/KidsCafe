@@ -15,6 +15,7 @@ public enum ErrorCode {
   CAFE_NOT_FOUND("CAFE_NOT_FOUND", "카페를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
   INVALID_CAFE_DATA("INVALID_CAFE_DATA", "카페 데이터가 유효하지 않습니다.", HttpStatus.BAD_REQUEST),
 
+
   // Image 관련 에러
   IMAGE_UPLOAD_FAILED("IMAGE_UPLOAD_FAILED", "카페 이미지 업로드에 실패했습니다.",
       HttpStatus.INTERNAL_SERVER_ERROR),
@@ -65,7 +66,8 @@ public enum ErrorCode {
   INTERNAL_SERVER_ERROR("INTERNAL_SERVER_ERROR", "서버 에러가 발생했습니다.",
       HttpStatus.INTERNAL_SERVER_ERROR),
   UNAUTHORIZED("UNAUTHORIZED", "인증이 필요합니다.", HttpStatus.UNAUTHORIZED),
-  FORBIDDEN("FORBIDDEN", "권한이 없습니다.", HttpStatus.FORBIDDEN);
+  FORBIDDEN("FORBIDDEN", "권한이 없습니다.", HttpStatus.FORBIDDEN),
+  EXTERNAL_API_ERROR("EXTERNAL_API_ERROR", "외부 API 호출 중 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);;
 
   // 필드 정의
   private final String code;
