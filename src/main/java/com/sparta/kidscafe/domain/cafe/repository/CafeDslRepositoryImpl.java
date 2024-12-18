@@ -8,18 +8,18 @@ import com.querydsl.core.types.dsl.ComparableExpressionBase;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.sparta.kidscafe.domain.cafe.repository.condition.CafeSearchCondition;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeResponseDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.QCafeResponseDto;
 import com.sparta.kidscafe.domain.cafe.entity.QCafe;
-import com.sparta.kidscafe.domain.cafe.repository.sort.CafeSearchSortBy;
 import com.sparta.kidscafe.domain.cafe.repository.condition.CafeCondition;
-import com.sparta.kidscafe.domain.fee.repository.condition.FeeCondition;
-import com.sparta.kidscafe.domain.review.repository.condition.ReviewCondition;
-import com.sparta.kidscafe.domain.room.repository.condition.RoomCondition;
+import com.sparta.kidscafe.domain.cafe.repository.condition.CafeSearchCondition;
+import com.sparta.kidscafe.domain.cafe.repository.sort.CafeSearchSortBy;
 import com.sparta.kidscafe.domain.fee.entity.QFee;
+import com.sparta.kidscafe.domain.fee.repository.condition.FeeCondition;
 import com.sparta.kidscafe.domain.review.entity.QReview;
+import com.sparta.kidscafe.domain.review.repository.condition.ReviewCondition;
 import com.sparta.kidscafe.domain.room.entity.QRoom;
+import com.sparta.kidscafe.domain.room.repository.condition.RoomCondition;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -113,7 +113,8 @@ public class CafeDslRepositoryImpl implements CafeDslRepository {
         .and(cafeCondition.multiFamily(condition.getMultiFamily()))
         .and(cafeCondition.goeOpenedAt(condition.getOpenedAt()))
         .and(cafeCondition.loeClosedAt(condition.getClosedAt()))
-        .and(cafeCondition.eqUserId(condition.getUserId()));
+        .and(cafeCondition.eqUserId(condition.getUserId()))
+        .and(cafeCondition.withInRadius(condition));
   }
 
   private BooleanBuilder makeHaving(CafeSearchCondition condition) {

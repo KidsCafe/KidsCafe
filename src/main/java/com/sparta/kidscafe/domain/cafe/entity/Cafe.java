@@ -25,6 +25,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.locationtech.jts.geom.Point;
 
 @Builder
 @Getter
@@ -50,6 +51,9 @@ public class Cafe extends Timestamped {
 
   @Column(nullable = false)
   private String address;
+
+  @Column(columnDefinition = "POINT SRID 4326")
+  private Point location;
 
   @Column(nullable = false)
   private int size;

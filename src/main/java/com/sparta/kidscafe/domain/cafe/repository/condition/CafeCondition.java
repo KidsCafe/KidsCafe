@@ -3,12 +3,15 @@ package com.sparta.kidscafe.domain.cafe.repository.condition;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.sparta.kidscafe.domain.cafe.entity.QCafe;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.TextStyle;
 import java.util.Locale;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -152,5 +155,36 @@ public class CafeCondition {
       return null;
     }
     return cafe.closedAt.loe(closedAt);
+  }
+
+  public BooleanExpression withInRadius(CafeSearchCondition condition) {
+    Long lat = condition.getLat();
+    Long lon = condition.getLon();
+    Double radiusMeter = condition.getRadiusMeter();
+    return withInRadius(lon, lat, radiusMeter);
+  }
+
+  public BooleanExpression withInRadius(Long lon, Long lat, Double radiusMeter) {
+    // 경도 범위
+    if(lon == null || lon < -90 || lon > 90) {
+      return null;
+    }
+
+    // 위도 범위
+    if(lat == null || lat < -180 || lat > 180) {
+      return null;
+    }
+
+    if(radiusMeter == null) {
+      return null;
+    }
+
+    return Expressions.booleanTemplate(
+        "ST_Distance_Sphere({0}, ST_GeomFromText('POINT({1} {2})', 4326)) <= {3}",
+        cafe.location,
+        lon,
+        lat,
+        radiusMeter
+    );
   }
 }

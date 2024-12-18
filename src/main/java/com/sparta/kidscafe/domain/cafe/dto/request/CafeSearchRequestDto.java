@@ -29,6 +29,9 @@ public class CafeSearchRequestDto extends CafeSearchPageRequestDto {
   private String openedAt;
   private String closedAt;
   private Long userId;
+  private Long lon;
+  private Long lat;
+  private Double radiusMeter;
 
   public CafeSearchCondition getSearchCondition() {
     return CafeSearchCondition.createBuilder()
@@ -48,6 +51,9 @@ public class CafeSearchRequestDto extends CafeSearchPageRequestDto {
         .openedAt(StringUtils.hasText(openedAt) ? LocalTime.parse(openedAt) : null)
         .closedAt(StringUtils.hasText(closedAt) ? LocalTime.parse(closedAt) : null)
         .userId(userId)
+        .lon(lon)
+        .lat(lat)
+        .radiusMeter(radiusMeter)
         .sortBy(getSortBy())
         .asc(isAsc())
         .pageable(getPageable())
