@@ -13,6 +13,7 @@ public record ReviewCreateRequestDto(
     double star,
     @NotNull
     String content,
+    Long parentId,
     List<Long>imageId
 ) {
 }

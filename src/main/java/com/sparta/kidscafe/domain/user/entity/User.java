@@ -89,13 +89,14 @@ public class User extends Timestamped implements OAuthMember {
 
   public User updateOAuth(String email, String name, String nickname) {
     this.email = email;
-    if(name != null && !name.isBlank()){
+    if (name != null && !name.isBlank()) {
       this.name = name;
     }
-    if(nickname != null && !nickname.isBlank()){
+    if (nickname != null && !nickname.isBlank()) {
       this.nickname = nickname;
     }
     return this;
+  }
 
   // 프로필 업데이트 메서드
   public void updateProfile(String name, String nickname, String address) {
