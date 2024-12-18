@@ -25,7 +25,7 @@ public class CafeSearchCondition extends CafeSearchPageCondition {
   private LocalTime openedAt;
   private LocalTime closedAt;
   private Long userId;
-  private Long lon;
-  private Long lat;
+  private Double lon;
+  private Double lat;
   private Double radiusMeter;
 }

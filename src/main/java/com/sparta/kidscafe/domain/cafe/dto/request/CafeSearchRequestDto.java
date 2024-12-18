@@ -29,8 +29,8 @@ public class CafeSearchRequestDto extends CafeSearchPageRequestDto {
   private String openedAt;
   private String closedAt;
   private Long userId;
-  private Long lon;
-  private Long lat;
+  private Double lon;
+  private Double lat;
   private Double radiusMeter;
 
   public CafeSearchCondition getSearchCondition() {

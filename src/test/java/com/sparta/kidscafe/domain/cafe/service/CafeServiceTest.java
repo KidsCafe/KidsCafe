@@ -4,9 +4,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.sparta.kidscafe.api.address.MapService;
 import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.PageResponseDto;
 import com.sparta.kidscafe.common.dto.ResponseDto;
@@ -39,6 +42,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.locationtech.jts.geom.Point;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -81,6 +85,9 @@ class CafeServiceTest {
   @Mock
   private CafeValidationCheck cafeValidationCheck;
 
+  @Mock
+  private MapService mapService;
+
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
@@ -92,19 +99,19 @@ class CafeServiceTest {
 
   @Test
   @DisplayName("카페 등록 성공 - 사장님")
-  void createCafeOwner_Success() {
+  void createCafeOwner_Success() throws JsonProcessingException {
     // given
     AuthUser authUser = createAuthUser(RoleType.OWNER);
     User user = DummyUser.createDummyUser(authUser.getRoleType());
     Cafe cafe = DummyCafe.createDummyCafe(user, null);
 
-    when(userValidationCheck.validMy(authUser.getId())).thenReturn(user);
-    when(cafeCreateRequestDto.convertDtoToEntityByCafe(user)).thenReturn(cafe);
+    when(cafeCreateRequestDto.convertDtoToEntityByCafe(user, null)).thenReturn(cafe);
     when(cafeCreateRequestDto.convertDtoToEntityByRoom(cafe)).thenReturn(Collections.singletonList(mock(Room.class)));
     when(cafeCreateRequestDto.convertDtoToEntityByFee(cafe)).thenReturn(Collections.singletonList(mock(Fee.class)));
     when(cafeCreateRequestDto.convertDtoToEntityByPricePolicy(cafe)).thenReturn(Collections.singletonList(mock(PricePolicy.class)));
 
     when(userValidationCheck.validMy(authUser.getId())).thenReturn(user);
+    when(mapService.convertAddressToGeo(cafe.getAddress())).thenReturn(null);
     when(cafeRepository.save(any(Cafe.class))).thenReturn(cafe);
 
     // when
@@ -124,7 +131,7 @@ class CafeServiceTest {
 
   @Test
   @DisplayName("카페 등록 성공 - 관리자")
-  void creatCafe_MultipleCafes_Success() {
+  void creatCafe_MultipleCafes_Success() throws JsonProcessingException {
     // given
     AuthUser authUser = createAuthUser(RoleType.ADMIN);
     User user = DummyUser.createDummyUser(authUser.getRoleType());
@@ -140,6 +147,7 @@ class CafeServiceTest {
     assertEquals(HttpStatus.CREATED.value(), result.getStatus());
     assertEquals("카페 [2]개 등록 성공", result.getMessage());
 
+    verify(mapService, times(2)).convertAddressToGeo(any());
     verify(userValidationCheck).validMy(authUser.getId());
     verify(cafesSimpleCreateRequestDto).convertDtoToEntity(user);
     verify(cafeRepository).saveAll(cafes);
@@ -204,12 +212,14 @@ class CafeServiceTest {
 
   @Test
   @DisplayName("카페 수정 성공")
-  void updateCafe_Success() {
+  void updateCafe_Success() throws JsonProcessingException {
     // given
     Long cafeId = 2L;
     AuthUser authUser = createAuthUser(RoleType.OWNER);
     User user = DummyUser.createDummyUser(authUser.getRoleType());
     Cafe cafe = DummyCafe.createDummyCafe(user, cafeId);
+
+    when(mapService.convertAddressToGeo(cafe.getAddress())).thenReturn(null);
     when(cafeValidationCheck.validMyCafe(cafeId, authUser.getId())).thenReturn(cafe);
 
     // when
@@ -218,7 +228,9 @@ class CafeServiceTest {
     // then
     assertEquals(HttpStatus.OK.value(), result.getStatus());
     assertEquals("[" + cafe.getName() + "] 수정 성공", result.getMessage());
+
     verify(cafeValidationCheck).validMyCafe(cafeId, authUser.getId());
+    verify(mapService).convertAddressToGeo(any());
   }
 
   @Test

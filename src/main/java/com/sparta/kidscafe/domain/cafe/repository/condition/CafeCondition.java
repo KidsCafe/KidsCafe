@@ -4,20 +4,24 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
+import com.sparta.kidscafe.common.util.GeoUtil;
 import com.sparta.kidscafe.domain.cafe.entity.QCafe;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.TextStyle;
 import java.util.Locale;
+import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 @Component
+@RequiredArgsConstructor
 public class CafeCondition {
 
+  private final GeoUtil geoUtil;
   private final QCafe cafe = QCafe.cafe;
 
   public BooleanExpression likeName(String name) {
@@ -158,24 +162,18 @@ public class CafeCondition {
   }
 
   public BooleanExpression withInRadius(CafeSearchCondition condition) {
-    Long lat = condition.getLat();
-    Long lon = condition.getLon();
+    Double lat = condition.getLat();
+    Double lon = condition.getLon();
     Double radiusMeter = condition.getRadiusMeter();
     return withInRadius(lon, lat, radiusMeter);
   }
 
-  public BooleanExpression withInRadius(Long lon, Long lat, Double radiusMeter) {
-    // 경도 범위
-    if(lon == null || lon < -90 || lon > 90) {
+  public BooleanExpression withInRadius(Double lon, Double lat, Double radiusMeter) {
+    if(geoUtil.validWktPoint(lon, lat)) {
       return null;
     }
 
-    // 위도 범위
-    if(lat == null || lat < -180 || lat > 180) {
-      return null;
-    }
-
-    if(radiusMeter == null) {
+    if(radiusMeter == null || radiusMeter <= 0) {
       return null;
     }
 

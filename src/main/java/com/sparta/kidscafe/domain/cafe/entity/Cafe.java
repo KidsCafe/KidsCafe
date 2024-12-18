@@ -107,7 +107,7 @@ public class Cafe extends Timestamped {
       orphanRemoval = true)
   private List<PricePolicy> pricePolicies = new ArrayList<>();
 
-  public void update(CafeSimpleRequestDto requestDto) {
+  public void update(CafeSimpleRequestDto requestDto, Point location) {
     name = requestDto.getName();
     region = requestDto.getRegion();
     address = requestDto.getAddress();
@@ -118,5 +118,10 @@ public class Cafe extends Timestamped {
     hyperlink = requestDto.getHyperLink();
     openedAt = requestDto.getOpenedAt();
     closedAt = requestDto.getClosedAt();
+    this.location = location;
+  }
+
+  public void updateLocation(Point location) {
+    this.location = location;
   }
 }

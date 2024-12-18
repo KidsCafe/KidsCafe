@@ -1,5 +1,6 @@
 package com.sparta.kidscafe.domain.cafe.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sparta.kidscafe.common.annotation.Auth;
 import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.PageResponseDto;
@@ -38,7 +39,7 @@ public class CafeController {
   public ResponseEntity<StatusDto> createCafe(
       @Auth AuthUser authUser,
       @Valid @RequestBody CafeCreateRequestDto requestDto
-  ) {
+  ) throws JsonProcessingException {
     AuthValidationCheck.validOwner(authUser);
     return ResponseEntity
         .status(HttpStatus.CREATED)
@@ -49,7 +50,7 @@ public class CafeController {
   public ResponseEntity<StatusDto> createCafe(
       @Auth AuthUser authUser,
       @Valid @RequestBody CafesSimpleCreateRequestDto requestDto
-  ) {
+  ) throws JsonProcessingException {
     AuthValidationCheck.validAdmin(authUser);
     return ResponseEntity
         .status(HttpStatus.CREATED)
@@ -101,7 +102,7 @@ public class CafeController {
       @Auth AuthUser authUser,
       @PathVariable Long cafeId,
       @Valid @RequestBody CafeSimpleRequestDto requestDto
-  ) {
+  ) throws JsonProcessingException {
     AuthValidationCheck.validOwner(authUser);
     return ResponseEntity
         .status(HttpStatus.OK)

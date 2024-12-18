@@ -19,6 +19,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.locationtech.jts.geom.Point;
 
 @Data
 @Getter
@@ -63,12 +64,13 @@ public class CafeCreateRequestDto {
   @Valid
   private List<PricePolicyCreateRequestDto> pricePolicies;
 
-  public Cafe convertDtoToEntityByCafe(User user) {
+  public Cafe convertDtoToEntityByCafe(User user, Point location) {
     return Cafe.builder()
         .user(user)
         .name(name)
         .region(region)
         .address(address)
+        .location(location)
         .size(size)
         .multiFamily(multiFamily)
         .dayOff(dayOff)
