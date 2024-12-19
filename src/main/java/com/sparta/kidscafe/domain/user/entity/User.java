@@ -71,12 +71,24 @@ public class User extends Timestamped implements OAuthMember {
     @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private List<Reservation> reservations = new ArrayList<>();
 
-    // 최소 필드로 생성자 추가
-    public User(Long id, String email, RoleType role) {
-        this.id = id;
-        this.email = email;
-        this.role = role;
+
+  public User updateOAuth(String email, String name, String nickname) {
+    this.email = email;
+    if (name != null && !name.isBlank()) {
+      this.name = name;
     }
+    if (nickname != null && !nickname.isBlank()) {
+      this.nickname = nickname;
+    }
+    return this;
+  }
+
+  public User(Long id, String email, RoleType role) {
+     this.id = id;
+     this.email = email;
+     this.role = role;
+  }
+
 
     // OAuth 사용자 정보 업데이트 메서드
     public User updateOAuth(String email, String name, String nickname) {

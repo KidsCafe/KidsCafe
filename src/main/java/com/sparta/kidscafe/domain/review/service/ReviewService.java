@@ -14,6 +14,7 @@ import com.sparta.kidscafe.domain.review.repository.ReviewRepository;
 import com.sparta.kidscafe.domain.user.entity.User;
 import com.sparta.kidscafe.domain.user.repository.UserRepository;
 import com.sparta.kidscafe.exception.BusinessException;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -48,11 +49,22 @@ public class ReviewService {
     // 카페 확인
     Cafe cafe = cafeRepository.findById(cafeId).orElseThrow(() -> new BusinessException (CAFE_NOT_FOUND));
 
+    Review parentReview = null;
+    if (request.parentId() != null) {
+      parentReview = reviewRepository.findById(request.parentId()).orElseThrow(() -> new BusinessException(REVIEW_NOT_FOUND));
+    }
+
+    if (parentReview != null && parentReview.getDepth() >= 3) {
+      throw new BusinessException(FORBIDDEN);
+    }
+
     Review newReview = Review.builder()
         .user(user)
         .cafe(cafe)
         .star(request.star())
         .content(request.content())
+        .parentReview(parentReview)
+        .depth(parentReview != null ? parentReview.getDepth() + 1 : 0)
         .build();
 
     reviewRepository.save(newReview);
@@ -75,16 +87,9 @@ public class ReviewService {
     cafeRepository.findById(cafeId).orElseThrow(() -> new BusinessException (CAFE_NOT_FOUND));
 
     // 특정 리뷰 조회
-    Page<Review> reviews = reviewRepository.findByCafeId(cafeId, pageable);
+    Page<Review> reviews = reviewRepository.findByCafeIdAndParentReviewIsNullWithReplies(cafeId, pageable);
 
-    // 리뷰 목록 변환
-    Page<ReviewResponseDto> reviewDtos = reviews.map(review -> new ReviewResponseDto(
-            review.getId(),
-            review.getUser().getId(),
-            review.getCafe().getId(),
-            review.getStar(),
-            review.getContent()
-        ));
+    Page<ReviewResponseDto> reviewDtos = reviews.map(this::mapToReviewResponseDtoWithReplies);
 
     return PageResponseDto.success(reviewDtos,HttpStatus.OK, "카페 리뷰 조회 성공");
   }
@@ -100,34 +105,33 @@ public class ReviewService {
     Page<Review> reviews = reviewRepository.findAllByUserId(id, pageable);
 
     // 리뷰 목록 변환
-    Page<ReviewResponseDto> reviewDtos = reviews.map(review -> new ReviewResponseDto(
-        review.getId(),
-        review.getUser().getId(),
-        review.getCafe().getId(),
-        review.getStar(),
-        review.getContent()
-    ));
+    Page<ReviewResponseDto> reviewDtos = reviews.map(ReviewResponseDto::from);
 
     return PageResponseDto.success(reviewDtos,HttpStatus.OK, "리뷰 조회 성공");
   }
 
   public StatusDto updateReview(AuthUser authUser, Long reviewId, ReviewCreateRequestDto request) {
     // 리뷰 가져오기
-    Optional<Review> review = reviewRepository.findById(reviewId);
+    Review review = reviewRepository.findById(reviewId)
+        .orElseThrow(() -> new BusinessException(REVIEW_NOT_FOUND));
 
     // 리뷰 사용자 확인
-    Long id = authUser.getId();
-
-    if (!id.equals(review.get().getUser().getId())) {
-      throw new BusinessException (FORBIDDEN);
+    Long userId = authUser.getId();
+    if (!userId.equals(review.getUser().getId())) {
+      throw new BusinessException(FORBIDDEN); // 사용자가 작성한 리뷰가 아닌 경우 예외 발생
     }
 
-    // 리뷰 입히기
-    review.ifPresent(value -> value.UpdateReview(request.star(), request.content()));
+    // (필요시) 부모 리뷰 업데이트는 허용하지 않도록 검증 추가
+    if (review.getParentReview() != null && request.parentId() != null) {
+      throw new BusinessException(FORBIDDEN); // 부모 리뷰는 수정 불가
+    }
+
+    // 리뷰 업데이트
+    review.updateReview(request.star(), request.content());
 
     return StatusDto.builder()
         .status(HttpStatus.OK.value())
-        .message("리뷰 수정완료")
+        .message("리뷰 수정 완료")
         .build();
   }
 
@@ -149,5 +153,22 @@ public class ReviewService {
     }
 
     reviewRepository.delete(review);
+  }
+
+  private ReviewResponseDto mapToReviewResponseDtoWithReplies(Review review) {
+    List<ReviewResponseDto> childResponses = review.getReplies().stream()
+        .map(this::mapToReviewResponseDtoWithReplies)
+        .collect(Collectors.toList());
+
+    return new ReviewResponseDto(
+        review.getId(),
+        review.getUser().getId(),
+        review.getCafe().getId(),
+        review.getStar(),
+        review.getContent(),
+        review.getParentReview() != null ? review.getParentReview().getId() : null,
+        review.getDepth(),
+        childResponses
+    );
   }
 }
