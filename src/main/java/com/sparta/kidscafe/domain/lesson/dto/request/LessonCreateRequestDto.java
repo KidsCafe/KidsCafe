@@ -1,5 +1,7 @@
 package com.sparta.kidscafe.domain.lesson.dto.request;
 
+import com.sparta.kidscafe.domain.cafe.entity.Cafe;
+import com.sparta.kidscafe.domain.lesson.entity.Lesson;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
@@ -18,4 +20,13 @@ public class LessonCreateRequestDto {
 
   @Positive(message = "수업료는 0원 이상입니다.")
   private int price;
+
+  public Lesson convertDtoToEntity(Cafe cafe) {
+    return Lesson.builder()
+        .cafe(cafe)
+        .name(name)
+        .description(description)
+        .price(price)
+        .build();
+  }
 }
