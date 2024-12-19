@@ -27,14 +27,27 @@ public class ReservationDslRepositoryImpl implements ReservationDslRepository {
   private final QReservation reservation = QReservation.reservation;
   private final QReservationDetail reservationDetail = QReservationDetail.reservationDetail;
 
+//  @Override
+//  public boolean isRoomAvailable(ReservationSearchCondition condition) {
+//    Boolean isRoomAvailable = queryFactory
+//        .select(reservationDetail
+//            .count
+//            .sum()
+//            .add(condition.getUserCount())
+//            .loe(roomMaxCountQuery(condition)))
+//        .from(reservationDetail)
+//        .leftJoin(reservation).on(reservationDetail.reservation.id.eq(reservation.id))
+//        .leftJoin(cafe).on(cafe.id.eq(reservation.cafe.id))
+//        .where(isRoomAvailableMakeWhere(condition))
+//        .fetchOne();
+//
+//    return isRoomAvailable == null || isRoomAvailable;
+//  }
+
   @Override
   public boolean isRoomAvailable(ReservationSearchCondition condition) {
     Boolean isRoomAvailable = queryFactory
-        .select(reservationDetail
-            .count
-            .sum()
-            .add(condition.getUserCount())
-            .loe(roomMaxCountQuery(condition)))
+        .select(reservation.id.count().loe(1))
         .from(reservationDetail)
         .leftJoin(reservation).on(reservationDetail.reservation.id.eq(reservation.id))
         .leftJoin(cafe).on(cafe.id.eq(reservation.cafe.id))

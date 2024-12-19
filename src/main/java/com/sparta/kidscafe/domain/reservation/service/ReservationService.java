@@ -63,16 +63,31 @@ public class ReservationService {
     if (!authUser.getRoleType().equals(RoleType.USER)) {
       throw new BusinessException(ErrorCode.BAD_REQUEST);
     }
+
     // 2. 카페 확인
     Cafe cafe = cafeRepository.findById(cafeId)
         .orElseThrow(() -> new BusinessException(ErrorCode.CAFE_NOT_FOUND));
+
     // 3. 예약 가능한 상태인지 조회
     ReservationSearchCondition condition = requestDto.createSearchCondition(cafeId);
     if (!reservationRepository.isRoomAvailable(condition)) {
       throw new BusinessException(ErrorCode.RESERVATION_FAILURE);
     }
+
+    int count = requestDto.getCount();
+    Room room = roomRepository.findById(requestDto.getRoomId())
+        .orElseThrow(() -> new BusinessException(ErrorCode.ROOM_NOT_FOUND));
+    if(room.getMinCount() > count) {
+      throw new BusinessException(ErrorCode.RESERVATION_FAILURE);
+    }
+
+    if(room.getMaxCount() < count) {
+      throw new BusinessException(ErrorCode.RESERVATION_FAILURE);
+    }
+
     // 4. 예약
     saveReservations(user, cafe, requestDto);
+
     // 5. 반환
     return StatusDto.builder()
         .status(HttpStatus.CREATED.value())
@@ -238,23 +253,26 @@ public class ReservationService {
     Long userId = authUser.getId();
     Reservation reservation = reservationRepository.findById(reservationId)
         .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
+
     // 유저 권한 확인
     if (!userId.equals(reservation.getUser().getId())) {
       throw new BusinessException(ErrorCode.FORBIDDEN);
     }
+
     // 취소는 PENDING 상태에만 가능
     if (reservation.getStatus() != ReservationStatus.PENDING) {
       throw new BusinessException(ErrorCode.INVALID_STATUS);
     }
+
     double totalPrice = 0;
     for (ReservationDetailUpdateRequestDto detailDto : requestDto.getDetails()) {
       ReservationDetail details = reservationDetailRepository.findById(detailDto.getId())
           .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
 
       details.updateCount(detailDto.getCount());
-
       totalPrice += reservationCalculationService.calcReservation(reservation, details);
     }
+
     reservation.updateTotalPrice((int) totalPrice);
     reservation.updateTime(LocalDateTime.parse(requestDto.getStartedAt()),
         LocalDateTime.parse(requestDto.getFinishedAt()));
@@ -264,6 +282,18 @@ public class ReservationService {
     if (!reservationRepository.isRoomAvailable(condition)) {
       throw new BusinessException(ErrorCode.RESERVATION_UPDATE_FAILURE);
     }
+
+    int count = requestDto.getCount();
+    Room room = roomRepository.findById(requestDto.getRoomId())
+        .orElseThrow(() -> new BusinessException(ErrorCode.ROOM_NOT_FOUND));
+    if(room.getMinCount() > count) {
+      throw new BusinessException(ErrorCode.RESERVATION_FAILURE);
+    }
+
+    if(room.getMaxCount() < count) {
+      throw new BusinessException(ErrorCode.RESERVATION_FAILURE);
+    }
+
     return StatusDto.builder()
         .status(HttpStatus.OK.value())
         .message("예약이 성공적으로 수정되었습니다.")
