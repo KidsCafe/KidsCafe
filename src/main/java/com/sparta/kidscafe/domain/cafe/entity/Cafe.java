@@ -4,6 +4,7 @@ import com.sparta.kidscafe.common.entity.Timestamped;
 import com.sparta.kidscafe.domain.bookmark.entity.Bookmark;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeSimpleRequestDto;
 import com.sparta.kidscafe.domain.fee.entity.Fee;
+import com.sparta.kidscafe.domain.lesson.entity.Lesson;
 import com.sparta.kidscafe.domain.pricepolicy.entity.PricePolicy;
 import com.sparta.kidscafe.domain.room.entity.Room;
 import com.sparta.kidscafe.domain.user.entity.User;
@@ -106,6 +107,13 @@ public class Cafe extends Timestamped {
       cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
       orphanRemoval = true)
   private List<PricePolicy> pricePolicies = new ArrayList<>();
+
+  @Builder.Default
+  @OneToMany(
+      mappedBy = "cafe",
+      cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+      orphanRemoval = true)
+  private List<Lesson> lessons = new ArrayList<>();
 
   public void update(CafeSimpleRequestDto requestDto, Point location) {
     name = requestDto.getName();
