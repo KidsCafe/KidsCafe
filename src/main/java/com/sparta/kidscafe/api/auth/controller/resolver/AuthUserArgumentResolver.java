@@ -48,12 +48,29 @@ public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
 		RoleType roleType = RoleType.valueOf(jwtUtil.extractRoleType(accessToken));
 		LoginType loginType = LoginType.valueOf(jwtUtil.extractLoginType(accessToken));
 
+		if (!isAuthorized(roleType)){
+			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "접근 권한이 없습니다.");
+		}
+
 		// 일반 로그인 사용자
 		if (loginType == LoginType.BASIC) {
 			return new AuthUser(userId, email, roleType);
 		}
 
+		// 소셜 로그인 사용자 ( 수정 후 추가 예정 )
+		// if (loginType == LoginType.){
+		//
+		// }
+
+		if (roleType == RoleType.ADMIN || roleType == RoleType.USER || roleType == RoleType.OWNER) {
+			return new AuthUser(userId, email, roleType);
+		}
+
 		throw new IllegalArgumentException("유효하지 않은 LoginType 입니다.");
+	}
+
+	private boolean isAuthorized(RoleType roleType){
+		return RoleType.ADMIN.equals(roleType) || RoleType.OWNER.equals(roleType);
 	}
 
 	private String extractToken(String authorizationHeader) {
