@@ -2,7 +2,7 @@ package com.sparta.kidscafe.domain.lesson.entity;
 
 import com.sparta.kidscafe.common.entity.Timestamped;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
-import com.sparta.kidscafe.domain.user.entity.User;
+import com.sparta.kidscafe.domain.lesson.dto.request.LessonCreateRequestDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -40,4 +40,10 @@ public class Lesson extends Timestamped {
 
   @Column
   private int price;
+
+  public void update(LessonCreateRequestDto requestDto) {
+    this.name = requestDto.getName();
+    this.description = requestDto.getDescription();
+    this.price = requestDto.getPrice();
+  }
 }
