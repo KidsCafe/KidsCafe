@@ -96,10 +96,17 @@ public class CafeDslRepositoryImpl implements CafeDslRepository {
             review.id.countDistinct(),
             cafe.dayOff,
             cafe.multiFamily,
-            roomCondition.selectExistRoom(),
-            lessonCondition.selectExistLesson(),
             cafe.parking,
             cafe.restaurant,
+            cafe.careService,
+            cafe.swimmingPool,
+            cafe.clothesRental,
+            cafe.monitoring,
+            cafe.feedingRoom,
+            cafe.outdoorPlayground,
+            cafe.safetyGuard,
+            roomCondition.selectExistRoom(),
+            lessonCondition.selectExistLesson(),
             cafe.hyperlink,
             cafe.openedAt,
             cafe.closedAt))
@@ -115,11 +122,18 @@ public class CafeDslRepositoryImpl implements CafeDslRepository {
         .and(cafeCondition.eqRegion(condition.getRegion()))
         .and(cafeCondition.loeSize(condition.getSize()))
         .and(feeCondition.ageGroup(condition))
-        .and(cafeCondition.parking(condition.getParking()))
         .and(cafeCondition.isOpening(condition.getOpening()))
-        .and(cafeCondition.restaurantExists(condition.getExistRestaurant()))
-        .and(feeCondition.adultPrice(condition.getAdultPrice()))
         .and(cafeCondition.multiFamily(condition.getMultiFamily()))
+        .and(cafeCondition.parking(condition.getParking()))
+        .and(cafeCondition.existRestaurant(condition.getExistRestaurant()))
+        .and(cafeCondition.existCareService(condition.getExistCareService()))
+        .and(cafeCondition.existSwimmingPool(condition.getExistSwimmingPool()))
+        .and(cafeCondition.existClothesRental(condition.getExistClothesRental()))
+        .and(cafeCondition.existMonitoring(condition.getExistMonitoring()))
+        .and(cafeCondition.existFeedingRoom(condition.getExistFeedingRoom()))
+        .and(cafeCondition.existOutdoorPlayground(condition.getExistOutdoorPlayground()))
+        .and(cafeCondition.existSafetyGuard(condition.getExistSafetyGuard()))
+        .and(feeCondition.adultPrice(condition.getAdultPrice()))
         .and(cafeCondition.goeOpenedAt(condition.getOpenedAt()))
         .and(cafeCondition.loeClosedAt(condition.getClosedAt()))
         .and(cafeCondition.eqUserId(condition.getUserId()))

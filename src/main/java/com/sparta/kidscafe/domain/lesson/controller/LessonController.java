@@ -12,7 +12,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -46,5 +48,27 @@ public class LessonController {
     return ResponseEntity
         .status(HttpStatus.OK)
         .body(lessonService.searchLesson(authUser, cafeId));
+  }
+
+  @PatchMapping("/lessons/{lessonId}")
+  public ResponseEntity<StatusDto> updateLesson(
+      @Auth AuthUser authUser,
+      @PathVariable Long lessonId,
+      @Valid @RequestBody LessonCreateRequestDto requestDto
+  ) {
+    AuthValidationCheck.validOwner(authUser);
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(lessonService.updateLesson(lessonId, requestDto));
+  }
+
+  @DeleteMapping("lessons/{lessonId}")
+  public ResponseEntity<Void> deleteLesson(
+      @Auth AuthUser authUser,
+      @PathVariable Long lessonId
+  ) {
+    AuthValidationCheck.validOwner(authUser);
+    lessonService.deleteLesson(lessonId);
+    return ResponseEntity.noContent().build();
   }
 }

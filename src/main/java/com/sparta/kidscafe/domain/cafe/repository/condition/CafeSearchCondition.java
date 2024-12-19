@@ -19,6 +19,13 @@ public class CafeSearchCondition extends CafeSearchPageCondition {
   private Boolean parking;
   private Boolean opening;
   private Boolean existRestaurant;
+  private Boolean existCareService;
+  private Boolean existSwimmingPool;
+  private Boolean existClothesRental;
+  private Boolean existMonitoring;
+  private Boolean existFeedingRoom;
+  private Boolean existOutdoorPlayground;
+  private Boolean existSafetyGuard;
   private Boolean existRoom;
   private Boolean existLesson;
   private Boolean adultPrice;

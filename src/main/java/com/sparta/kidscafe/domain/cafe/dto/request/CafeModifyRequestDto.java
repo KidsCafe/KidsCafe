@@ -27,17 +27,22 @@ public class CafeModifyRequestDto {
   @Positive(message = "카페 크기는 0이상입니다.")
   private int size;
 
-  private boolean multiFamily;
-  private boolean existRoom;
-
   @Pattern(
       regexp = "^(월|화|수|목|금|토|일)(,\\s*(월|화|수|목|금|토|일))*$",
       message = "요일을 쉼표로 구분하여 입력해야 합니다. (예: '월, 화, 수')"
   )
   private String dayOff;
 
+  private boolean multiFamily;
   private boolean parking;
   private boolean existRestaurant;
+  private boolean careService;
+  private boolean swimmingPool;
+  private boolean clothesRental;
+  private boolean monitoring;
+  private boolean feedingRoom;
+  private boolean outdoorPlayground;
+  private boolean safetyGuard;
   private String hyperlink;
   private LocalTime openedAt;
   private LocalTime closedAt;

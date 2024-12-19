@@ -56,6 +56,9 @@ public enum ErrorCode {
   INVALID_REPORT_STATUS("INVALID_REPORT_STATUS", "잘못된 신고 상태입니다.", HttpStatus.BAD_REQUEST),
   REPORT_STATUS_NOT_CHANGEABLE("REPORT_STATUS_NOT_CHANGEABLE", "현재 상태에서 요청된 상태로 변경할 수 없습니다.", HttpStatus.BAD_REQUEST),
 
+  // 활동 클래스 관련 에러
+  LESSON_NOT_FOUND("LESSON_NOT_FOUND", "해당 활동 클래스를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+
   // 공통 에러
   FAIL_ENCODING("FAIL_ENCODING", "잘못된 인코딩을 사용하였습니다.", HttpStatus.BAD_REQUEST),
   JSON_INVALID("JSON_INVALID", "잘못된 JSON형식 전송", HttpStatus.BAD_REQUEST),

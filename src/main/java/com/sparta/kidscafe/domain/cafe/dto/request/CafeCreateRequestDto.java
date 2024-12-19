@@ -41,15 +41,22 @@ public class CafeCreateRequestDto {
   @Positive(message = "카페 크기는 0이상입니다.")
   private int size;
 
-  private boolean multiFamily;
-
   @Pattern(
       regexp = "^(월|화|수|목|금|토|일)(,\\s*(월|화|수|목|금|토|일))*$",
       message = "DayType은 요일을 쉼표로 구분하여 입력해야 합니다. (예: '월, 화, 수')"
   )
   private String dayOff;
+
+  private boolean multiFamily;
   private boolean parking;
   private boolean restaurant;
+  private boolean careService;
+  private boolean swimmingPool;
+  private boolean clothesRental;
+  private boolean monitoring;
+  private boolean feedingRoom;
+  private boolean outdoorPlayground;
+  private boolean safetyGuard;
   private String hyperLink;
   private LocalTime openedAt;
   private LocalTime closedAt;
@@ -77,10 +84,17 @@ public class CafeCreateRequestDto {
         .address(address)
         .location(location)
         .size(size)
-        .multiFamily(multiFamily)
         .dayOff(dayOff)
+        .multiFamily(multiFamily)
         .parking(parking)
         .restaurant(restaurant)
+        .careService(careService)
+        .swimmingPool(swimmingPool)
+        .clothesRental(clothesRental)
+        .monitoring(monitoring)
+        .feedingRoom(feedingRoom)
+        .outdoorPlayground(outdoorPlayground)
+        .safetyGuard(safetyGuard)
         .hyperlink(hyperLink)
         .openedAt(openedAt)
         .closedAt(closedAt)

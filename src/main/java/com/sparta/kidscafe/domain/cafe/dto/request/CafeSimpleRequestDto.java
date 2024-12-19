@@ -35,6 +35,13 @@ public class CafeSimpleRequestDto {
   private boolean multiFamily;
   private boolean parking;
   private boolean restaurant;
+  private boolean careService;
+  private boolean swimmingPool;
+  private boolean clothesRental;
+  private boolean monitoring;
+  private boolean feedingRoom;
+  private boolean outdoorPlayground;
+  private boolean safetyGuard;
   private String hyperLink;
   private LocalTime openedAt;
   private LocalTime closedAt;
@@ -46,10 +53,17 @@ public class CafeSimpleRequestDto {
         .region(region)
         .address(address)
         .size(size)
-        .multiFamily(multiFamily)
         .dayOff(dayOff)
+        .multiFamily(multiFamily)
         .parking(parking)
         .restaurant(restaurant)
+        .careService(careService)
+        .swimmingPool(swimmingPool)
+        .clothesRental(clothesRental)
+        .monitoring(monitoring)
+        .feedingRoom(feedingRoom)
+        .outdoorPlayground(outdoorPlayground)
+        .safetyGuard(safetyGuard)
         .hyperlink(hyperLink)
         .openedAt(openedAt)
         .closedAt(closedAt)

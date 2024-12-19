@@ -21,10 +21,17 @@ public class CafeResponseDto {
   private Long reviewCount;
   private String dayOff;
   private boolean multiFamily;
-  private boolean existRoom;
-  private boolean existLesson;
   private boolean parking;
   private boolean existRestaurant;
+  private boolean existCareService;
+  private boolean existSwimmingPool;
+  private boolean existClothesRental;
+  private boolean existMonitoring;
+  private boolean existFeedingRoom;
+  private boolean existOutdoorPlayground;
+  private boolean existSafetyGuard;
+  private boolean existRoom;
+  private boolean existLesson;
   private String hyperLink;
   private LocalTime openedAt;
   private LocalTime closedAt;
@@ -41,10 +48,17 @@ public class CafeResponseDto {
       Long reviewCount,
       String dayOff,
       boolean multiFamily,
-      boolean existRoom,
-      boolean existLesson,
       boolean parking,
       boolean existRestaurant,
+      boolean existCareService,
+      boolean existSwimmingPool,
+      boolean existClothesRental,
+      boolean existMonitoring,
+      boolean existFeedingRoom,
+      boolean existOutdoorPlayground,
+      boolean existSafetyGuard,
+      boolean existRoom,
+      boolean existLesson,
       String hyperLink,
       LocalTime openedAt,
       LocalTime closedAt) {
@@ -58,10 +72,17 @@ public class CafeResponseDto {
     this.reviewCount = reviewCount;
     this.dayOff = dayOff;
     this.multiFamily = multiFamily;
-    this.existRoom = existRoom;
-    this.existLesson = existLesson;
     this.parking = parking;
     this.existRestaurant = existRestaurant;
+    this.existCareService = existCareService;
+    this.existSwimmingPool = existSwimmingPool;
+    this.existClothesRental = existClothesRental;
+    this.existMonitoring = existMonitoring;
+    this.existFeedingRoom = existFeedingRoom;
+    this.existOutdoorPlayground = existOutdoorPlayground;
+    this.existSafetyGuard = existSafetyGuard;
+    this.existRoom = existRoom;
+    this.existLesson = existLesson;
     this.hyperLink = hyperLink;
     this.openedAt = openedAt;
     this.closedAt = closedAt;

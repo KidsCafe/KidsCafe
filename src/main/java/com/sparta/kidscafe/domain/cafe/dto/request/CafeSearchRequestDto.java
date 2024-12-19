@@ -12,6 +12,7 @@ import org.springframework.util.StringUtils;
 @NoArgsConstructor
 public class CafeSearchRequestDto extends CafeSearchPageRequestDto {
 
+  private Long userId;
   private String name;
   private String region;
   private Integer size;
@@ -20,22 +21,29 @@ public class CafeSearchRequestDto extends CafeSearchPageRequestDto {
   private Integer maxPrice;
   private Double minStar;
   private Double maxStar;
+  private Boolean multiFamily;
   private Boolean parking;
   private Boolean opening;
   private Boolean existRestaurant;
+  private Boolean existCareService;
+  private Boolean existSwimmingPool;
+  private Boolean existClothesRental;
+  private Boolean existMonitoring;
+  private Boolean existFeedingRoom;
+  private Boolean existOutdoorPlayground;
+  private Boolean existSafetyGuard;
   private Boolean existRoom;
   private Boolean existLesson;
   private Boolean adultPrice;
-  private Boolean multiFamily;
   private String openedAt;
   private String closedAt;
-  private Long userId;
   private Double lon;
   private Double lat;
   private Double radiusMeter;
 
   public CafeSearchCondition getSearchCondition() {
     return CafeSearchCondition.createBuilder()
+        .userId(userId)
         .name(name)
         .region(region)
         .size(size)
@@ -47,12 +55,18 @@ public class CafeSearchRequestDto extends CafeSearchPageRequestDto {
         .parking(parking)
         .opening(opening)
         .existRestaurant(existRestaurant)
+        .existCareService(existCareService)
+        .existSwimmingPool(existSwimmingPool)
+        .existClothesRental(existClothesRental)
+        .existMonitoring(existMonitoring)
+        .existFeedingRoom(existFeedingRoom)
+        .existOutdoorPlayground(existOutdoorPlayground)
+        .existSafetyGuard(existSafetyGuard)
         .existRoom(existRoom)
         .existLesson(existLesson)
         .multiFamily(multiFamily)
         .openedAt(StringUtils.hasText(openedAt) ? LocalTime.parse(openedAt) : null)
         .closedAt(StringUtils.hasText(closedAt) ? LocalTime.parse(closedAt) : null)
-        .userId(userId)
         .lon(lon)
         .lat(lat)
         .radiusMeter(radiusMeter)
