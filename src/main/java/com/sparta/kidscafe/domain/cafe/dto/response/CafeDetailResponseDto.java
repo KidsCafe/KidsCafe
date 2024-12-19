@@ -24,6 +24,8 @@ public class CafeDetailResponseDto {
   private Long id;
   private String name;
   private String address;
+  private Double longitude;
+  private Double latitude;
   private int size;
   private double star;
   private Long reviewCount;
@@ -45,6 +47,8 @@ public class CafeDetailResponseDto {
     id = cafeInfo.getId();
     name = cafeInfo.getName();
     address = cafeInfo.getAddress();
+    longitude = cafeInfo.getLongitude();
+    latitude = cafeInfo.getLatitude();
     size = cafeInfo.getSize();
     star = cafeInfo.getStar();
     reviewCount = cafeInfo.getReviewCount();

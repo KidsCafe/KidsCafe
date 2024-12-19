@@ -1,5 +1,6 @@
 package com.sparta.kidscafe.domain.cafe.service;
 
+import com.sparta.kidscafe.api.address.MapService;
 import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.PageResponseDto;
 import com.sparta.kidscafe.common.dto.ResponseDto;
@@ -23,11 +24,9 @@ import com.sparta.kidscafe.domain.pricepolicy.repository.PricePolicyRepository;
 import com.sparta.kidscafe.domain.room.entity.Room;
 import com.sparta.kidscafe.domain.room.repository.RoomRepository;
 import com.sparta.kidscafe.domain.user.entity.User;
-import com.sparta.kidscafe.domain.user.repository.UserRepository;
-import com.sparta.kidscafe.exception.BusinessException;
-import com.sparta.kidscafe.exception.ErrorCode;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.locationtech.jts.geom.Point;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -42,8 +41,11 @@ public class CafeService {
   private final RoomRepository roomRepository;
   private final FeeRepository feeRepository;
   private final PricePolicyRepository pricePolicyRepository;
+
   private final UserValidationCheck userValidationCheck;
   private final CafeValidationCheck cafeValidationCheck;
+
+  private final MapService mapService;
 
   @Transactional
   public StatusDto createCafe(AuthUser authUser, CafeCreateRequestDto requestDto) {
@@ -60,6 +62,11 @@ public class CafeService {
   public StatusDto creatCafe(AuthUser authUser, CafesSimpleCreateRequestDto requestDto) {
     User user = userValidationCheck.validMy(authUser.getId());
     List<Cafe> cafes = requestDto.convertDtoToEntity(user);
+    for(Cafe cafe : cafes) {
+      Point location = mapService.convertAddressToGeo(cafe.getAddress());
+      cafe.updateLocation(location);
+    }
+
     cafeRepository.saveAll(cafes);
     return createStatusDto(
         HttpStatus.CREATED,
@@ -88,9 +95,10 @@ public class CafeService {
   }
 
   @Transactional
-  public StatusDto updateCafe(AuthUser authUser, Long cafeId, CafeSimpleRequestDto requestDto) {
+  public StatusDto updateCafe(AuthUser authUser, Long cafeId, CafeSimpleRequestDto requestDto)  {
+    Point location = mapService.convertAddressToGeo(requestDto.getAddress());
     Cafe cafe = cafeValidationCheck.validMyCafe(cafeId, authUser.getId());
-    cafe.update(requestDto);
+    cafe.update(requestDto, location);
     return createStatusDto(
         HttpStatus.OK,
         "[" + cafe.getName() + "] 수정 성공"
@@ -121,7 +129,8 @@ public class CafeService {
   }
 
   private Cafe saveCafe(CafeCreateRequestDto requestDto, User user) {
-    Cafe cafe = requestDto.convertDtoToEntityByCafe(user);
+    Point location = mapService.convertAddressToGeo(requestDto.getAddress());
+    Cafe cafe = requestDto.convertDtoToEntityByCafe(user, location);
     cafeRepository.save(cafe);
     return cafe;
   }

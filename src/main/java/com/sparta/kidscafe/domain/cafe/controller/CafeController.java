@@ -1,5 +1,6 @@
 package com.sparta.kidscafe.domain.cafe.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sparta.kidscafe.common.annotation.Auth;
 import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.PageResponseDto;

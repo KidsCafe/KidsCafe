@@ -3,18 +3,24 @@ package com.sparta.kidscafe.domain.cafe.repository.condition;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.NumberTemplate;
+import com.sparta.kidscafe.common.util.GeoUtil;
 import com.sparta.kidscafe.domain.cafe.entity.QCafe;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.TextStyle;
 import java.util.Locale;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 @Component
+@RequiredArgsConstructor
 public class CafeCondition {
 
+  private final GeoUtil geoUtil;
   private final QCafe cafe = QCafe.cafe;
 
   public BooleanExpression likeName(String name) {
@@ -133,7 +139,6 @@ public class CafeCondition {
   }
 
   public BooleanExpression loeOpenedAt(LocalTime openedAt) {
-    // goe 크거나 같음, loe 작거나 같음
     if (openedAt == null) {
       return null;
     }
@@ -152,5 +157,37 @@ public class CafeCondition {
       return null;
     }
     return cafe.closedAt.loe(closedAt);
+  }
+
+  public BooleanExpression withInRadius(CafeSearchCondition condition) {
+    Double lat = condition.getLat();
+    Double lon = condition.getLon();
+    Double radiusMeter = condition.getRadiusMeter();
+    return withInRadius(lon, lat, radiusMeter);
+  }
+
+  public BooleanExpression withInRadius(Double lon, Double lat, Double radiusMeter) {
+    if(geoUtil.validWktPoint(lon, lat)) {
+      return null;
+    }
+
+    if(radiusMeter == null || radiusMeter <= 0) {
+      return null;
+    }
+
+    return Expressions.booleanTemplate(
+        "ST_Distance_Sphere({0}, ST_GeomFromText({1}, 4326)) <= {2}",
+        cafe.location,
+        geoUtil.convertPointToWkt(lon, lat),
+        radiusMeter
+    );
+  }
+
+  public NumberTemplate<Double> selectLon() {
+    return Expressions.numberTemplate(Double.class, "ST_Longitude({0})", cafe.location);
+  }
+
+  public NumberTemplate<Double> selectLat() {
+    return Expressions.numberTemplate(Double.class, "ST_Latitude({0})", cafe.location);
   }
 }
