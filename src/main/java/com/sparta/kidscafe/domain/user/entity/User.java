@@ -89,36 +89,23 @@ public class User extends Timestamped implements OAuthMember {
      this.role = role;
   }
 
-
-    // OAuth 사용자 정보 업데이트 메서드
-    public User updateOAuth(String email, String name, String nickname) {
-        this.email = email;
-        if (name != null && !name.isBlank()) {
+  // 프로필 업데이트 메서드
+  public void updateProfile(String name, String nickname, String address) {
+      if (name != null && !name.isBlank()) {
             this.name = name;
-        }
-        if (nickname != null && !nickname.isBlank()) {
-            this.nickname = nickname;
-        }
-        return this;
-    }
+      }
+      if (nickname != null && !nickname.isBlank()) {
+          this.nickname = nickname;
+      }
+      if (address != null && !address.isBlank()) {
+          this.address = address;
+      }
+  }
 
-    // 프로필 업데이트 메서드
-    public void updateProfile(String name, String nickname, String address) {
-        if (name != null && !name.isBlank()) {
-            this.name = name;
-        }
-        if (nickname != null && !nickname.isBlank()) {
-            this.nickname = nickname;
-        }
-        if (address != null && !address.isBlank()) {
-            this.address = address;
-        }
-    }
-
-    // 비밀번호 변경 메서드
-    public void changePassword(String newPassword) {
-        if (newPassword != null && !newPassword.isBlank()) {
-            this.password = newPassword;
-        }
-    }
+  // 비밀번호 변경 메서드
+  public void changePassword(String newPassword) {
+      if (newPassword != null && !newPassword.isBlank()) {
+          this.password = newPassword;
+      }
+  }
 }
