@@ -60,6 +60,9 @@ public class MapService {
   private Point fromJsonToAddress(String responseEntity) {
     JSONObject jsonObject = new JSONObject(responseEntity);
     JSONArray documents = jsonObject.getJSONArray("documents");
+    if(documents.isEmpty())
+      return null;
+
     JSONObject address = documents.getJSONObject(0);
     Double lon = Double.parseDouble(address.get("x").toString());
     Double lat = Double.parseDouble(address.get("y").toString());
