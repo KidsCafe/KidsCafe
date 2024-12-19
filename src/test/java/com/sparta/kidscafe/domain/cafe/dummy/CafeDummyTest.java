@@ -8,6 +8,8 @@ import com.sparta.kidscafe.domain.cafe.repository.CafeImageRepository;
 import com.sparta.kidscafe.domain.cafe.repository.CafeRepository;
 import com.sparta.kidscafe.domain.fee.entity.Fee;
 import com.sparta.kidscafe.domain.fee.repository.FeeRepository;
+import com.sparta.kidscafe.domain.lesson.entity.Lesson;
+import com.sparta.kidscafe.domain.lesson.repository.LessonRepository;
 import com.sparta.kidscafe.domain.pricepolicy.entity.PricePolicy;
 import com.sparta.kidscafe.domain.pricepolicy.repository.PricePolicyRepository;
 import com.sparta.kidscafe.domain.room.entity.Room;
@@ -17,6 +19,7 @@ import com.sparta.kidscafe.domain.user.repository.UserRepository;
 import com.sparta.kidscafe.dummy.DummyCafe;
 import com.sparta.kidscafe.dummy.DummyCafeImage;
 import com.sparta.kidscafe.dummy.DummyFee;
+import com.sparta.kidscafe.dummy.DummyLesson;
 import com.sparta.kidscafe.dummy.DummyPricePolicy;
 import com.sparta.kidscafe.dummy.DummyRoom;
 import java.util.Collections;
@@ -45,6 +48,9 @@ public class CafeDummyTest {
   private FeeRepository feeRepository;
 
   @Autowired
+  private LessonRepository lessonRepository;
+
+  @Autowired
   private PricePolicyRepository pricePolicyRepository;
 
   @Autowired
@@ -66,6 +72,9 @@ public class CafeDummyTest {
 
         List<Room> rooms = DummyRoom.createDummyRooms(cafe, TestUtil.getRandomInteger(0, 5));
         roomRepository.saveAll(rooms);
+
+        List<Lesson> lessons = DummyLesson.createDummyLessons(cafe, TestUtil.getRandomInteger(0, 5));
+        lessonRepository.saveAll(lessons);
 
         List<Fee> fees = DummyFee.createDummyFees(cafe);
         feeRepository.saveAll(fees);

@@ -272,3 +272,19 @@ where rd.reservation_id in (select re.id
 # 3. 예매 시작 시간
 # 4. 예매 마감 시간
 
+
+SELECT
+    ST_X(location) AS longitude, -- 경도 추출
+    ST_Y(location) AS latitude   -- 위도 추출
+FROM cafe;
+
+SELECT
+    ST_Longitude(location) AS longitude, -- 경도 추출
+    ST_Latitude(location) AS latitude   -- 위도 추출
+FROM cafe;
+
+SELECT
+    id,
+    ST_SRID(location) AS srid,
+    ST_AsText(location) AS point_text
+FROM cafe;

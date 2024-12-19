@@ -3,6 +3,8 @@ package com.sparta.kidscafe.domain.cafe.dto.response;
 import com.sparta.kidscafe.domain.cafe.entity.CafeImage;
 import com.sparta.kidscafe.domain.fee.dto.response.FeeResponseDto;
 import com.sparta.kidscafe.domain.fee.entity.Fee;
+import com.sparta.kidscafe.domain.lesson.dto.response.LessonResponseDto;
+import com.sparta.kidscafe.domain.lesson.entity.Lesson;
 import com.sparta.kidscafe.domain.pricepolicy.dto.response.PricePolicyResponseDto;
 import com.sparta.kidscafe.domain.pricepolicy.entity.PricePolicy;
 import com.sparta.kidscafe.domain.room.dto.response.RoomResponseDto;
@@ -40,6 +42,7 @@ public class CafeDetailResponseDto {
 
   private List<CafeImageResponseDto> images;
   private List<RoomResponseDto> rooms;
+  private List<LessonResponseDto> lessons;
   private List<FeeResponseDto> fees;
   private List<PricePolicyResponseDto> pricePolicies;
 
@@ -73,6 +76,13 @@ public class CafeDetailResponseDto {
     this.rooms = new ArrayList<>();
     for (Room room : rooms) {
       this.rooms.add(RoomResponseDto.from(room));
+    }
+  }
+
+  public void setLessons(List<Lesson> lessons) {
+    this.lessons = new ArrayList<>();
+    for (Lesson lesson : lessons) {
+      this.lessons.add(LessonResponseDto.from(lesson));
     }
   }
 

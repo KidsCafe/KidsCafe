@@ -19,6 +19,8 @@ import com.sparta.kidscafe.domain.cafe.repository.CafeRepository;
 import com.sparta.kidscafe.domain.cafe.repository.condition.CafeSearchCondition;
 import com.sparta.kidscafe.domain.fee.entity.Fee;
 import com.sparta.kidscafe.domain.fee.repository.FeeRepository;
+import com.sparta.kidscafe.domain.lesson.entity.Lesson;
+import com.sparta.kidscafe.domain.lesson.repository.LessonRepository;
 import com.sparta.kidscafe.domain.pricepolicy.entity.PricePolicy;
 import com.sparta.kidscafe.domain.pricepolicy.repository.PricePolicyRepository;
 import com.sparta.kidscafe.domain.room.entity.Room;
@@ -39,6 +41,7 @@ public class CafeService {
   private final CafeRepository cafeRepository;
   private final CafeImageRepository cafeImageRepository;
   private final RoomRepository roomRepository;
+  private final LessonRepository lessonRepository;
   private final FeeRepository feeRepository;
   private final PricePolicyRepository pricePolicyRepository;
 
@@ -53,7 +56,7 @@ public class CafeService {
     Cafe cafe = saveCafe(requestDto, user);
     saveCafeImage(cafe, requestDto.getImages());
     saveCafeDetailInfo(requestDto, cafe);
-    return createStatusDto(
+    return StatusDto.createStatusDto(
         HttpStatus.CREATED,
         "[" + cafe.getName() + "] 등록 성공"
     );
@@ -68,7 +71,7 @@ public class CafeService {
     }
 
     cafeRepository.saveAll(cafes);
-    return createStatusDto(
+    return StatusDto.createStatusDto(
         HttpStatus.CREATED,
         "카페 [" + cafes.size() + "]개 등록 성공"
     );
@@ -99,7 +102,7 @@ public class CafeService {
     Point location = mapService.convertAddressToGeo(requestDto.getAddress());
     Cafe cafe = cafeValidationCheck.validMyCafe(cafeId, authUser.getId());
     cafe.update(requestDto, location);
-    return createStatusDto(
+    return StatusDto.createStatusDto(
         HttpStatus.OK,
         "[" + cafe.getName() + "] 수정 성공"
     );
@@ -137,10 +140,12 @@ public class CafeService {
 
   private void saveCafeDetailInfo(CafeCreateRequestDto requestDto, Cafe cafe) {
     List<Room> rooms = requestDto.convertDtoToEntityByRoom(cafe);
+    List<Lesson> lessons = requestDto.convertDtoToEntityByLesson(cafe);
     List<Fee> fees = requestDto.convertDtoToEntityByFee(cafe);
     List<PricePolicy> pricePolicies = requestDto.convertDtoToEntityByPricePolicy(cafe);
 
     roomRepository.saveAll(rooms);
+    lessonRepository.saveAll(lessons);
     feeRepository.saveAll(fees);
     pricePolicyRepository.saveAll(pricePolicies);
   }
@@ -153,6 +158,7 @@ public class CafeService {
     Long cafeId = cafeResponseDto.getId();
     List<CafeImage> images = cafeImageRepository.findAllByCafeId(cafeId);
     List<Room> rooms = roomRepository.findAllByCafeId(cafeId);
+    List<Lesson> lessons = lessonRepository.findAllByCafeId(cafeId);
     List<Fee> fees = feeRepository.findAllByCafeId(cafeId);
     List<PricePolicy> pricePolicies = pricePolicyRepository.findAllByCafeId(cafeId);
 
@@ -160,15 +166,9 @@ public class CafeService {
     cafeDetailResponseDto.setCafeInfo(cafeResponseDto);
     cafeDetailResponseDto.setCafeImage(images);
     cafeDetailResponseDto.setRooms(rooms);
+    cafeDetailResponseDto.setLessons(lessons);
     cafeDetailResponseDto.setFees(fees);
     cafeDetailResponseDto.setPricePolicies(pricePolicies);
     return cafeDetailResponseDto;
-  }
-
-  private StatusDto createStatusDto(HttpStatus status, String message) {
-    return StatusDto.builder()
-        .status(status.value())
-        .message(message)
-        .build();
   }
 }

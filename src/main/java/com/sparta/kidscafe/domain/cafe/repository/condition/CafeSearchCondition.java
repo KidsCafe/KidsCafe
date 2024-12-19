@@ -20,6 +20,7 @@ public class CafeSearchCondition extends CafeSearchPageCondition {
   private Boolean opening;
   private Boolean existRestaurant;
   private Boolean existRoom;
+  private Boolean existLesson;
   private Boolean adultPrice;
   private Boolean multiFamily;
   private LocalTime openedAt;
