@@ -22,6 +22,7 @@ public class CafeResponseDto {
   private String dayOff;
   private boolean multiFamily;
   private boolean existRoom;
+  private boolean existLesson;
   private boolean parking;
   private boolean existRestaurant;
   private String hyperLink;
@@ -41,6 +42,7 @@ public class CafeResponseDto {
       String dayOff,
       boolean multiFamily,
       boolean existRoom,
+      boolean existLesson,
       boolean parking,
       boolean existRestaurant,
       String hyperLink,
@@ -57,6 +59,7 @@ public class CafeResponseDto {
     this.dayOff = dayOff;
     this.multiFamily = multiFamily;
     this.existRoom = existRoom;
+    this.existLesson = existLesson;
     this.parking = parking;
     this.existRestaurant = existRestaurant;
     this.hyperLink = hyperLink;
