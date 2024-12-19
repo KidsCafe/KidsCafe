@@ -3,6 +3,8 @@ package com.sparta.kidscafe.domain.cafe.dto.request;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
 import com.sparta.kidscafe.domain.fee.dto.request.FeeCreateRequestDto;
 import com.sparta.kidscafe.domain.fee.entity.Fee;
+import com.sparta.kidscafe.domain.lesson.dto.request.LessonCreateRequestDto;
+import com.sparta.kidscafe.domain.lesson.entity.Lesson;
 import com.sparta.kidscafe.domain.pricepolicy.dto.request.PricePolicyCreateRequestDto;
 import com.sparta.kidscafe.domain.pricepolicy.entity.PricePolicy;
 import com.sparta.kidscafe.domain.room.dto.request.RoomCreateRequestDto;
@@ -62,6 +64,9 @@ public class CafeCreateRequestDto {
   private List<FeeCreateRequestDto> fees;
 
   @Valid
+  private List<LessonCreateRequestDto> lessons;
+
+  @Valid
   private List<PricePolicyCreateRequestDto> pricePolicies;
 
   public Cafe convertDtoToEntityByCafe(User user, Point location) {
@@ -87,6 +92,13 @@ public class CafeCreateRequestDto {
     for(RoomCreateRequestDto dto : rooms)
       cafeRooms.add(dto.convertDtoToEntity(cafe));
     return cafeRooms;
+  }
+
+  public List<Lesson> convertDtoToEntityByLesson(Cafe cafe) {
+    List<Lesson> cafeLessons = new ArrayList<>();
+    for(LessonCreateRequestDto dto : lessons)
+      cafeLessons.add(dto.convertDtoToEntity(cafe));
+    return cafeLessons;
   }
 
   public List<Fee> convertDtoToEntityByFee(Cafe cafe) {

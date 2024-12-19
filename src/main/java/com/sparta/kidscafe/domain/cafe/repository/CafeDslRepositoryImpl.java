@@ -16,6 +16,8 @@ import com.sparta.kidscafe.domain.cafe.repository.condition.CafeSearchCondition;
 import com.sparta.kidscafe.domain.cafe.repository.sort.CafeSearchSortBy;
 import com.sparta.kidscafe.domain.fee.entity.QFee;
 import com.sparta.kidscafe.domain.fee.repository.condition.FeeCondition;
+import com.sparta.kidscafe.domain.lesson.entity.QLesson;
+import com.sparta.kidscafe.domain.lesson.repository.condition.LessonCondition;
 import com.sparta.kidscafe.domain.review.entity.QReview;
 import com.sparta.kidscafe.domain.review.repository.condition.ReviewCondition;
 import com.sparta.kidscafe.domain.room.entity.QRoom;
@@ -30,12 +32,14 @@ public class CafeDslRepositoryImpl implements CafeDslRepository {
 
   private final JPAQueryFactory queryFactory;
   private final RoomCondition roomCondition;
+  private final LessonCondition lessonCondition;
   private final ReviewCondition reviewCondition;
   private final CafeCondition cafeCondition;
   private final FeeCondition feeCondition;
 
   private final QCafe cafe = QCafe.cafe;
   private final QRoom room = QRoom.room;
+  private final QLesson lesson = QLesson.lesson;
   private final QReview review = QReview.review;
   private final QFee fee = new QFee("fee");
 
@@ -71,6 +75,7 @@ public class CafeDslRepositoryImpl implements CafeDslRepository {
         .from(cafe)
         .leftJoin(review).on(review.cafe.eq(cafe))
         .leftJoin(room).on(room.cafe.eq(cafe))
+        .leftJoin(lesson).on(lesson.cafe.eq(cafe))
         .leftJoin(fee).on(fee.cafe.eq(cafe))
         .where(makeWhere(condition))
         .groupBy(cafe.id)
@@ -91,7 +96,8 @@ public class CafeDslRepositoryImpl implements CafeDslRepository {
             review.id.countDistinct(),
             cafe.dayOff,
             cafe.multiFamily,
-            roomCondition.existRoom(),
+            roomCondition.selectExistRoom(),
+            lessonCondition.selectExistLesson(),
             cafe.parking,
             cafe.restaurant,
             cafe.hyperlink,
@@ -99,7 +105,8 @@ public class CafeDslRepositoryImpl implements CafeDslRepository {
             cafe.closedAt))
         .from(cafe)
         .leftJoin(review).on(review.cafe.eq(cafe))
-        .leftJoin(room).on(room.cafe.eq(cafe));
+        .leftJoin(room).on(room.cafe.eq(cafe))
+        .leftJoin(lesson).on(lesson.cafe.eq(cafe));
   }
 
   private BooleanBuilder makeWhere(CafeSearchCondition condition) {
@@ -123,6 +130,7 @@ public class CafeDslRepositoryImpl implements CafeDslRepository {
     BooleanBuilder builder = new BooleanBuilder();
     builder.and(reviewCondition.betweenAvgStar(condition));
     builder.and(roomCondition.existRoom(condition.getExistRoom()));
+    builder.and(lessonCondition.existLesson(condition.getExistLesson()));
     return builder;
   }
 
@@ -140,7 +148,7 @@ public class CafeDslRepositoryImpl implements CafeDslRepository {
     return switch (sortBy) {
       case REVIEW_COUNT -> review.id.count();
       case REVIEW_AVG -> review.star.avg();
-      case ROOM_EXIST -> roomCondition.existRoom();
+      case ROOM_EXIST -> roomCondition.selectExistRoom();
       default -> cafe.name;
     };
   }

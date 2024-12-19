@@ -28,6 +28,8 @@ import com.sparta.kidscafe.domain.cafe.repository.CafeRepository;
 import com.sparta.kidscafe.domain.cafe.repository.condition.CafeSearchCondition;
 import com.sparta.kidscafe.domain.fee.entity.Fee;
 import com.sparta.kidscafe.domain.fee.repository.FeeRepository;
+import com.sparta.kidscafe.domain.lesson.entity.Lesson;
+import com.sparta.kidscafe.domain.lesson.repository.LessonRepository;
 import com.sparta.kidscafe.domain.pricepolicy.entity.PricePolicy;
 import com.sparta.kidscafe.domain.pricepolicy.repository.PricePolicyRepository;
 import com.sparta.kidscafe.domain.room.entity.Room;
@@ -61,6 +63,9 @@ class CafeServiceTest {
 
   @Mock
   private RoomRepository roomRepository;
+
+  @Mock
+  private LessonRepository lessonRepository;
 
   @Mock
   private FeeRepository feeRepository;
@@ -105,6 +110,7 @@ class CafeServiceTest {
 
     when(cafeCreateRequestDto.convertDtoToEntityByCafe(user, null)).thenReturn(cafe);
     when(cafeCreateRequestDto.convertDtoToEntityByRoom(cafe)).thenReturn(Collections.singletonList(mock(Room.class)));
+    when(cafeCreateRequestDto.convertDtoToEntityByLesson(cafe)).thenReturn(Collections.singletonList(mock(Lesson.class)));
     when(cafeCreateRequestDto.convertDtoToEntityByFee(cafe)).thenReturn(Collections.singletonList(mock(Fee.class)));
     when(cafeCreateRequestDto.convertDtoToEntityByPricePolicy(cafe)).thenReturn(Collections.singletonList(mock(PricePolicy.class)));
 
@@ -123,6 +129,7 @@ class CafeServiceTest {
     verify(cafeRepository).save(any(Cafe.class));
     verify(cafeImageRepository).findAllById(cafeCreateRequestDto.getImages());
     verify(roomRepository).saveAll(any());
+    verify(lessonRepository).saveAll(any());
     verify(feeRepository).saveAll(any());
     verify(pricePolicyRepository).saveAll(any());
   }

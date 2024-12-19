@@ -17,7 +17,7 @@ public class RoomCondition {
     return room.id.eq(id);
   }
 
-  public BooleanExpression existRoom() {
+  public BooleanExpression selectExistRoom() {
     return new CaseBuilder()
         .when(room.cafe.id.countDistinct().goe(1))
         .then(true)

@@ -24,6 +24,7 @@ public class CafeSearchRequestDto extends CafeSearchPageRequestDto {
   private Boolean opening;
   private Boolean existRestaurant;
   private Boolean existRoom;
+  private Boolean existLesson;
   private Boolean adultPrice;
   private Boolean multiFamily;
   private String openedAt;
@@ -47,6 +48,7 @@ public class CafeSearchRequestDto extends CafeSearchPageRequestDto {
         .opening(opening)
         .existRestaurant(existRestaurant)
         .existRoom(existRoom)
+        .existLesson(existLesson)
         .multiFamily(multiFamily)
         .openedAt(StringUtils.hasText(openedAt) ? LocalTime.parse(openedAt) : null)
         .closedAt(StringUtils.hasText(closedAt) ? LocalTime.parse(closedAt) : null)
