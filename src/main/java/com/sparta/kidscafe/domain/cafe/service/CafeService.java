@@ -56,7 +56,7 @@ public class CafeService {
     Cafe cafe = saveCafe(requestDto, user);
     saveCafeImage(cafe, requestDto.getImages());
     saveCafeDetailInfo(requestDto, cafe);
-    return createStatusDto(
+    return StatusDto.createStatusDto(
         HttpStatus.CREATED,
         "[" + cafe.getName() + "] 등록 성공"
     );
@@ -71,7 +71,7 @@ public class CafeService {
     }
 
     cafeRepository.saveAll(cafes);
-    return createStatusDto(
+    return StatusDto.createStatusDto(
         HttpStatus.CREATED,
         "카페 [" + cafes.size() + "]개 등록 성공"
     );
@@ -102,7 +102,7 @@ public class CafeService {
     Point location = mapService.convertAddressToGeo(requestDto.getAddress());
     Cafe cafe = cafeValidationCheck.validMyCafe(cafeId, authUser.getId());
     cafe.update(requestDto, location);
-    return createStatusDto(
+    return StatusDto.createStatusDto(
         HttpStatus.OK,
         "[" + cafe.getName() + "] 수정 성공"
     );
@@ -170,12 +170,5 @@ public class CafeService {
     cafeDetailResponseDto.setFees(fees);
     cafeDetailResponseDto.setPricePolicies(pricePolicies);
     return cafeDetailResponseDto;
-  }
-
-  private StatusDto createStatusDto(HttpStatus status, String message) {
-    return StatusDto.builder()
-        .status(status.value())
-        .message(message)
-        .build();
   }
 }
