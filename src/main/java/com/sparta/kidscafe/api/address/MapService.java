@@ -1,8 +1,5 @@
 package com.sparta.kidscafe.api.address;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.kidscafe.common.util.GeoUtil;
 import java.net.URI;
 import org.json.JSONArray;
@@ -31,35 +28,38 @@ public class MapService {
     this.geoUtil = geoUtil;
   }
 
-  public Point convertAddressToGeo(String address) throws JsonProcessingException {
-    // 요청 URL 만들기
-    URI uri = UriComponentsBuilder
-        .fromUriString("https://dapi.kakao.com")
-        .path("/v2/local/search/address")
-        .encode()
-        .build()
-        .toUri();
-
-    // HTTP Header 생성
-    HttpHeaders headers = new HttpHeaders();
-    headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
-    headers.add("Authorization", "KakaoAK "  + restApiKey);
-
-    RequestEntity<Void> requestEntity = RequestEntity
-        .get(uri)
-        .headers(headers)
-        .build();
-
+  public Point convertAddressToGeo(String address) {
     // HTTP 요청 보내기
+    RequestEntity<Void> requestEntity = RequestEntity
+        .get(makeUrl(address))
+        .headers(makeHeaders())
+        .build();
     ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
 
     // HTTP 응답 (JSON) -> 파싱
-    JsonNode jsonNode = new ObjectMapper().readTree(responseEntity.getBody());
-    return fromJsonToAddress(jsonNode);
+    return fromJsonToAddress(responseEntity.getBody());
   }
 
-  private Point fromJsonToAddress(JsonNode responseEntity) {
-    JSONArray documents = new JSONArray(responseEntity.get(0));
+  private URI makeUrl(String address) {
+    return UriComponentsBuilder
+        .fromUriString("https://dapi.kakao.com")
+        .path("/v2/local/search/address.json")
+        .queryParam("query", address)
+        .encode()
+        .build()
+        .toUri();
+  }
+
+  private HttpHeaders makeHeaders() {
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("Content-Type", "application/json;charset=UTF-8");
+    headers.add("Authorization", "KakaoAK " + restApiKey);
+    return headers;
+  }
+
+  private Point fromJsonToAddress(String responseEntity) {
+    JSONObject jsonObject = new JSONObject(responseEntity);
+    JSONArray documents = jsonObject.getJSONArray("documents");
     JSONObject address = documents.getJSONObject(0);
     Double lon = Double.parseDouble(address.get("x").toString());
     Double lat = Double.parseDouble(address.get("y").toString());

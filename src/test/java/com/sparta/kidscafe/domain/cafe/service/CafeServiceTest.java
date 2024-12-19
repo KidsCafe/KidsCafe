@@ -8,7 +8,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sparta.kidscafe.api.address.MapService;
 import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.PageResponseDto;
@@ -42,7 +41,6 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.locationtech.jts.geom.Point;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -99,7 +97,7 @@ class CafeServiceTest {
 
   @Test
   @DisplayName("카페 등록 성공 - 사장님")
-  void createCafeOwner_Success() throws JsonProcessingException {
+  void createCafeOwner_Success()  {
     // given
     AuthUser authUser = createAuthUser(RoleType.OWNER);
     User user = DummyUser.createDummyUser(authUser.getRoleType());
@@ -131,7 +129,7 @@ class CafeServiceTest {
 
   @Test
   @DisplayName("카페 등록 성공 - 관리자")
-  void creatCafe_MultipleCafes_Success() throws JsonProcessingException {
+  void creatCafe_MultipleCafes_Success() {
     // given
     AuthUser authUser = createAuthUser(RoleType.ADMIN);
     User user = DummyUser.createDummyUser(authUser.getRoleType());
@@ -212,7 +210,7 @@ class CafeServiceTest {
 
   @Test
   @DisplayName("카페 수정 성공")
-  void updateCafe_Success() throws JsonProcessingException {
+  void updateCafe_Success() {
     // given
     Long cafeId = 2L;
     AuthUser authUser = createAuthUser(RoleType.OWNER);

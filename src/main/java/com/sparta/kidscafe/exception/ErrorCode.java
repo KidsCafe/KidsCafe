@@ -16,12 +16,9 @@ public enum ErrorCode {
   INVALID_CAFE_DATA("INVALID_CAFE_DATA", "카페 데이터가 유효하지 않습니다.", HttpStatus.BAD_REQUEST),
 
   // Image 관련 에러
-  IMAGE_UPLOAD_FAILED("IMAGE_UPLOAD_FAILED", "카페 이미지 업로드에 실패했습니다.",
-      HttpStatus.INTERNAL_SERVER_ERROR),
-  IMAGE_S3_UPLOAD_FAILED("IMAGE_UPLOAD_FAILED", "S3 파일 업로드 중 오류 발생",
-      HttpStatus.INTERNAL_SERVER_ERROR),
-  IMAGE_REMOVE_FAILED("IMAGE_REMOVE_FAILED", "카페 이미지 삭제에 실패했습니다.",
-      HttpStatus.INTERNAL_SERVER_ERROR),
+  IMAGE_UPLOAD_FAILED("IMAGE_UPLOAD_FAILED", "카페 이미지 업로드에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
+  IMAGE_S3_UPLOAD_FAILED("IMAGE_UPLOAD_FAILED", "S3 파일 업로드 중 오류 발생", HttpStatus.INTERNAL_SERVER_ERROR),
+  IMAGE_REMOVE_FAILED("IMAGE_REMOVE_FAILED", "카페 이미지 삭제에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
   IMAGE_NOT_EXIST("IMAGE_NOT_EXIST", "이미지가 존재하지 않습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
   IMAGE_SDK_ERROR("IMAGE_UPLOAD_FAILED", "SDK 오류로 인한 파일 업로드 실패", HttpStatus.INTERNAL_SERVER_ERROR),
 
@@ -36,8 +33,8 @@ public enum ErrorCode {
   RESERVATION_NOT_FOUND("RESERVATION_NOT_FOUND", "예약을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
   INVALID_STATUS("INVALID_STATUS", "유효하지 않은 상태입니다.", HttpStatus.BAD_REQUEST),
   RESERVATION_FAILURE("RESERVATION_FAILURE", "예약을 할 수 없습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
-  RESERVATION_UPDATE_FAILURE("RESERVATION_UPDATE_FAILURE", "수정할 수 없는 정보입니다.",
-      HttpStatus.BAD_REQUEST),
+  RESERVATION_UPDATE_FAILURE("RESERVATION_UPDATE_FAILURE", "수정할 수 없는 정보입니다.", HttpStatus.BAD_REQUEST),
+
   // Bookmark 관련 에러
   NO_BOOKMARKS_FOUND("NO_BOOKMARKS_FOUND", "즐겨찾기 목록이 비어있습니다.", HttpStatus.NOT_FOUND),
 
@@ -57,13 +54,13 @@ public enum ErrorCode {
   // 신고 관련 에러
   REPORT_NOT_FOUND("REPORT_NOT_FOUND", "신고를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
   INVALID_REPORT_STATUS("INVALID_REPORT_STATUS", "잘못된 신고 상태입니다.", HttpStatus.BAD_REQUEST),
-  REPORT_STATUS_NOT_CHANGEABLE("REPORT_STATUS_NOT_CHANGEABLE", "현재 상태에서 요청된 상태로 변경할 수 없습니다.",
-      HttpStatus.BAD_REQUEST),
+  REPORT_STATUS_NOT_CHANGEABLE("REPORT_STATUS_NOT_CHANGEABLE", "현재 상태에서 요청된 상태로 변경할 수 없습니다.", HttpStatus.BAD_REQUEST),
 
   // 공통 에러
+  FAIL_ENCODING("FAIL_ENCODING", "잘못된 인코딩을 사용하였습니다.", HttpStatus.BAD_REQUEST),
+  JSON_INVALID("JSON_INVALID", "잘못된 JSON형식 전송", HttpStatus.BAD_REQUEST),
   BAD_REQUEST("BAD_REQUEST", "잘못된 요청입니다.", HttpStatus.BAD_REQUEST),
-  INTERNAL_SERVER_ERROR("INTERNAL_SERVER_ERROR", "서버 에러가 발생했습니다.",
-      HttpStatus.INTERNAL_SERVER_ERROR),
+  INTERNAL_SERVER_ERROR("INTERNAL_SERVER_ERROR", "서버 에러가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
   UNAUTHORIZED("UNAUTHORIZED", "인증이 필요합니다.", HttpStatus.UNAUTHORIZED),
   FORBIDDEN("FORBIDDEN", "권한이 없습니다.", HttpStatus.FORBIDDEN);
 

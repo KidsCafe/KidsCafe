@@ -14,6 +14,8 @@ public class CafeResponseDto {
   private Long id;
   private String name;
   private String address;
+  private Double longitude;
+  private Double latitude;
   private int size;
   private double star;
   private Long reviewCount;
@@ -31,6 +33,8 @@ public class CafeResponseDto {
       Long id,
       String name,
       String address,
+      Double longitude,
+      Double latitude,
       int size,
       double star,
       Long reviewCount,
@@ -45,6 +49,8 @@ public class CafeResponseDto {
     this.id = id;
     this.name = name;
     this.address = address;
+    this.longitude = longitude;
+    this.latitude = latitude;
     this.size = size;
     this.star = star;
     this.reviewCount = reviewCount;

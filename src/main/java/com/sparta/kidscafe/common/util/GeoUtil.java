@@ -1,5 +1,6 @@
 package com.sparta.kidscafe.common.util;
 
+import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
@@ -10,7 +11,7 @@ public class GeoUtil {
   private final GeometryFactory geometryFactory = new GeometryFactory();
 
   public Point convertGeoToPoint(Double lon, Double lat) {
-    Point location = geometryFactory.createPoint(new Coordinate(lon, lat));
+    Point location = geometryFactory.createPoint(new Coordinate(lon, lat, 0.0));
     location.setSRID(4326);
     return location;
   }
@@ -23,5 +24,9 @@ public class GeoUtil {
 
     // 위도 범위
     return lat != null && lat >= -180 && lat <= 180;
+  }
+
+  public String convertPointToWkt(Double lon, Double lat) {
+    return String.format("POINT(%f %f)", lat, lon);
   }
 }

@@ -84,6 +84,8 @@ public class CafeDslRepositoryImpl implements CafeDslRepository {
             cafe.id,
             cafe.name,
             cafe.address,
+            cafeCondition.selectLon(),
+            cafeCondition.selectLat(),
             cafe.size,
             review.star.avg(),
             review.id.countDistinct(),

@@ -1,6 +1,5 @@
 package com.sparta.kidscafe.domain.cafe.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sparta.kidscafe.api.address.MapService;
 import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.PageResponseDto;
@@ -49,7 +48,7 @@ public class CafeService {
   private final MapService mapService;
 
   @Transactional
-  public StatusDto createCafe(AuthUser authUser, CafeCreateRequestDto requestDto) throws JsonProcessingException {
+  public StatusDto createCafe(AuthUser authUser, CafeCreateRequestDto requestDto) {
     User user = userValidationCheck.validMy(authUser.getId());
     Cafe cafe = saveCafe(requestDto, user);
     saveCafeImage(cafe, requestDto.getImages());
@@ -60,7 +59,7 @@ public class CafeService {
     );
   }
 
-  public StatusDto creatCafe(AuthUser authUser, CafesSimpleCreateRequestDto requestDto) throws JsonProcessingException {
+  public StatusDto creatCafe(AuthUser authUser, CafesSimpleCreateRequestDto requestDto) {
     User user = userValidationCheck.validMy(authUser.getId());
     List<Cafe> cafes = requestDto.convertDtoToEntity(user);
     for(Cafe cafe : cafes) {
@@ -96,7 +95,7 @@ public class CafeService {
   }
 
   @Transactional
-  public StatusDto updateCafe(AuthUser authUser, Long cafeId, CafeSimpleRequestDto requestDto) throws JsonProcessingException {
+  public StatusDto updateCafe(AuthUser authUser, Long cafeId, CafeSimpleRequestDto requestDto)  {
     Point location = mapService.convertAddressToGeo(requestDto.getAddress());
     Cafe cafe = cafeValidationCheck.validMyCafe(cafeId, authUser.getId());
     cafe.update(requestDto, location);
@@ -129,7 +128,7 @@ public class CafeService {
     }
   }
 
-  private Cafe saveCafe(CafeCreateRequestDto requestDto, User user) throws JsonProcessingException {
+  private Cafe saveCafe(CafeCreateRequestDto requestDto, User user) {
     Point location = mapService.convertAddressToGeo(requestDto.getAddress());
     Cafe cafe = requestDto.convertDtoToEntityByCafe(user, location);
     cafeRepository.save(cafe);

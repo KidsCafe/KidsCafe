@@ -4,6 +4,7 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.NumberTemplate;
 import com.sparta.kidscafe.common.util.GeoUtil;
 import com.sparta.kidscafe.domain.cafe.entity.QCafe;
 import java.time.LocalDate;
@@ -12,8 +13,6 @@ import java.time.LocalTime;
 import java.time.format.TextStyle;
 import java.util.Locale;
 import lombok.RequiredArgsConstructor;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.Point;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -140,7 +139,6 @@ public class CafeCondition {
   }
 
   public BooleanExpression loeOpenedAt(LocalTime openedAt) {
-    // goe 크거나 같음, loe 작거나 같음
     if (openedAt == null) {
       return null;
     }
@@ -178,11 +176,18 @@ public class CafeCondition {
     }
 
     return Expressions.booleanTemplate(
-        "ST_Distance_Sphere({0}, ST_GeomFromText('POINT({1} {2})', 4326)) <= {3}",
+        "ST_Distance_Sphere({0}, ST_GeomFromText({1}, 4326)) <= {2}",
         cafe.location,
-        lon,
-        lat,
+        geoUtil.convertPointToWkt(lon, lat),
         radiusMeter
     );
+  }
+
+  public NumberTemplate<Double> selectLon() {
+    return Expressions.numberTemplate(Double.class, "ST_Longitude({0})", cafe.location);
+  }
+
+  public NumberTemplate<Double> selectLat() {
+    return Expressions.numberTemplate(Double.class, "ST_Latitude({0})", cafe.location);
   }
 }
