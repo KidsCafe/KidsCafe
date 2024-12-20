@@ -63,6 +63,90 @@ public class CafeCondition {
     }
   }
 
+  public BooleanExpression existCareService(Boolean careService) {
+    if (careService == null) {
+      return null;
+    }
+
+    if (careService) {
+      return cafe.careService.isTrue();
+    } else {
+      return cafe.careService.isFalse();
+    }
+  }
+
+  public BooleanExpression existSwimmingPool(Boolean swimmingPool) {
+    if (swimmingPool == null) {
+      return null;
+    }
+
+    if (swimmingPool) {
+      return cafe.swimmingPool.isTrue();
+    } else {
+      return cafe.swimmingPool.isFalse();
+    }
+  }
+
+  public BooleanExpression existClothesRental(Boolean clothesRental) {
+    if (clothesRental == null) {
+      return null;
+    }
+
+    if (clothesRental) {
+      return cafe.clothesRental.isTrue();
+    } else {
+      return cafe.clothesRental.isFalse();
+    }
+  }
+
+  public BooleanExpression existMonitoring(Boolean monitoring) {
+    if (monitoring == null) {
+      return null;
+    }
+
+    if (monitoring) {
+      return cafe.monitoring.isTrue();
+    } else {
+      return cafe.monitoring.isFalse();
+    }
+  }
+
+  public BooleanExpression existFeedingRoom(Boolean feedingRoom) {
+    if (feedingRoom == null) {
+      return null;
+    }
+
+    if (feedingRoom) {
+      return cafe.feedingRoom.isTrue();
+    } else {
+      return cafe.feedingRoom.isFalse();
+    }
+  }
+
+  public BooleanExpression existOutdoorPlayground(Boolean playground) {
+    if (playground == null) {
+      return null;
+    }
+
+    if (playground) {
+      return cafe.outdoorPlayground.isTrue();
+    } else {
+      return cafe.outdoorPlayground.isFalse();
+    }
+  }
+
+  public BooleanExpression existSafetyGuard(Boolean safetyGuard) {
+    if (safetyGuard == null) {
+      return null;
+    }
+
+    if (safetyGuard) {
+      return cafe.safetyGuard.isTrue();
+    } else {
+      return cafe.safetyGuard.isFalse();
+    }
+  }
+
   public Predicate isOpening(Boolean opening) {
     if (opening == null || !opening) {
       return null;
@@ -106,7 +190,7 @@ public class CafeCondition {
     return innerBuilder.getValue();
   }
 
-  public BooleanExpression restaurantExists(Boolean restaurant) {
+  public BooleanExpression existRestaurant(Boolean restaurant) {
     if (restaurant == null) {
       return null;
     }

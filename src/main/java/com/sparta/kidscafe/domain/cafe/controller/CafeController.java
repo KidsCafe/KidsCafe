@@ -65,7 +65,7 @@ public class CafeController {
         .body(cafeService.searchCafe(requestDto.getSearchCondition()));
   }
 
-  @GetMapping("owners/cafes")
+  @GetMapping("/owners/cafes")
   public ResponseEntity<PageResponseDto<CafeResponseDto>> searchCafeByOwner(
       @Auth AuthUser authUser,
       @RequestBody CafeSearchRequestDto requestDto
@@ -76,7 +76,7 @@ public class CafeController {
         .body(cafeService.searchCafe(requestDto.getSearchCondition()));
   }
 
-  @GetMapping("admin/cafes")
+  @GetMapping("/admin/cafes")
   public ResponseEntity<PageResponseDto<CafeResponseDto>> searchCafeByAdmin(
       @Auth AuthUser authUser,
       @RequestBody CafeSearchRequestDto requestDto
@@ -108,7 +108,7 @@ public class CafeController {
         .body(cafeService.updateCafe(authUser, cafeId, requestDto));
   }
 
-  @DeleteMapping("owners/cafes/{cafeId}")
+  @DeleteMapping("/owners/cafes/{cafeId}")
   public ResponseEntity<Void> deleteCafe(
       @Auth AuthUser authUser,
       @PathVariable Long cafeId
@@ -118,7 +118,7 @@ public class CafeController {
     return ResponseEntity.noContent().build();
   }
 
-  @DeleteMapping("admin/cafes")
+  @DeleteMapping("/admin/cafes")
   public ResponseEntity<Void> deleteCafe(
       @Auth AuthUser authUser,
       @RequestBody List<Long> cafes

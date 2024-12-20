@@ -71,6 +71,27 @@ public class Cafe extends Timestamped {
   @Column(nullable = false)
   private boolean restaurant;
 
+  @Column(nullable = false)
+  private boolean careService;
+
+  @Column(nullable = false)
+  private boolean swimmingPool;
+
+  @Column(nullable = false)
+  private boolean clothesRental;
+
+  @Column(nullable = false)
+  private boolean monitoring;
+
+  @Column(nullable = false)
+  private boolean feedingRoom;
+
+  @Column(nullable = false)
+  private boolean outdoorPlayground;
+
+  @Column(nullable = false)
+  private boolean safetyGuard;
+
   @Column
   private String hyperlink;
 
