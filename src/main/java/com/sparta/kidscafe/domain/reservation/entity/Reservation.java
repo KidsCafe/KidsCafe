@@ -6,25 +6,14 @@ import com.sparta.kidscafe.domain.reservation.enums.ReservationStatus;
 import com.sparta.kidscafe.domain.user.entity.User;
 import com.sparta.kidscafe.exception.BusinessException;
 import com.sparta.kidscafe.exception.ErrorCode;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Builder
@@ -67,6 +56,12 @@ public class Reservation extends Timestamped {
   @OneToMany(mappedBy = "reservation", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
   private List<ReservationDetail> reservationDetails = new ArrayList<>();
 
+  public Reservation() {
+    this.status = ReservationStatus.PENDING;
+    this.isDeleted = false;
+    this.isPaymentConfirmed = false;
+  }
+
   public void updateTotalPrice(int price) {
     totalPrice = price;
   }
@@ -74,12 +69,6 @@ public class Reservation extends Timestamped {
   public void updateTime(LocalDateTime startedAt, LocalDateTime finishedAt) {
     this.startedAt = startedAt;
     this.finishedAt = finishedAt;
-  }
-
-  public Reservation() {
-    this.status = ReservationStatus.PENDING;
-    this.isDeleted = false;
-    this.isPaymentConfirmed = false;
   }
 
   public void approve() {

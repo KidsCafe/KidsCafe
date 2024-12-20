@@ -30,9 +30,9 @@ public class ReviewController {
 
   @PostMapping("/cafes/{cafeId}/reviews")
   public ResponseEntity<StatusDto> createReview(
-          @Auth AuthUser authUser,
-          @Valid @RequestBody ReviewCreateRequestDto request,
-          @PathVariable("cafeId") Long cafeId
+      @Auth AuthUser authUser,
+      @Valid @RequestBody ReviewCreateRequestDto request,
+      @PathVariable("cafeId") Long cafeId
   ) {
     StatusDto response = reviewService.createReview(authUser, request, cafeId);
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -40,31 +40,31 @@ public class ReviewController {
 
   @GetMapping("/cafes/{cafeId}/reviews")
   public ResponseEntity<PageResponseDto<ReviewResponseDto>> getReviews(
-          @PathVariable("cafeId") Long cafeId,
-          @RequestParam(defaultValue = "1", name = "page") @Min(1) int page,
-          @RequestParam(defaultValue = "10", name = "size") @Min(1) @Max(50) int size
+      @PathVariable("cafeId") Long cafeId,
+      @RequestParam(defaultValue = "1", name = "page") @Min(1) int page,
+      @RequestParam(defaultValue = "10", name = "size") @Min(1) @Max(50) int size
   ) {
     return ResponseEntity
-            .status(HttpStatus.OK)
-            .body(reviewService.getReviews(cafeId, PageRequest.of(Math.max(0, page - 1), size)));
+        .status(HttpStatus.OK)
+        .body(reviewService.getReviews(cafeId, PageRequest.of(Math.max(0, page - 1), size)));
   }
 
   @GetMapping("/reviews")
   public ResponseEntity<PageResponseDto<ReviewResponseDto>> getMyReviews(
-          @Auth AuthUser authUser,
-          @RequestParam(defaultValue = "1", name = "page") @Min(1) int page,
-          @RequestParam(defaultValue = "10", name = "size") @Min(1) @Max(50) int size
+      @Auth AuthUser authUser,
+      @RequestParam(defaultValue = "1", name = "page") @Min(1) int page,
+      @RequestParam(defaultValue = "10", name = "size") @Min(1) @Max(50) int size
   ) {
     return ResponseEntity
-            .status(HttpStatus.OK)
-            .body(reviewService.getMyReviews(authUser, PageRequest.of(Math.max(0, page - 1), size)));
+        .status(HttpStatus.OK)
+        .body(reviewService.getMyReviews(authUser, PageRequest.of(Math.max(0, page - 1), size)));
   }
 
   @PutMapping("/reviews/{reviewId}")
   public ResponseEntity<StatusDto> updateReview(
-          @Auth AuthUser authUser,
-          @PathVariable("reviewId") Long reviewId,
-          @Valid @RequestBody ReviewCreateRequestDto request
+      @Auth AuthUser authUser,
+      @PathVariable("reviewId") Long reviewId,
+      @Valid @RequestBody ReviewCreateRequestDto request
   ) {
     StatusDto response = reviewService.updateReview(authUser, reviewId, request);
     return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -72,8 +72,8 @@ public class ReviewController {
 
   @DeleteMapping("/reviews/{reviewId}")
   public ResponseEntity<Void> deleteReview(
-          @Auth AuthUser authUser,
-          @PathVariable("reviewId") Long reviewId
+      @Auth AuthUser authUser,
+      @PathVariable("reviewId") Long reviewId
   ) {
     reviewService.deleteReview(authUser, reviewId);
     return ResponseEntity.noContent().build();
@@ -81,7 +81,7 @@ public class ReviewController {
 
   @PostMapping("/reviews/scan")
   public ResponseEntity<ReceiptScanResponseDto> scanReceipt(
-          @RequestParam("receiptImage") MultipartFile receiptImage
+      @RequestParam("receiptImage") MultipartFile receiptImage
   ) {
     ReceiptScanRequestDto requestDto = new ReceiptScanRequestDto();
     requestDto.setReceiptImage(receiptImage);

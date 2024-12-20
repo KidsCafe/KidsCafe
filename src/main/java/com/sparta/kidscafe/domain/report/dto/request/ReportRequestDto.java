@@ -5,5 +5,5 @@ import jakarta.validation.constraints.NotNull;
 public record ReportRequestDto(
     @NotNull
     String content
-){
+) {
 }

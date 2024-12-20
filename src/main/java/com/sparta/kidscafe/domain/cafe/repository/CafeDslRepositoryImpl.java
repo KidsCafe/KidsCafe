@@ -22,10 +22,11 @@ import com.sparta.kidscafe.domain.review.entity.QReview;
 import com.sparta.kidscafe.domain.review.repository.condition.ReviewCondition;
 import com.sparta.kidscafe.domain.room.entity.QRoom;
 import com.sparta.kidscafe.domain.room.repository.condition.RoomCondition;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 public class CafeDslRepositoryImpl implements CafeDslRepository {
@@ -168,7 +169,7 @@ public class CafeDslRepositoryImpl implements CafeDslRepository {
   }
 
   private JPAQuery<CafeResponseDto> makePaging(JPAQuery<CafeResponseDto> query, CafeSearchCondition condition) {
-    if(condition.getPageable() != null) {
+    if (condition.getPageable() != null) {
       query
           .limit(condition.getPageable().getPageSize())
           .offset(condition.getPageable().getOffset());

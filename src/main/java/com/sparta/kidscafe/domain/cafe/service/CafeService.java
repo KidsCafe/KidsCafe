@@ -26,13 +26,14 @@ import com.sparta.kidscafe.domain.pricepolicy.repository.PricePolicyRepository;
 import com.sparta.kidscafe.domain.room.entity.Room;
 import com.sparta.kidscafe.domain.room.repository.RoomRepository;
 import com.sparta.kidscafe.domain.user.entity.User;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.Point;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -65,7 +66,7 @@ public class CafeService {
   public StatusDto creatCafe(AuthUser authUser, CafesSimpleCreateRequestDto requestDto) {
     User user = userValidationCheck.validMy(authUser.getId());
     List<Cafe> cafes = requestDto.convertDtoToEntity(user);
-    for(Cafe cafe : cafes) {
+    for (Cafe cafe : cafes) {
       Point location = mapService.convertAddressToGeo(cafe.getAddress());
       cafe.updateLocation(location);
     }
@@ -98,7 +99,7 @@ public class CafeService {
   }
 
   @Transactional
-  public StatusDto updateCafe(AuthUser authUser, Long cafeId, CafeSimpleRequestDto requestDto)  {
+  public StatusDto updateCafe(AuthUser authUser, Long cafeId, CafeSimpleRequestDto requestDto) {
     Point location = mapService.convertAddressToGeo(requestDto.getAddress());
     Cafe cafe = cafeValidationCheck.validMyCafe(cafeId, authUser.getId());
     cafe.update(requestDto, location);

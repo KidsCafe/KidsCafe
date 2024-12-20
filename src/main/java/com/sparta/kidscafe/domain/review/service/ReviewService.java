@@ -42,17 +42,17 @@ public class ReviewService {
 
     // 유저 검증
     User user = userRepository.findById(userId)
-            .orElseThrow(() -> new BusinessException(USER_NOT_FOUND));
+        .orElseThrow(() -> new BusinessException(USER_NOT_FOUND));
 
     // 카페 검증
     Cafe cafe = cafeRepository.findById(cafeId)
-            .orElseThrow(() -> new BusinessException(CAFE_NOT_FOUND));
+        .orElseThrow(() -> new BusinessException(CAFE_NOT_FOUND));
 
     // 부모 리뷰 확인
     Review parentReview = null;
     if (request.parentId() != null) {
       parentReview = reviewRepository.findById(request.parentId())
-              .orElseThrow(() -> new BusinessException(REVIEW_NOT_FOUND));
+          .orElseThrow(() -> new BusinessException(REVIEW_NOT_FOUND));
 
       if (parentReview.getDepth() >= 3) {
         throw new BusinessException(FORBIDDEN, "더 이상 대댓글을 작성할 수 없습니다.");
@@ -61,13 +61,13 @@ public class ReviewService {
 
     // 리뷰 생성
     Review newReview = Review.builder()
-            .user(user)
-            .cafe(cafe)
-            .star(request.star())
-            .content(request.content())
-            .parentReview(parentReview)
-            .depth(parentReview != null ? parentReview.getDepth() + 1 : 0)
-            .build();
+        .user(user)
+        .cafe(cafe)
+        .star(request.star())
+        .content(request.content())
+        .parentReview(parentReview)
+        .depth(parentReview != null ? parentReview.getDepth() + 1 : 0)
+        .build();
 
     reviewRepository.save(newReview);
 
@@ -76,16 +76,16 @@ public class ReviewService {
     images.forEach(image -> image.updateReviewImages(newReview.getId()));
 
     return StatusDto.builder()
-            .status(HttpStatus.CREATED.value())
-            .message("리뷰 등록 성공")
-            .build();
+        .status(HttpStatus.CREATED.value())
+        .message("리뷰 등록 성공")
+        .build();
   }
 
   @Transactional(readOnly = true)
   public PageResponseDto<ReviewResponseDto> getReviews(Long cafeId, Pageable pageable) {
     // 카페 확인
     cafeRepository.findById(cafeId)
-            .orElseThrow(() -> new BusinessException(CAFE_NOT_FOUND));
+        .orElseThrow(() -> new BusinessException(CAFE_NOT_FOUND));
 
     // 특정 카페의 리뷰 조회
     Page<Review> reviews = reviewRepository.findByCafeIdAndParentReviewIsNullWithReplies(cafeId, pageable);
@@ -100,7 +100,7 @@ public class ReviewService {
 
     // 유저 확인
     userRepository.findById(userId)
-            .orElseThrow(() -> new BusinessException(USER_NOT_FOUND));
+        .orElseThrow(() -> new BusinessException(USER_NOT_FOUND));
 
     // 유저가 작성한 리뷰 조회
     Page<Review> reviews = reviewRepository.findAllByUserId(userId, pageable);
@@ -112,7 +112,7 @@ public class ReviewService {
   public StatusDto updateReview(AuthUser authUser, Long reviewId, ReviewCreateRequestDto request) {
     // 리뷰 확인
     Review review = reviewRepository.findById(reviewId)
-            .orElseThrow(() -> new BusinessException(REVIEW_NOT_FOUND));
+        .orElseThrow(() -> new BusinessException(REVIEW_NOT_FOUND));
 
     // 사용자 검증
     Long userId = authUser.getId();
@@ -129,15 +129,15 @@ public class ReviewService {
     review.updateReview(request.star(), request.content());
 
     return StatusDto.builder()
-            .status(HttpStatus.OK.value())
-            .message("리뷰 수정 성공")
-            .build();
+        .status(HttpStatus.OK.value())
+        .message("리뷰 수정 성공")
+        .build();
   }
 
   public void deleteReview(AuthUser authUser, Long reviewId) {
     // 리뷰 확인
     Review review = reviewRepository.findById(reviewId)
-            .orElseThrow(() -> new BusinessException(REVIEW_NOT_FOUND));
+        .orElseThrow(() -> new BusinessException(REVIEW_NOT_FOUND));
 
     // 사용자 검증
     Long userId = authUser.getId();
@@ -155,18 +155,18 @@ public class ReviewService {
 
   private ReviewResponseDto mapToReviewResponseDtoWithReplies(Review review) {
     List<ReviewResponseDto> childResponses = review.getReplies().stream()
-            .map(this::mapToReviewResponseDtoWithReplies)
-            .collect(Collectors.toList());
+        .map(this::mapToReviewResponseDtoWithReplies)
+        .collect(Collectors.toList());
 
     return new ReviewResponseDto(
-            review.getId(),
-            review.getUser().getId(),
-            review.getCafe().getId(),
-            review.getStar(),
-            review.getContent(),
-            review.getParentReview() != null ? review.getParentReview().getId() : null,
-            review.getDepth(),
-            childResponses
+        review.getId(),
+        review.getUser().getId(),
+        review.getCafe().getId(),
+        review.getStar(),
+        review.getContent(),
+        review.getParentReview() != null ? review.getParentReview().getId() : null,
+        review.getDepth(),
+        childResponses
     );
   }
 }

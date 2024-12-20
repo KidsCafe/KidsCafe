@@ -7,14 +7,15 @@ import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberTemplate;
 import com.sparta.kidscafe.common.util.GeoUtil;
 import com.sparta.kidscafe.domain.cafe.entity.QCafe;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.TextStyle;
 import java.util.Locale;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 @Component
 @RequiredArgsConstructor
@@ -31,7 +32,7 @@ public class CafeCondition {
   }
 
   public BooleanExpression eqUserId(Long userId) {
-    if(userId == null || userId <= 0) {
+    if (userId == null || userId <= 0) {
       return null;
     }
     return cafe.user.id.eq(userId);
@@ -251,11 +252,11 @@ public class CafeCondition {
   }
 
   public BooleanExpression withInRadius(Double lon, Double lat, Double radiusMeter) {
-    if(geoUtil.validWktPoint(lon, lat)) {
+    if (geoUtil.validWktPoint(lon, lat)) {
       return null;
     }
 
-    if(radiusMeter == null || radiusMeter <= 0) {
+    if (radiusMeter == null || radiusMeter <= 0) {
       return null;
     }
 

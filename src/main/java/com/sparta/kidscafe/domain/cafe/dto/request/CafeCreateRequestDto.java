@@ -14,14 +14,15 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.locationtech.jts.geom.Point;
+
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Getter
@@ -103,28 +104,28 @@ public class CafeCreateRequestDto {
 
   public List<Room> convertDtoToEntityByRoom(Cafe cafe) {
     List<Room> cafeRooms = new ArrayList<>();
-    for(RoomCreateRequestDto dto : rooms)
+    for (RoomCreateRequestDto dto : rooms)
       cafeRooms.add(dto.convertDtoToEntity(cafe));
     return cafeRooms;
   }
 
   public List<Lesson> convertDtoToEntityByLesson(Cafe cafe) {
     List<Lesson> cafeLessons = new ArrayList<>();
-    for(LessonCreateRequestDto dto : lessons)
+    for (LessonCreateRequestDto dto : lessons)
       cafeLessons.add(dto.convertDtoToEntity(cafe));
     return cafeLessons;
   }
 
   public List<Fee> convertDtoToEntityByFee(Cafe cafe) {
     List<Fee> cafeFees = new ArrayList<>();
-    for(FeeCreateRequestDto dto : fees)
+    for (FeeCreateRequestDto dto : fees)
       cafeFees.add(dto.convertDtoToEntity(cafe));
     return cafeFees;
   }
 
   public List<PricePolicy> convertDtoToEntityByPricePolicy(Cafe cafe) {
     List<PricePolicy> cafePricePolicies = new ArrayList<>();
-    for(PricePolicyCreateRequestDto dto : pricePolicies)
+    for (PricePolicyCreateRequestDto dto : pricePolicies)
       cafePricePolicies.add(dto.convertDtoToEntity(cafe));
     return cafePricePolicies;
   }

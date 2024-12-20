@@ -1,10 +1,11 @@
 package com.sparta.kidscafe.domain.cafe.dto.response;
 
 import com.querydsl.core.annotations.QueryProjection;
-import java.time.LocalTime;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalTime;
 
 @Builder
 @Getter

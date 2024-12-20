@@ -34,149 +34,149 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class ReviewServiceTest {
 
-    @Mock
-    private UserRepository userRepository;
+  @Mock
+  private UserRepository userRepository;
 
-    @Mock
-    private CafeRepository cafeRepository;
+  @Mock
+  private CafeRepository cafeRepository;
 
-    @Mock
-    private ReviewRepository reviewRepository;
+  @Mock
+  private ReviewRepository reviewRepository;
 
-    @Mock
-    private ReviewImageRepository reviewImageRepository;
+  @Mock
+  private ReviewImageRepository reviewImageRepository;
 
-    @InjectMocks
-    private ReviewService reviewService;
+  @InjectMocks
+  private ReviewService reviewService;
 
-    @Test
-    void createReview_success() {
-        AuthUser authUser = new AuthUser(1L, "test@gmail.com", RoleType.USER);
-        ReviewCreateRequestDto request = new ReviewCreateRequestDto(5.0, "Great place!", null, List.of(1L, 2L));
-        Long cafeId = 1L;
+  @Test
+  void createReview_success() {
+    AuthUser authUser = new AuthUser(1L, "test@gmail.com", RoleType.USER);
+    ReviewCreateRequestDto request = new ReviewCreateRequestDto(5.0, "Great place!", null, List.of(1L, 2L));
+    Long cafeId = 1L;
 
-        User user = User.builder().id(1L).email("test@gmail.com").build();
-        Cafe cafe = Cafe.builder().id(cafeId).name("Test Cafe").build();
+    User user = User.builder().id(1L).email("test@gmail.com").build();
+    Cafe cafe = Cafe.builder().id(cafeId).name("Test Cafe").build();
 
-        when(userRepository.findById(authUser.getId())).thenReturn(Optional.of(user));
-        when(cafeRepository.findById(cafeId)).thenReturn(Optional.of(cafe));
+    when(userRepository.findById(authUser.getId())).thenReturn(Optional.of(user));
+    when(cafeRepository.findById(cafeId)).thenReturn(Optional.of(cafe));
 
-        StatusDto response = reviewService.createReview(authUser, request, cafeId);
+    StatusDto response = reviewService.createReview(authUser, request, cafeId);
 
-        assertEquals(HttpStatus.CREATED.value(), response.getStatus());
-        assertEquals("리뷰 등록 성공", response.getMessage());
+    assertEquals(HttpStatus.CREATED.value(), response.getStatus());
+    assertEquals("리뷰 등록 성공", response.getMessage());
 
-        verify(reviewRepository, times(1)).save(any(Review.class));
-    }
+    verify(reviewRepository, times(1)).save(any(Review.class));
+  }
 
-    @Test
-    void getReviews_success() {
-        Long cafeId = 1L;
-        PageRequest pageable = PageRequest.of(0, 10);
+  @Test
+  void getReviews_success() {
+    Long cafeId = 1L;
+    PageRequest pageable = PageRequest.of(0, 10);
 
-        Cafe cafe = Cafe.builder().id(cafeId).name("Test Cafe").build();
-        User user = User.builder().id(1L).email("test@gmail.com").role(RoleType.USER).build();
+    Cafe cafe = Cafe.builder().id(cafeId).name("Test Cafe").build();
+    User user = User.builder().id(1L).email("test@gmail.com").role(RoleType.USER).build();
 
-        // 대댓글 추가
-        Review childReview = Review.builder()
-                .id(2L)
-                .user(user)
-                .cafe(cafe)
-                .star(4.0)
-                .content("Child review")
-                .replies(Collections.emptyList()) // 대댓글도 빈 리스트로 초기화
-                .build();
+    // 대댓글 추가
+    Review childReview = Review.builder()
+        .id(2L)
+        .user(user)
+        .cafe(cafe)
+        .star(4.0)
+        .content("Child review")
+        .replies(Collections.emptyList()) // 대댓글도 빈 리스트로 초기화
+        .build();
 
-        // 부모 리뷰 설정
-        Review review = Review.builder()
-                .id(1L)
-                .user(user)
-                .cafe(cafe)
-                .star(5.0)
-                .content("Great!")
-                .replies(List.of(childReview)) // 대댓글 추가
-                .build();
+    // 부모 리뷰 설정
+    Review review = Review.builder()
+        .id(1L)
+        .user(user)
+        .cafe(cafe)
+        .star(5.0)
+        .content("Great!")
+        .replies(List.of(childReview)) // 대댓글 추가
+        .build();
 
-        Page<Review> reviewPage = new PageImpl<>(List.of(review), pageable, 1);
+    Page<Review> reviewPage = new PageImpl<>(List.of(review), pageable, 1);
 
-        // Mock 설정
-        when(cafeRepository.findById(cafeId)).thenReturn(Optional.of(cafe));
-        when(reviewRepository.findByCafeIdAndParentReviewIsNullWithReplies(cafeId, pageable)).thenReturn(reviewPage);
+    // Mock 설정
+    when(cafeRepository.findById(cafeId)).thenReturn(Optional.of(cafe));
+    when(reviewRepository.findByCafeIdAndParentReviewIsNullWithReplies(cafeId, pageable)).thenReturn(reviewPage);
 
-        // 테스트 실행
-        PageResponseDto<ReviewResponseDto> response = reviewService.getReviews(cafeId, pageable);
+    // 테스트 실행
+    PageResponseDto<ReviewResponseDto> response = reviewService.getReviews(cafeId, pageable);
 
-        // 검증
-        assertEquals(HttpStatus.OK.value(), response.getStatus());
-        assertEquals("카페 리뷰 조회 성공", response.getMessage());
-        assertEquals(1, response.getData().size());
+    // 검증
+    assertEquals(HttpStatus.OK.value(), response.getStatus());
+    assertEquals("카페 리뷰 조회 성공", response.getMessage());
+    assertEquals(1, response.getData().size());
 
-        ReviewResponseDto responseDto = response.getData().get(0);
-        assertEquals(1L, responseDto.id()); // 리뷰 ID 확인
-        assertEquals(5.0, responseDto.star()); // 별점 확인
-        assertEquals("Great!", responseDto.content()); // 내용 확인
-        assertEquals(cafeId, responseDto.cafeId()); // 카페 ID 확인
-        assertEquals(user.getId(), responseDto.userId()); // 사용자 ID 확인
+    ReviewResponseDto responseDto = response.getData().get(0);
+    assertEquals(1L, responseDto.id()); // 리뷰 ID 확인
+    assertEquals(5.0, responseDto.star()); // 별점 확인
+    assertEquals("Great!", responseDto.content()); // 내용 확인
+    assertEquals(cafeId, responseDto.cafeId()); // 카페 ID 확인
+    assertEquals(user.getId(), responseDto.userId()); // 사용자 ID 확인
 
-        // 대댓글 검증
-        ReviewResponseDto childResponseDto = responseDto.replies().get(0);
-        assertEquals(2L, childResponseDto.id());
-        assertEquals(4.0, childResponseDto.star());
-        assertEquals("Child review", childResponseDto.content());
-    }
+    // 대댓글 검증
+    ReviewResponseDto childResponseDto = responseDto.replies().get(0);
+    assertEquals(2L, childResponseDto.id());
+    assertEquals(4.0, childResponseDto.star());
+    assertEquals("Child review", childResponseDto.content());
+  }
 
 
-    @Test
-    void getMyReviews_success() {
-        AuthUser authUser = new AuthUser(1L, "test@gmail.com", RoleType.USER);
-        PageRequest pageable = PageRequest.of(0, 10);
+  @Test
+  void getMyReviews_success() {
+    AuthUser authUser = new AuthUser(1L, "test@gmail.com", RoleType.USER);
+    PageRequest pageable = PageRequest.of(0, 10);
 
-        User user = User.builder().id(1L).email("test@gmail.com").build();
-        Review review = new Review(1L, user, Cafe.builder().id(1L).name("Test Cafe").build(), 5, "Great!");
-        Page<Review> reviewPage = new PageImpl<>(List.of(review));
+    User user = User.builder().id(1L).email("test@gmail.com").build();
+    Review review = new Review(1L, user, Cafe.builder().id(1L).name("Test Cafe").build(), 5, "Great!");
+    Page<Review> reviewPage = new PageImpl<>(List.of(review));
 
-        when(userRepository.findById(authUser.getId())).thenReturn(Optional.of(user));
-        when(reviewRepository.findAllByUserId(authUser.getId(), pageable)).thenReturn(reviewPage);
+    when(userRepository.findById(authUser.getId())).thenReturn(Optional.of(user));
+    when(reviewRepository.findAllByUserId(authUser.getId(), pageable)).thenReturn(reviewPage);
 
-        PageResponseDto<ReviewResponseDto> response = reviewService.getMyReviews(authUser, pageable);
+    PageResponseDto<ReviewResponseDto> response = reviewService.getMyReviews(authUser, pageable);
 
-        assertEquals(HttpStatus.OK.value(), response.getStatus());
-        assertEquals("리뷰 조회 성공", response.getMessage());
-    }
+    assertEquals(HttpStatus.OK.value(), response.getStatus());
+    assertEquals("리뷰 조회 성공", response.getMessage());
+  }
 
-    @Test
-    void updateReview_success() {
-        AuthUser authUser = new AuthUser(1L, "test@gmail.com", RoleType.USER);
-        Long reviewId = 1L;
-        ReviewCreateRequestDto request = new ReviewCreateRequestDto(4.0, "Updated review!", null, List.of(3L));
+  @Test
+  void updateReview_success() {
+    AuthUser authUser = new AuthUser(1L, "test@gmail.com", RoleType.USER);
+    Long reviewId = 1L;
+    ReviewCreateRequestDto request = new ReviewCreateRequestDto(4.0, "Updated review!", null, List.of(3L));
 
-        Review review = new Review(1L, new User(1L, "test@gmail.com", RoleType.USER), Cafe.builder().id(1L).name("Test Cafe").build(), 5, "Great!");
+    Review review = new Review(1L, new User(1L, "test@gmail.com", RoleType.USER), Cafe.builder().id(1L).name("Test Cafe").build(), 5, "Great!");
 
-        // Mock 설정
-        when(reviewRepository.findById(reviewId)).thenReturn(Optional.of(review));
+    // Mock 설정
+    when(reviewRepository.findById(reviewId)).thenReturn(Optional.of(review));
 
-        StatusDto response = reviewService.updateReview(authUser, reviewId, request);
+    StatusDto response = reviewService.updateReview(authUser, reviewId, request);
 
-        assertEquals(HttpStatus.OK.value(), response.getStatus());
-        assertEquals("리뷰 수정 완료", response.getMessage()); // 메시지를 서비스와 일치시키세요.
-        assertEquals(4.0, review.getStar());
-        assertEquals("Updated review!", review.getContent());
-    }
+    assertEquals(HttpStatus.OK.value(), response.getStatus());
+    assertEquals("리뷰 수정 완료", response.getMessage()); // 메시지를 서비스와 일치시키세요.
+    assertEquals(4.0, review.getStar());
+    assertEquals("Updated review!", review.getContent());
+  }
 
-    @Test
-    void deleteReview_success() {
-        AuthUser authUser = new AuthUser(1L, "test@gmail.com", RoleType.USER);
-        Long reviewId = 1L;
+  @Test
+  void deleteReview_success() {
+    AuthUser authUser = new AuthUser(1L, "test@gmail.com", RoleType.USER);
+    Long reviewId = 1L;
 
-        Review review = new Review(1L, new User(1L, "test@gmail.com", RoleType.USER), Cafe.builder().id(1L).name("Test Cafe").build(), 5, "Great!");
-        List<ReviewImage> reviewImages = Collections.singletonList(new ReviewImage(1L, 2L, "image"));
+    Review review = new Review(1L, new User(1L, "test@gmail.com", RoleType.USER), Cafe.builder().id(1L).name("Test Cafe").build(), 5, "Great!");
+    List<ReviewImage> reviewImages = Collections.singletonList(new ReviewImage(1L, 2L, "image"));
 
-        when(reviewRepository.findById(reviewId)).thenReturn(Optional.of(review));
-        when(reviewImageRepository.findAllByReviewId(reviewId)).thenReturn(reviewImages);
+    when(reviewRepository.findById(reviewId)).thenReturn(Optional.of(review));
+    when(reviewImageRepository.findAllByReviewId(reviewId)).thenReturn(reviewImages);
 
-        reviewService.deleteReview(authUser, reviewId);
+    reviewService.deleteReview(authUser, reviewId);
 
-        verify(reviewImageRepository, times(1)).findAllByReviewId(reviewId);
-        verify(reviewRepository, times(1)).delete(review);
-    }
+    verify(reviewImageRepository, times(1)).findAllByReviewId(reviewId);
+    verify(reviewRepository, times(1)).delete(review);
+  }
 }

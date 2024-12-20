@@ -17,43 +17,43 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class PricePolicyController {
 
-    private final PricePolicyService pricePolicyService;
+  private final PricePolicyService pricePolicyService;
 
-    @PostMapping
-    public ResponseEntity<StatusDto> addPricePolicy(
-            @PathVariable Long cafeId,
-            @RequestBody @Valid PricePolicyCreateRequestDto requestDto
-    ) {
-        StatusDto statusDto = pricePolicyService.addPricePolicy(cafeId, requestDto);
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(statusDto);
-    }
+  @PostMapping
+  public ResponseEntity<StatusDto> addPricePolicy(
+      @PathVariable Long cafeId,
+      @RequestBody @Valid PricePolicyCreateRequestDto requestDto
+  ) {
+    StatusDto statusDto = pricePolicyService.addPricePolicy(cafeId, requestDto);
+    return ResponseEntity
+        .status(HttpStatus.CREATED)
+        .body(statusDto);
+  }
 
-    @GetMapping
-    public ResponseEntity<ListResponseDto<PricePolicyResponseDto>> getPricePolicies(@PathVariable Long cafeId) {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(pricePolicyService.getPricePolicies(cafeId));
-    }
+  @GetMapping
+  public ResponseEntity<ListResponseDto<PricePolicyResponseDto>> getPricePolicies(@PathVariable Long cafeId) {
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(pricePolicyService.getPricePolicies(cafeId));
+  }
 
-    @PatchMapping("/{priceId}")
-    public ResponseEntity<StatusDto> updatePricePolicy(
-            @PathVariable Long cafeId,
-            @PathVariable Long priceId,
-            @RequestBody @Valid PricePolicyUpdateRequestDto requestDto
-    ) {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(pricePolicyService.updatePricePolicy(cafeId, priceId, requestDto));
-    }
+  @PatchMapping("/{priceId}")
+  public ResponseEntity<StatusDto> updatePricePolicy(
+      @PathVariable Long cafeId,
+      @PathVariable Long priceId,
+      @RequestBody @Valid PricePolicyUpdateRequestDto requestDto
+  ) {
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(pricePolicyService.updatePricePolicy(cafeId, priceId, requestDto));
+  }
 
-    @DeleteMapping("/{priceId}")
-    public ResponseEntity<Void> deletePricePolicy(
-            @PathVariable Long cafeId,
-            @PathVariable Long priceId
-    ) {
-        pricePolicyService.deletePricePolicy(cafeId, priceId);
-        return ResponseEntity.noContent().build();
-    }
+  @DeleteMapping("/{priceId}")
+  public ResponseEntity<Void> deletePricePolicy(
+      @PathVariable Long cafeId,
+      @PathVariable Long priceId
+  ) {
+    pricePolicyService.deletePricePolicy(cafeId, priceId);
+    return ResponseEntity.noContent().build();
+  }
 }

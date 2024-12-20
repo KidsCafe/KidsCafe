@@ -1,10 +1,5 @@
 package com.sparta.kidscafe.domain.lesson;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.ListResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
@@ -20,8 +15,6 @@ import com.sparta.kidscafe.domain.user.entity.User;
 import com.sparta.kidscafe.dummy.DummyCafe;
 import com.sparta.kidscafe.dummy.DummyLesson;
 import com.sparta.kidscafe.dummy.DummyUser;
-import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,6 +22,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
+
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class LessonServiceTest {
   @InjectMocks
