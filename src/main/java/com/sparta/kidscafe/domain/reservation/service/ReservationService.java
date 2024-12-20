@@ -353,7 +353,6 @@ public class ReservationService {
       throw new BusinessException(ErrorCode.UNAUTHORIZED);
     }
     reservation.cancelByUser();
-    ;
     reservationRepository.save(reservation);
 
     return StatusDto.builder()
