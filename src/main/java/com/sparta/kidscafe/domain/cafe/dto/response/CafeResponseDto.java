@@ -2,24 +2,23 @@ package com.sparta.kidscafe.domain.cafe.dto.response;
 
 import com.querydsl.core.annotations.QueryProjection;
 import java.time.LocalTime;
-import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
-@Builder
 @Getter
+@Setter
+@AllArgsConstructor
 @NoArgsConstructor
-public class CafeResponseDto {
+@SuperBuilder(builderMethodName = "createBuilder")
+public class CafeResponseDto extends CafeSimpleResponseDto {
 
-  private Long id;
-  private String name;
   private String address;
   private Double longitude;
   private Double latitude;
   private int size;
-  private double star;
-  private Long reviewCount;
-  private String dayOff;
   private boolean multiFamily;
   private boolean parking;
   private boolean existRestaurant;
@@ -32,9 +31,6 @@ public class CafeResponseDto {
   private boolean existSafetyGuard;
   private boolean existRoom;
   private boolean existLesson;
-  private String hyperLink;
-  private LocalTime openedAt;
-  private LocalTime closedAt;
 
   @QueryProjection
   public CafeResponseDto(
@@ -62,15 +58,15 @@ public class CafeResponseDto {
       String hyperLink,
       LocalTime openedAt,
       LocalTime closedAt) {
-    this.id = id;
-    this.name = name;
+    setId(id);
+    setName(name);
     this.address = address;
     this.longitude = longitude;
     this.latitude = latitude;
     this.size = size;
-    this.star = star;
-    this.reviewCount = reviewCount;
-    this.dayOff = dayOff;
+    setStar(star);
+    setReviewCount(reviewCount);
+    setDayOff(dayOff);
     this.multiFamily = multiFamily;
     this.parking = parking;
     this.existRestaurant = existRestaurant;
@@ -83,8 +79,8 @@ public class CafeResponseDto {
     this.existSafetyGuard = existSafetyGuard;
     this.existRoom = existRoom;
     this.existLesson = existLesson;
-    this.hyperLink = hyperLink;
-    this.openedAt = openedAt;
-    this.closedAt = closedAt;
+    setHyperLink(hyperLink);
+    setOpenedAt(openedAt);
+    setClosedAt(closedAt);
   }
 }

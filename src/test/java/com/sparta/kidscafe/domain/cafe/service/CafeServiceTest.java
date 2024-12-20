@@ -183,7 +183,7 @@ class CafeServiceTest {
   void findCafe_Success() {
     // given
     Long cafeId = 1L;
-    CafeResponseDto cafeResponseDto = CafeResponseDto.builder().name("Test Cafe").build();
+    CafeResponseDto cafeResponseDto = CafeResponseDto.createBuilder().name("Test Cafe").build();
     CafeDetailResponseDto cafeDetailResponseDto = new CafeDetailResponseDto();
     cafeDetailResponseDto.setCafeInfo(cafeResponseDto);
     when(cafeRepository.findCafeById(cafeId)).thenReturn(cafeResponseDto);
