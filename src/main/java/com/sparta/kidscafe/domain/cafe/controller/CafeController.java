@@ -11,7 +11,7 @@ import com.sparta.kidscafe.domain.cafe.dto.request.CafeSearchRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeSimpleRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafesSimpleCreateRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeDetailResponseDto;
-import com.sparta.kidscafe.domain.cafe.dto.response.CafeResponseDto;
+import com.sparta.kidscafe.domain.cafe.dto.response.CafeSimpleResponseDto;
 import com.sparta.kidscafe.domain.cafe.service.CafeService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -57,7 +57,7 @@ public class CafeController {
   }
 
   @GetMapping("/cafes")
-  public ResponseEntity<PageResponseDto<CafeResponseDto>> searchCafe(
+  public ResponseEntity<PageResponseDto<CafeSimpleResponseDto>> searchCafe(
       @RequestBody CafeSearchRequestDto requestDto
   ) {
     return ResponseEntity
@@ -66,7 +66,7 @@ public class CafeController {
   }
 
   @GetMapping("/owners/cafes")
-  public ResponseEntity<PageResponseDto<CafeResponseDto>> searchCafeByOwner(
+  public ResponseEntity<PageResponseDto<CafeSimpleResponseDto>> searchCafeByOwner(
       @Auth AuthUser authUser,
       @RequestBody CafeSearchRequestDto requestDto
   ) {
@@ -77,7 +77,7 @@ public class CafeController {
   }
 
   @GetMapping("/admin/cafes")
-  public ResponseEntity<PageResponseDto<CafeResponseDto>> searchCafeByAdmin(
+  public ResponseEntity<PageResponseDto<CafeSimpleResponseDto>> searchCafeByAdmin(
       @Auth AuthUser authUser,
       @RequestBody CafeSearchRequestDto requestDto
   ) {

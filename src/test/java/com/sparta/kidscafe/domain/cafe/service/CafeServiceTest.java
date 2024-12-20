@@ -21,6 +21,7 @@ import com.sparta.kidscafe.domain.cafe.dto.request.CafeSimpleRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafesSimpleCreateRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeDetailResponseDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeResponseDto;
+import com.sparta.kidscafe.domain.cafe.dto.response.CafeSimpleResponseDto;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
 import com.sparta.kidscafe.domain.cafe.entity.CafeImage;
 import com.sparta.kidscafe.domain.cafe.repository.CafeImageRepository;
@@ -163,19 +164,19 @@ class CafeServiceTest {
   void searchCafe_Success() {
     // given
     CafeSearchCondition condition = mock(CafeSearchCondition.class);
-    CafeResponseDto cafeResponseDto = new CafeResponseDto();
-    CafeResponseDto cafeResponseDto2 = new CafeResponseDto();
-    Page<CafeResponseDto> cafes = new PageImpl<>(List.of(cafeResponseDto, cafeResponseDto2));
-    when(cafeRepository.findAllByCafe(condition)).thenReturn(cafes);
+    CafeSimpleResponseDto cafeResponseDto = new CafeResponseDto();
+    CafeSimpleResponseDto cafeResponseDto2 = new CafeResponseDto();
+    Page<CafeSimpleResponseDto> cafes = new PageImpl<>(List.of(cafeResponseDto, cafeResponseDto2));
+    when(cafeRepository.findAllByCafeSimple(condition)).thenReturn(cafes);
 
     // when
-    PageResponseDto<CafeResponseDto> result = cafeService.searchCafe(condition);
+    PageResponseDto<CafeSimpleResponseDto> result = cafeService.searchCafe(condition);
 
     // than
     assertEquals(HttpStatus.OK.value(), result.getStatus());
     assertEquals("카페 조회 성공", result.getMessage());
     assertEquals(2, result.getData().size());
-    verify(cafeRepository).findAllByCafe(condition);
+    verify(cafeRepository).findAllByCafeSimple(condition);
   }
 
   @Test

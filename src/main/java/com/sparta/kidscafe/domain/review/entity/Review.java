@@ -60,6 +60,7 @@ public class Review extends Timestamped {
   @OneToMany(mappedBy = "review", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
   private List<Report> report = new ArrayList<>();
 
+  @Builder.Default
   @OneToMany(mappedBy = "parentReview", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Review> replies = new ArrayList<>();
 

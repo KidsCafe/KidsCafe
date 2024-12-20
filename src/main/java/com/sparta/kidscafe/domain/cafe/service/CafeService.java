@@ -12,6 +12,7 @@ import com.sparta.kidscafe.domain.cafe.dto.request.CafeSimpleRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafesSimpleCreateRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeDetailResponseDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeResponseDto;
+import com.sparta.kidscafe.domain.cafe.dto.response.CafeSimpleResponseDto;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
 import com.sparta.kidscafe.domain.cafe.entity.CafeImage;
 import com.sparta.kidscafe.domain.cafe.repository.CafeImageRepository;
@@ -77,8 +78,8 @@ public class CafeService {
     );
   }
 
-  public PageResponseDto<CafeResponseDto> searchCafe(CafeSearchCondition condition) {
-    Page<CafeResponseDto> cafes = cafeRepository.findAllByCafe(condition);
+  public PageResponseDto<CafeSimpleResponseDto> searchCafe(CafeSearchCondition condition) {
+    Page<CafeSimpleResponseDto> cafes = cafeRepository.findAllByCafeSimple(condition);
     return PageResponseDto.success(
         cafes,
         HttpStatus.OK,

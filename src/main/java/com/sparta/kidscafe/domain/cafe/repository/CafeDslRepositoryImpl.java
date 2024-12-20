@@ -9,7 +9,9 @@ import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeResponseDto;
+import com.sparta.kidscafe.domain.cafe.dto.response.CafeSimpleResponseDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.QCafeResponseDto;
+import com.sparta.kidscafe.domain.cafe.dto.response.QCafeSimpleResponseDto;
 import com.sparta.kidscafe.domain.cafe.entity.QCafe;
 import com.sparta.kidscafe.domain.cafe.repository.condition.CafeCondition;
 import com.sparta.kidscafe.domain.cafe.repository.condition.CafeSearchCondition;
@@ -23,6 +25,7 @@ import com.sparta.kidscafe.domain.review.repository.condition.ReviewCondition;
 import com.sparta.kidscafe.domain.room.entity.QRoom;
 import com.sparta.kidscafe.domain.room.repository.condition.RoomCondition;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -52,6 +55,24 @@ public class CafeDslRepositoryImpl implements CafeDslRepository {
   }
 
   @Override
+  public Page<CafeSimpleResponseDto> findAllByCafeSimple(CafeSearchCondition condition) {
+    long cntTotal = searchCafeTotalCount(condition);
+    if (cntTotal == 0) {
+      return Page.empty();
+    }
+
+    JPAQuery<CafeSimpleResponseDto> query = simpleBaseQuery()
+        .leftJoin(fee).on(fee.cafe.eq(cafe))
+        .where(makeWhere(condition))
+        .groupBy(cafe.id)
+        .having(makeHaving(condition))
+        .orderBy(makeOrderBy(condition));
+
+    List<CafeSimpleResponseDto> cafes = makePaging(query, condition).fetch();
+    return new PageImpl<>(cafes, condition.getPageable(), cntTotal);
+  }
+
+  @Override
   public Page<CafeResponseDto> findAllByCafe(CafeSearchCondition condition) {
     long cntTotal = searchCafeTotalCount(condition);
     if (cntTotal == 0) {
@@ -70,7 +91,7 @@ public class CafeDslRepositoryImpl implements CafeDslRepository {
   }
 
   private long searchCafeTotalCount(CafeSearchCondition condition) {
-    Long cntTotal = queryFactory
+    return Optional.ofNullable(queryFactory
         .select(cafe.id.countDistinct())
         .from(cafe)
         .leftJoin(review).on(review.cafe.eq(cafe))
@@ -80,8 +101,24 @@ public class CafeDslRepositoryImpl implements CafeDslRepository {
         .where(makeWhere(condition))
         .groupBy(cafe.id)
         .having(makeHaving(condition))
-        .fetchFirst();
-    return cntTotal == null ? 0 : cntTotal;
+        .fetchFirst()).orElse(0L);
+  }
+
+  private JPAQuery<CafeSimpleResponseDto> simpleBaseQuery() {
+    return queryFactory.select(new QCafeSimpleResponseDto(
+            cafe.id,
+            cafe.name,
+            review.star.avg(),
+            review.id.countDistinct(),
+            cafe.dayOff,
+            cafe.hyperlink,
+            cafe.openedAt,
+            cafe.closedAt
+        ))
+        .from(cafe)
+        .leftJoin(review).on(review.cafe.eq(cafe))
+        .leftJoin(room).on(room.cafe.eq(cafe))
+        .leftJoin(lesson).on(lesson.cafe.eq(cafe));
   }
 
   private JPAQuery<CafeResponseDto> baseCafeQuery() {
@@ -167,8 +204,8 @@ public class CafeDslRepositoryImpl implements CafeDslRepository {
     };
   }
 
-  private JPAQuery<CafeResponseDto> makePaging(JPAQuery<CafeResponseDto> query, CafeSearchCondition condition) {
-    if(condition.getPageable() != null) {
+  private <T> JPAQuery<T> makePaging(JPAQuery<T> query, CafeSearchCondition condition) {
+    if (condition.getPageable() != null) {
       query
           .limit(condition.getPageable().getPageSize())
           .offset(condition.getPageable().getOffset());
