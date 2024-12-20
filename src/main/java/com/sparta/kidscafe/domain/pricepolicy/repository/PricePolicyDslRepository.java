@@ -5,7 +5,7 @@ import com.sparta.kidscafe.domain.pricepolicy.searchcondition.PricePolicySearchC
 import java.util.List;
 
 public interface PricePolicyDslRepository {
-    List<Double> findPricePolicyWithRoom(PricePolicySearchCondition condition);
+  List<Double> findPricePolicyWithRoom(PricePolicySearchCondition condition);
 
-    List<Double> findPricePolicyWithFee(PricePolicySearchCondition condition);
+  List<Double> findPricePolicyWithFee(PricePolicySearchCondition condition);
 }

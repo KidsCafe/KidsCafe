@@ -20,9 +20,9 @@ public class RecommendController {
   private final RecommendService recommendService;
 
   @PostMapping("/review/recommend/{reviewId}")
-    public ResponseEntity<StatusDto> createRecommend (
-        @PathVariable Long reviewId,
-        @Auth AuthUser authUser
+  public ResponseEntity<StatusDto> createRecommend(
+      @PathVariable Long reviewId,
+      @Auth AuthUser authUser
   ) {
     boolean response = recommendService.createRecommend(reviewId, authUser);
 

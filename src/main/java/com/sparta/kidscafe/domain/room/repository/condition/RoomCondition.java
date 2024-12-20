@@ -11,7 +11,7 @@ public class RoomCondition {
   private final QRoom room = QRoom.room;
 
   public BooleanExpression eqId(Long id) {
-    if(id == null)
+    if (id == null)
       return null;
 
     return room.id.eq(id);

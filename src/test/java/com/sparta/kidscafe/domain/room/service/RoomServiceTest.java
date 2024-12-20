@@ -1,15 +1,5 @@
 package com.sparta.kidscafe.domain.room.service;
 
-import static com.sparta.kidscafe.exception.ErrorCode.FORBIDDEN;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.ListResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
@@ -22,14 +12,20 @@ import com.sparta.kidscafe.domain.room.entity.Room;
 import com.sparta.kidscafe.domain.room.repository.RoomRepository;
 import com.sparta.kidscafe.domain.user.entity.User;
 import com.sparta.kidscafe.exception.BusinessException;
-import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
+
+import java.util.List;
+import java.util.Optional;
+
+import static com.sparta.kidscafe.exception.ErrorCode.FORBIDDEN;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
 
 class RoomServiceTest {
 
@@ -54,7 +50,7 @@ class RoomServiceTest {
     mockAuthUser = new AuthUser(userId, "testUser", RoleType.OWNER);
 
     User mockUser = new User(userId, "testUser", RoleType.OWNER);
-    mockCafe =Cafe.builder().id(1L).user(mockUser).build();
+    mockCafe = Cafe.builder().id(1L).user(mockUser).build();
 
     mockRoom = mock(Room.class); // mock 객체로 변경
     when(mockRoom.getCafe()).thenReturn(mockCafe);
@@ -77,7 +73,7 @@ class RoomServiceTest {
   void testCreateRoom_Forbidden() {
     Long userId = 2L;
     User mockUser = new User(userId, "testUser", RoleType.OWNER);
-    mockCafe =Cafe.builder().id(1L).user(mockUser).build();
+    mockCafe = Cafe.builder().id(1L).user(mockUser).build();
 
     RoomCreateRequestDto request = mock(RoomCreateRequestDto.class);
     when(cafeRepository.findById(1L)).thenReturn(Optional.of(mockCafe));

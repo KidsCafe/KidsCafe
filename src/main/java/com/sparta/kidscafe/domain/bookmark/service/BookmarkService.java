@@ -13,7 +13,6 @@ import com.sparta.kidscafe.domain.user.entity.User;
 import com.sparta.kidscafe.domain.user.repository.UserRepository;
 import com.sparta.kidscafe.exception.BusinessException;
 import com.sparta.kidscafe.exception.ErrorCode;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,6 +21,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -57,8 +58,8 @@ public class BookmarkService {
 
   // 즐겨찾기 조회(사용자용)
   public PageResponseDto<BookmarkUserRetreiveResponseDto> getBookmarkByUser(AuthUser authUser,
-      int page,
-      int size) {
+                                                                            int page,
+                                                                            int size) {
     if (!authUser.getRoleType().equals(RoleType.USER)) {
       throw new BusinessException(ErrorCode.UNAUTHORIZED);
     }
@@ -81,7 +82,7 @@ public class BookmarkService {
 
   // 즐겨찾기 조회(카페용)
   public PageResponseDto<BookmarkOwnerRetreiveResponseDto> getBookmarkByOwner(AuthUser authUser,
-      Long cafeId, int page, int size) {
+                                                                              Long cafeId, int page, int size) {
     if (!authUser.getRoleType().equals(RoleType.OWNER)) {
       throw new BusinessException(ErrorCode.UNAUTHORIZED);
     }

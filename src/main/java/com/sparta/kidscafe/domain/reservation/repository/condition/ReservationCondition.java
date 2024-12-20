@@ -7,8 +7,9 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.sparta.kidscafe.common.enums.TargetType;
 import com.sparta.kidscafe.domain.reservation.entity.QReservation;
 import com.sparta.kidscafe.domain.reservation.entity.QReservationDetail;
-import java.time.LocalDateTime;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
 
 @Component
 public class ReservationCondition {
@@ -17,7 +18,7 @@ public class ReservationCondition {
   private final QReservationDetail reservationDetail = QReservationDetail.reservationDetail;
 
   public BooleanExpression notEqId(Long id) {
-    if(id == null)
+    if (id == null)
       return null;
 
     return reservation.id.notIn(id);
@@ -29,7 +30,7 @@ public class ReservationCondition {
   }
 
   public BooleanBuilder eqTargetId(Long targetId) {
-    if(targetId == null)
+    if (targetId == null)
       return null;
 
     return new BooleanBuilder()
@@ -40,7 +41,7 @@ public class ReservationCondition {
     LocalDateTime startedAt = condition.getStartedAt();
     LocalDateTime finishedAt = condition.getFinishedAt();
 
-    if(startedAt == null || finishedAt == null) {
+    if (startedAt == null || finishedAt == null) {
       return null;
     }
 
@@ -51,7 +52,7 @@ public class ReservationCondition {
   }
 
   public BooleanExpression inReservationDetailId(SubQueryExpression<Long> ids) {
-    if(ids == null)
+    if (ids == null)
       return null;
 
     return reservationDetail.reservation.id.in(ids);

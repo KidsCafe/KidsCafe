@@ -27,9 +27,6 @@ import com.sparta.kidscafe.domain.user.entity.User;
 import com.sparta.kidscafe.domain.user.repository.UserRepository;
 import com.sparta.kidscafe.exception.BusinessException;
 import com.sparta.kidscafe.exception.ErrorCode;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -39,6 +36,10 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -56,7 +57,7 @@ public class ReservationService {
 
   @Transactional
   public StatusDto createReservation(AuthUser authUser, Long cafeId,
-      ReservationCreateRequestDto requestDto) {
+                                     ReservationCreateRequestDto requestDto) {
     // 1. 유저 확인
     User user = userRepository.findById(authUser.getId())
         .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
@@ -77,11 +78,11 @@ public class ReservationService {
     int count = requestDto.getCount();
     Room room = roomRepository.findById(requestDto.getRoomId())
         .orElseThrow(() -> new BusinessException(ErrorCode.ROOM_NOT_FOUND));
-    if(room.getMinCount() > count) {
+    if (room.getMinCount() > count) {
       throw new BusinessException(ErrorCode.RESERVATION_FAILURE);
     }
 
-    if(room.getMaxCount() < count) {
+    if (room.getMaxCount() < count) {
       throw new BusinessException(ErrorCode.RESERVATION_FAILURE);
     }
 
@@ -107,7 +108,7 @@ public class ReservationService {
   // 예약 내역 조회(User용)
   @Transactional(readOnly = true)
   public PageResponseDto<ReservationResponseDto> getReservationsByUser(AuthUser authUser, int page,
-      int size) {
+                                                                       int size) {
     if (!authUser.getRoleType().equals(RoleType.USER)) {
       throw new BusinessException(ErrorCode.FORBIDDEN);
     }
@@ -132,7 +133,7 @@ public class ReservationService {
   // 예약 내역 조회(Owner용)
   @Transactional(readOnly = true)
   public PageResponseDto<ReservationResponseDto> getReservationsByOwner(AuthUser authUser,
-      Long cafeId, int page, int size) {
+                                                                        Long cafeId, int page, int size) {
     if (!authUser.getRoleType().equals(RoleType.OWNER)) {
       throw new BusinessException(ErrorCode.FORBIDDEN);
     }
@@ -161,7 +162,7 @@ public class ReservationService {
   // 예약 상세 조회: User용
   @Transactional(readOnly = true)
   public ResponseDto<ReservationResponseDto> getReservationDetailByUser(AuthUser authUser,
-      Long reservationId) {
+                                                                        Long reservationId) {
     Long userId = authUser.getId();
     if (!authUser.getRoleType().equals(RoleType.USER)) {
       throw new BusinessException(ErrorCode.FORBIDDEN);
@@ -248,7 +249,7 @@ public class ReservationService {
   // 예약 수정(User용)
   @Transactional
   public StatusDto updateReservation(AuthUser authUser, Long reservationId,
-      ReservationUpdateRequestDto requestDto) {
+                                     ReservationUpdateRequestDto requestDto) {
 
     Long userId = authUser.getId();
     Reservation reservation = reservationRepository.findById(reservationId)
@@ -286,11 +287,11 @@ public class ReservationService {
     int count = requestDto.getCount();
     Room room = roomRepository.findById(requestDto.getRoomId())
         .orElseThrow(() -> new BusinessException(ErrorCode.ROOM_NOT_FOUND));
-    if(room.getMinCount() > count) {
+    if (room.getMinCount() > count) {
       throw new BusinessException(ErrorCode.RESERVATION_FAILURE);
     }
 
-    if(room.getMaxCount() < count) {
+    if (room.getMaxCount() < count) {
       throw new BusinessException(ErrorCode.RESERVATION_FAILURE);
     }
 
@@ -352,7 +353,6 @@ public class ReservationService {
       throw new BusinessException(ErrorCode.UNAUTHORIZED);
     }
     reservation.cancelByUser();
-    ;
     reservationRepository.save(reservation);
 
     return StatusDto.builder()

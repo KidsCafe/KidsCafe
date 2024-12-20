@@ -4,5 +4,5 @@ import com.sparta.kidscafe.common.enums.ReportType;
 
 public record ReportUpdateDto(
     ReportType status
-){
+) {
 }
