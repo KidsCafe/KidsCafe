@@ -11,6 +11,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -28,15 +30,15 @@ class ReceiptScanServiceTest {
         Mockito.when(mockFile.isEmpty()).thenReturn(false);
 
         // 테스트 리소스 파일 로드
-        InputStream testReceiptStream = getClass().getResourceAsStream("/test-receipt.jpg");
-        assert testReceiptStream != null; // 테스트 리소스 확인
-        Mockito.when(mockFile.getInputStream()).thenReturn(testReceiptStream);
+        Path testReceiptPath = Path.of("./test_receipts/test_receipt_1.jpg");
+        assert Files.exists(testReceiptPath) : "테스트 리소스 파일이 존재하지 않습니다.";
+        Mockito.when(mockFile.getInputStream()).thenReturn(Files.newInputStream(testReceiptPath));
 
         ReceiptScanRequestDto requestDto = new ReceiptScanRequestDto();
         requestDto.setReceiptImage(mockFile);
 
         // OCR Mock 설정
-        Mockito.doReturn("Store Name: Kids Cafe\nTotal: $30")
+        Mockito.doReturn("Store Name: Kids Cafe\nTotal: $10")
                 .when(receiptScanService)
                 .performOcr(Mockito.any(File.class));
 
@@ -74,7 +76,10 @@ class ReceiptScanServiceTest {
         MultipartFile mockFile = Mockito.mock(MultipartFile.class);
         Mockito.when(mockFile.getContentType()).thenReturn("image/jpeg");
         Mockito.when(mockFile.isEmpty()).thenReturn(false);
-        Mockito.when(mockFile.getInputStream()).thenReturn(getClass().getResourceAsStream("/test-receipt.jpg"));
+
+        Path testReceiptPath = Path.of("./test_receipts/test_receipt_2.jpg");
+        assert Files.exists(testReceiptPath) : "테스트 리소스 파일이 존재하지 않습니다.";
+        Mockito.when(mockFile.getInputStream()).thenReturn(Files.newInputStream(testReceiptPath));
 
         ReceiptScanRequestDto requestDto = new ReceiptScanRequestDto();
         requestDto.setReceiptImage(mockFile);
@@ -97,7 +102,10 @@ class ReceiptScanServiceTest {
         MultipartFile mockFile = Mockito.mock(MultipartFile.class);
         Mockito.when(mockFile.getContentType()).thenReturn("image/jpeg");
         Mockito.when(mockFile.isEmpty()).thenReturn(false);
-        Mockito.when(mockFile.getInputStream()).thenReturn(getClass().getResourceAsStream("/test-receipt.jpg"));
+
+        Path testReceiptPath = Path.of("./test_receipts/test_receipt_3.jpg");
+        assert Files.exists(testReceiptPath) : "테스트 리소스 파일이 존재하지 않습니다.";
+        Mockito.when(mockFile.getInputStream()).thenReturn(Files.newInputStream(testReceiptPath));
 
         ReceiptScanRequestDto requestDto = new ReceiptScanRequestDto();
         requestDto.setReceiptImage(mockFile);
