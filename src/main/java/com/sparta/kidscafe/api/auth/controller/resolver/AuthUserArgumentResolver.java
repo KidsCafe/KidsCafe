@@ -57,10 +57,10 @@ public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
 			return new AuthUser(userId, email, roleType);
 		}
 
-		// 소셜 로그인 사용자 ( 수정 후 추가 예정 )
-		// if (loginType == LoginType.){
-		//
-		// }
+		// 소셜 로그인 사용자 ( 수정 후 추가 예정 ) : BASIC, OAUTH
+		if (loginType == LoginType.KAKAO || loginType == LoginType.GITHUB || loginType == LoginType.NAVER){
+			return new AuthUser(userId, email, roleType);
+		}
 
 		if (roleType == RoleType.ADMIN || roleType == RoleType.USER || roleType == RoleType.OWNER) {
 			return new AuthUser(userId, email, roleType);
@@ -70,7 +70,7 @@ public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
 	}
 
 	private boolean isAuthorized(RoleType roleType){
-		return RoleType.ADMIN.equals(roleType) || RoleType.OWNER.equals(roleType);
+		return RoleType.ADMIN.equals(roleType) || RoleType.OWNER.equals(roleType) || RoleType.USER.equals(roleType);
 	}
 
 	private String extractToken(String authorizationHeader) {
