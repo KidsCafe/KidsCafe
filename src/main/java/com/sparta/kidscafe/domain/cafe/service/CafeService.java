@@ -7,9 +7,9 @@ import com.sparta.kidscafe.common.dto.ResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
 import com.sparta.kidscafe.common.util.valid.CafeValidationCheck;
 import com.sparta.kidscafe.common.util.valid.UserValidationCheck;
-import com.sparta.kidscafe.domain.cafe.dto.request.CafeCreateRequestDto;
+import com.sparta.kidscafe.domain.cafe.dto.request.CafeRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeSimpleRequestDto;
-import com.sparta.kidscafe.domain.cafe.dto.request.CafesSimpleCreateRequestDto;
+import com.sparta.kidscafe.domain.cafe.dto.request.CafesSimpleRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeDetailResponseDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeResponseDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeSimpleResponseDto;
@@ -52,7 +52,7 @@ public class CafeService {
   private final MapService mapService;
 
   @Transactional
-  public StatusDto createCafe(AuthUser authUser, CafeCreateRequestDto requestDto) {
+  public StatusDto createCafe(AuthUser authUser, CafeRequestDto requestDto) {
     User user = userValidationCheck.validMy(authUser.getId());
     Cafe cafe = saveCafe(requestDto, user);
     saveCafeImage(cafe, requestDto.getImages());
@@ -63,7 +63,7 @@ public class CafeService {
     );
   }
 
-  public StatusDto creatCafe(AuthUser authUser, CafesSimpleCreateRequestDto requestDto) {
+  public StatusDto creatCafe(AuthUser authUser, CafesSimpleRequestDto requestDto) {
     User user = userValidationCheck.validMy(authUser.getId());
     List<Cafe> cafes = requestDto.convertDtoToEntity(user);
     for(Cafe cafe : cafes) {
@@ -132,14 +132,14 @@ public class CafeService {
     }
   }
 
-  private Cafe saveCafe(CafeCreateRequestDto requestDto, User user) {
+  private Cafe saveCafe(CafeRequestDto requestDto, User user) {
     Point location = mapService.convertAddressToGeo(requestDto.getAddress());
     Cafe cafe = requestDto.convertDtoToEntityByCafe(user, location);
     cafeRepository.save(cafe);
     return cafe;
   }
 
-  private void saveCafeDetailInfo(CafeCreateRequestDto requestDto, Cafe cafe) {
+  private void saveCafeDetailInfo(CafeRequestDto requestDto, Cafe cafe) {
     List<Room> rooms = requestDto.convertDtoToEntityByRoom(cafe);
     List<Lesson> lessons = requestDto.convertDtoToEntityByLesson(cafe);
     List<Fee> fees = requestDto.convertDtoToEntityByFee(cafe);

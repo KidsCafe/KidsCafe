@@ -6,10 +6,10 @@ import com.sparta.kidscafe.common.dto.PageResponseDto;
 import com.sparta.kidscafe.common.dto.ResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
 import com.sparta.kidscafe.common.util.valid.AuthValidationCheck;
-import com.sparta.kidscafe.domain.cafe.dto.request.CafeCreateRequestDto;
+import com.sparta.kidscafe.domain.cafe.dto.request.CafeRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeSearchRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeSimpleRequestDto;
-import com.sparta.kidscafe.domain.cafe.dto.request.CafesSimpleCreateRequestDto;
+import com.sparta.kidscafe.domain.cafe.dto.request.CafesSimpleRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeDetailResponseDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeSimpleResponseDto;
 import com.sparta.kidscafe.domain.cafe.service.CafeService;
@@ -37,7 +37,7 @@ public class CafeController {
   @PostMapping("/owners/cafes")
   public ResponseEntity<StatusDto> createCafe(
       @Auth AuthUser authUser,
-      @Valid @RequestBody CafeCreateRequestDto requestDto
+      @Valid @RequestBody CafeRequestDto requestDto
   ) {
     AuthValidationCheck.validOwner(authUser);
     return ResponseEntity
@@ -48,7 +48,7 @@ public class CafeController {
   @PostMapping("/admin/cafes")
   public ResponseEntity<StatusDto> createCafe(
       @Auth AuthUser authUser,
-      @Valid @RequestBody CafesSimpleCreateRequestDto requestDto
+      @Valid @RequestBody CafesSimpleRequestDto requestDto
   ) {
     AuthValidationCheck.validAdmin(authUser);
     return ResponseEntity

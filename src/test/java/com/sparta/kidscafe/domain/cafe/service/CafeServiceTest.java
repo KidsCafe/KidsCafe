@@ -16,9 +16,9 @@ import com.sparta.kidscafe.common.dto.StatusDto;
 import com.sparta.kidscafe.common.enums.RoleType;
 import com.sparta.kidscafe.common.util.valid.CafeValidationCheck;
 import com.sparta.kidscafe.common.util.valid.UserValidationCheck;
-import com.sparta.kidscafe.domain.cafe.dto.request.CafeCreateRequestDto;
+import com.sparta.kidscafe.domain.cafe.dto.request.CafeRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeSimpleRequestDto;
-import com.sparta.kidscafe.domain.cafe.dto.request.CafesSimpleCreateRequestDto;
+import com.sparta.kidscafe.domain.cafe.dto.request.CafesSimpleRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeDetailResponseDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeResponseDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeSimpleResponseDto;
@@ -75,10 +75,10 @@ class CafeServiceTest {
   private PricePolicyRepository pricePolicyRepository;
 
   @Mock
-  private CafeCreateRequestDto cafeCreateRequestDto;
+  private CafeRequestDto cafeCreateRequestDto;
 
   @Mock
-  private CafesSimpleCreateRequestDto cafesSimpleCreateRequestDto;
+  private CafesSimpleRequestDto cafesSimpleRequestDto;
 
   @Mock
   private CafeSimpleRequestDto cafeSimpleRequestDto;
@@ -143,11 +143,11 @@ class CafeServiceTest {
     User user = DummyUser.createDummyUser(authUser.getRoleType());
     List<Cafe> cafes = DummyCafe.createDummyCafes(user, 2);
 
-    when(cafesSimpleCreateRequestDto.convertDtoToEntity(user)).thenReturn(cafes);
+    when(cafesSimpleRequestDto.convertDtoToEntity(user)).thenReturn(cafes);
     when(userValidationCheck.validMy(authUser.getId())).thenReturn(user);
 
     // when
-    StatusDto result = cafeService.creatCafe(authUser, cafesSimpleCreateRequestDto);
+    StatusDto result = cafeService.creatCafe(authUser, cafesSimpleRequestDto);
 
     // then
     assertEquals(HttpStatus.CREATED.value(), result.getStatus());
@@ -155,7 +155,7 @@ class CafeServiceTest {
 
     verify(mapService, times(2)).convertAddressToGeo(any());
     verify(userValidationCheck).validMy(authUser.getId());
-    verify(cafesSimpleCreateRequestDto).convertDtoToEntity(user);
+    verify(cafesSimpleRequestDto).convertDtoToEntity(user);
     verify(cafeRepository).saveAll(cafes);
   }
 

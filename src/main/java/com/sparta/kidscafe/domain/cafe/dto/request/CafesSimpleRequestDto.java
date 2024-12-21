@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CafesSimpleCreateRequestDto {
+public class CafesSimpleRequestDto {
 
   @Valid
   private List<CafeSimpleRequestDto> cafes;
