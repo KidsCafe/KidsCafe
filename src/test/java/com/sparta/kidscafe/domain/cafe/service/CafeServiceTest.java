@@ -15,7 +15,6 @@ import com.sparta.kidscafe.common.util.valid.CafeValidationCheck;
 import com.sparta.kidscafe.common.util.valid.UserValidationCheck;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeSimpleRequestDto;
-import com.sparta.kidscafe.domain.cafe.dto.request.CafesSimpleRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeDetailResponseDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeResponseDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeSimpleResponseDto;
@@ -25,13 +24,9 @@ import com.sparta.kidscafe.domain.cafe.repository.CafeImageRepository;
 import com.sparta.kidscafe.domain.cafe.repository.CafeRepository;
 import com.sparta.kidscafe.domain.cafe.repository.condition.CafeSearchCondition;
 import com.sparta.kidscafe.domain.fee.entity.Fee;
-import com.sparta.kidscafe.domain.fee.repository.FeeRepository;
 import com.sparta.kidscafe.domain.lesson.entity.Lesson;
-import com.sparta.kidscafe.domain.lesson.repository.LessonRepository;
 import com.sparta.kidscafe.domain.pricepolicy.entity.PricePolicy;
-import com.sparta.kidscafe.domain.pricepolicy.repository.PricePolicyRepository;
 import com.sparta.kidscafe.domain.room.entity.Room;
-import com.sparta.kidscafe.domain.room.repository.RoomRepository;
 import com.sparta.kidscafe.domain.user.entity.User;
 import com.sparta.kidscafe.dummy.DummyCafe;
 import com.sparta.kidscafe.dummy.DummyCafeImage;
@@ -59,25 +54,10 @@ class CafeServiceTest {
   private CafeImageRepository cafeImageRepository;
 
   @Mock
-  private RoomRepository roomRepository;
+  private CafeRequestDto requestCafe;
 
   @Mock
-  private LessonRepository lessonRepository;
-
-  @Mock
-  private FeeRepository feeRepository;
-
-  @Mock
-  private PricePolicyRepository pricePolicyRepository;
-
-  @Mock
-  private CafeRequestDto cafeCreateRequestDto;
-
-  @Mock
-  private CafesSimpleRequestDto cafesSimpleRequestDto;
-
-  @Mock
-  private CafeSimpleRequestDto cafeSimpleRequestDto;
+  private CafeSimpleRequestDto requestSimpleCafe;
 
   @Mock
   private UserValidationCheck userValidationCheck;
@@ -97,6 +77,17 @@ class CafeServiceTest {
     return new AuthUser(1L, "hong@email.com", role);
   }
 
+  private CafeSimpleRequestDto createCafeSimpleRequestDto() {
+    return CafeSimpleRequestDto.builder().build();
+  }
+
+  private CafeResponseDto createResponseDto(Long id) {
+    return CafeResponseDto.createBuilder()
+        .id(id)
+        .name("Test Cafe")
+        .build();
+  }
+
   @Test
   @DisplayName("카페 등록 성공 - 사장님")
   void createCafeOwner_Success()  {
@@ -105,48 +96,46 @@ class CafeServiceTest {
     User user = DummyUser.createDummyUser(authUser.getRoleType());
     Cafe cafe = DummyCafe.createDummyCafe(user, null);
 
-    when(cafeCreateRequestDto.convertDtoToEntityByCafe(user, null)).thenReturn(cafe);
-    when(cafeCreateRequestDto.convertDtoToEntityByRoom(cafe)).thenReturn(Collections.singletonList(mock(Room.class)));
-    when(cafeCreateRequestDto.convertDtoToEntityByLesson(cafe)).thenReturn(Collections.singletonList(mock(Lesson.class)));
-    when(cafeCreateRequestDto.convertDtoToEntityByFee(cafe)).thenReturn(Collections.singletonList(mock(Fee.class)));
-    when(cafeCreateRequestDto.convertDtoToEntityByPricePolicy(cafe)).thenReturn(Collections.singletonList(mock(PricePolicy.class)));
+    when(requestCafe.convertDtoToEntity(user, null)).thenReturn(cafe);
+    when(requestCafe.convertDtoToEntityByRoom(cafe)).thenReturn(Collections.singletonList(mock(Room.class)));
+    when(requestCafe.convertDtoToEntityByLesson(cafe)).thenReturn(Collections.singletonList(mock(Lesson.class)));
+    when(requestCafe.convertDtoToEntityByFee(cafe)).thenReturn(Collections.singletonList(mock(Fee.class)));
+    when(requestCafe.convertDtoToEntityByPricePolicy(cafe)).thenReturn(Collections.singletonList(mock(PricePolicy.class)));
 
-    when(userValidationCheck.validMe(authUser.getId())).thenReturn(user);
+    when(userValidationCheck.findUser(authUser.getId())).thenReturn(user);
     when(mapService.convertAddressToGeo(cafe.getAddress())).thenReturn(null);
     when(cafeRepository.save(any(Cafe.class))).thenReturn(cafe);
 
     // when
-    cafeService.createCafe(authUser, cafeCreateRequestDto);
+    cafeService.createCafe(authUser, requestCafe);
 
     // then
-    verify(userValidationCheck).validMe(authUser.getId());
+    verify(userValidationCheck).findUser(authUser.getId());
     verify(cafeRepository).save(any(Cafe.class));
-    verify(cafeImageRepository).findAllById(cafeCreateRequestDto.getImages());
-    verify(roomRepository).saveAll(any());
-    verify(lessonRepository).saveAll(any());
-    verify(feeRepository).saveAll(any());
-    verify(pricePolicyRepository).saveAll(any());
+    verify(cafeImageRepository).findAllById(requestCafe.getImages());
   }
 
   @Test
   @DisplayName("카페 등록 성공 - 관리자")
   void creatCafe_MultipleCafes_Success() {
     // given
+    CafeSimpleRequestDto requestCafe1 = createCafeSimpleRequestDto();
+    CafeSimpleRequestDto requestCafe2 = createCafeSimpleRequestDto();
+    List<CafeSimpleRequestDto> requestCafes = List.of(requestCafe1, requestCafe2);
     AuthUser authUser = createAuthUser(RoleType.ADMIN);
     User user = DummyUser.createDummyUser(authUser.getRoleType());
     List<Cafe> cafes = DummyCafe.createDummyCafes(user, 2);
 
-    when(cafesSimpleRequestDto.convertDtoToEntity(user)).thenReturn(cafes);
-    when(userValidationCheck.validMe(authUser.getId())).thenReturn(user);
+    when(userValidationCheck.findUser(authUser.getId())).thenReturn(user);
+    when(cafeRepository.saveAll(cafes)).thenReturn(cafes);
 
     // when
-    cafeService.creatCafe(authUser, cafesSimpleRequestDto);
+    cafeService.creatCafe(authUser, requestCafes);
 
     // then
-    verify(userValidationCheck).validMe(authUser.getId());
+    verify(userValidationCheck).findUser(authUser.getId());
     verify(mapService, times(2)).convertAddressToGeo(any());
-    verify(cafesSimpleRequestDto).convertDtoToEntity(user);
-    verify(cafeRepository).saveAll(cafes);
+    verify(cafeRepository).saveAll(any());
   }
 
   @Test
@@ -154,9 +143,9 @@ class CafeServiceTest {
   void searchCafe_Success() {
     // given
     CafeSearchCondition condition = mock(CafeSearchCondition.class);
-    CafeSimpleResponseDto cafeResponseDto = new CafeResponseDto();
-    CafeSimpleResponseDto cafeResponseDto2 = new CafeResponseDto();
-    Page<CafeSimpleResponseDto> cafes = new PageImpl<>(List.of(cafeResponseDto, cafeResponseDto2));
+    CafeSimpleResponseDto responseCafe1 = new CafeResponseDto();
+    CafeSimpleResponseDto responseCafe2 = new CafeResponseDto();
+    Page<CafeSimpleResponseDto> cafes = new PageImpl<>(List.of(responseCafe1, responseCafe2));
     when(cafeRepository.findAllByCafeSimple(condition)).thenReturn(cafes);
 
     // when
@@ -172,10 +161,12 @@ class CafeServiceTest {
   void findCafe_Success() {
     // given
     Long cafeId = 1L;
-    CafeResponseDto cafeResponseDto = CafeResponseDto.createBuilder().name("Test Cafe").build();
-    CafeDetailResponseDto cafeDetailResponseDto = new CafeDetailResponseDto();
-    cafeDetailResponseDto.setCafeInfo(cafeResponseDto);
+    User user = DummyUser.createDummyUser(RoleType.OWNER);
+    Cafe cafe = DummyCafe.createDummyCafe(user, cafeId);
+
+    CafeResponseDto cafeResponseDto = createResponseDto(cafeId);
     when(cafeRepository.findCafeById(cafeId)).thenReturn(cafeResponseDto);
+    when(cafeValidationCheck.findCafe(cafeId)).thenReturn(cafe);
 
     // when
     CafeDetailResponseDto result = cafeService.findCafe(cafeId);
@@ -213,7 +204,7 @@ class CafeServiceTest {
     when(cafeValidationCheck.validMyCafe(cafeId, authUser.getId())).thenReturn(cafe);
 
     // when
-    cafeService.updateCafe(authUser, cafeId, cafeSimpleRequestDto);
+    cafeService.updateCafe(authUser, cafeId, requestSimpleCafe);
 
     // then
     verify(cafeValidationCheck).validMyCafe(cafeId, authUser.getId());

@@ -150,7 +150,19 @@ public class Cafe extends Timestamped {
     this.location = location;
   }
 
-  public void updateLocation(Point location) {
-    this.location = location;
+  public void initRooms(List<Room> rooms) {
+    this.rooms = rooms;
+  }
+
+  public void initFees(List<Fee> fees) {
+    this.fees = fees;
+  }
+
+  public void initLessons(List<Lesson> lessons) {
+    this.lessons = lessons;
+  }
+
+  public void initPricePolicies(List<PricePolicy> pricePolicies) {
+    this.pricePolicies = pricePolicies;
   }
 }

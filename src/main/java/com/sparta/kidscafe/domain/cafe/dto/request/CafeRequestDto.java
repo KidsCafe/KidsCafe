@@ -38,7 +38,7 @@ public class CafeRequestDto extends CafeSimpleRequestDto {
   @Valid
   private List<PricePolicyCreateRequestDto> pricePolicies;
 
-  public Cafe convertDtoToEntityByCafe(User user, Point location) {
+  public Cafe convertDtoToEntity(User user, Point location) {
     return Cafe.builder()
         .user(user)
         .name(getName())

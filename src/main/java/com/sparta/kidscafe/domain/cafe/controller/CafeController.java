@@ -9,7 +9,6 @@ import com.sparta.kidscafe.common.util.valid.AuthValidationCheck;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeSearchRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeSimpleRequestDto;
-import com.sparta.kidscafe.domain.cafe.dto.request.CafesSimpleRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeDetailResponseDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeSimpleResponseDto;
 import com.sparta.kidscafe.domain.cafe.service.CafeService;
@@ -51,11 +50,11 @@ public class CafeController {
   @PostMapping("/admin/cafes")
   public ResponseEntity<StatusDto> createCafe(
       @Auth AuthUser authUser,
-      @Valid @RequestBody CafesSimpleRequestDto requestDto
+      @Valid @RequestBody List<CafeSimpleRequestDto> requestDto
   ) {
     AuthValidationCheck.validAdmin(authUser);
     cafeService.creatCafe(authUser, requestDto);
-    String message = "카페 [" + requestDto.getCafes().size() + "]개 등록 성공";
+    String message = "카페 [" + requestDto.size() + "]개 등록 성공";
     return ResponseEntity
         .status(HttpStatus.CREATED)
         .body(StatusDto.createStatusDto(HttpStatus.CREATED, message));

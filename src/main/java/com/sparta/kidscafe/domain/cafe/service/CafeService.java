@@ -2,14 +2,10 @@ package com.sparta.kidscafe.domain.cafe.service;
 
 import com.sparta.kidscafe.api.address.MapService;
 import com.sparta.kidscafe.common.dto.AuthUser;
-import com.sparta.kidscafe.common.dto.PageResponseDto;
-import com.sparta.kidscafe.common.dto.ResponseDto;
-import com.sparta.kidscafe.common.dto.StatusDto;
 import com.sparta.kidscafe.common.util.valid.CafeValidationCheck;
 import com.sparta.kidscafe.common.util.valid.UserValidationCheck;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeSimpleRequestDto;
-import com.sparta.kidscafe.domain.cafe.dto.request.CafesSimpleRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeDetailResponseDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeResponseDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeSimpleResponseDto;
@@ -18,20 +14,12 @@ import com.sparta.kidscafe.domain.cafe.entity.CafeImage;
 import com.sparta.kidscafe.domain.cafe.repository.CafeImageRepository;
 import com.sparta.kidscafe.domain.cafe.repository.CafeRepository;
 import com.sparta.kidscafe.domain.cafe.repository.condition.CafeSearchCondition;
-import com.sparta.kidscafe.domain.fee.entity.Fee;
-import com.sparta.kidscafe.domain.fee.repository.FeeRepository;
-import com.sparta.kidscafe.domain.lesson.entity.Lesson;
-import com.sparta.kidscafe.domain.lesson.repository.LessonRepository;
-import com.sparta.kidscafe.domain.pricepolicy.entity.PricePolicy;
-import com.sparta.kidscafe.domain.pricepolicy.repository.PricePolicyRepository;
-import com.sparta.kidscafe.domain.room.entity.Room;
-import com.sparta.kidscafe.domain.room.repository.RoomRepository;
 import com.sparta.kidscafe.domain.user.entity.User;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.Point;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,30 +29,29 @@ public class CafeService {
 
   private final CafeRepository cafeRepository;
   private final CafeImageRepository cafeImageRepository;
-  private final RoomRepository roomRepository;
-  private final LessonRepository lessonRepository;
-  private final FeeRepository feeRepository;
-  private final PricePolicyRepository pricePolicyRepository;
-
   private final UserValidationCheck userValidationCheck;
   private final CafeValidationCheck cafeValidationCheck;
-
   private final MapService mapService;
 
   @Transactional
   public void createCafe(AuthUser authUser, CafeRequestDto requestDto) {
-    User user = userValidationCheck.validMe(authUser.getId());
+    User user = userValidationCheck.findUser(authUser.getId());
     Cafe cafe = saveCafe(requestDto, user);
     saveCafeImage(cafe, requestDto.getImages());
     saveCafeDetailInfo(requestDto, cafe);
   }
 
-  public void creatCafe(AuthUser authUser, CafesSimpleRequestDto requestDto) {
-    User user = userValidationCheck.validMe(authUser.getId());
-    List<Cafe> cafes = requestDto.convertDtoToEntity(user);
-    for(Cafe cafe : cafes) {
-      Point location = mapService.convertAddressToGeo(cafe.getAddress());
-      cafe.updateLocation(location);
+  public void creatCafe(AuthUser authUser, List<CafeSimpleRequestDto> requestCafes) {
+    if(requestCafes == null || requestCafes.isEmpty()) {
+      return;
+    }
+
+    User user = userValidationCheck.findUser(authUser.getId());
+    List<Cafe> cafes = new ArrayList<>();
+    for(CafeSimpleRequestDto requestCafe : requestCafes) {
+      Point location = mapService.convertAddressToGeo(requestCafe.getAddress());
+      Cafe cafe = requestCafe.convertDtoToEntity(user, location);
+      cafes.add(cafe);
     }
     cafeRepository.saveAll(cafes);
   }
@@ -110,22 +97,16 @@ public class CafeService {
 
   private Cafe saveCafe(CafeRequestDto requestDto, User user) {
     Point location = mapService.convertAddressToGeo(requestDto.getAddress());
-    Cafe cafe = requestDto.convertDtoToEntityByCafe(user, location);
+    Cafe cafe = requestDto.convertDtoToEntity(user, location);
     cafeRepository.save(cafe);
     return cafe;
   }
 
   private void saveCafeDetailInfo(CafeRequestDto requestDto, Cafe cafe) {
-    List<Room> rooms = requestDto.convertDtoToEntityByRoom(cafe);
-    List<Lesson> lessons = requestDto.convertDtoToEntityByLesson(cafe);
-    List<Fee> fees = requestDto.convertDtoToEntityByFee(cafe);
-    List<PricePolicy> pricePolicies = requestDto.convertDtoToEntityByPricePolicy(cafe);
-
-    // TODO. khj 양방향으로 insert되는지 확인해볼 것.
-    roomRepository.saveAll(rooms);
-    lessonRepository.saveAll(lessons);
-    feeRepository.saveAll(fees);
-    pricePolicyRepository.saveAll(pricePolicies);
+    cafe.initRooms(requestDto.convertDtoToEntityByRoom(cafe));
+    cafe.initLessons(requestDto.convertDtoToEntityByLesson(cafe));
+    cafe.initFees(requestDto.convertDtoToEntityByFee(cafe));
+    cafe.initPricePolicies(requestDto.convertDtoToEntityByPricePolicy(cafe));
   }
 
   private CafeDetailResponseDto createCafeDetailInfo(CafeResponseDto cafeResponseDto) {
@@ -134,19 +115,14 @@ public class CafeService {
     }
 
     Long cafeId = cafeResponseDto.getId();
-    List<CafeImage> images = cafeImageRepository.findAllByCafeId(cafeId);
-    List<Room> rooms = roomRepository.findAllByCafeId(cafeId);
-    List<Lesson> lessons = lessonRepository.findAllByCafeId(cafeId);
-    List<Fee> fees = feeRepository.findAllByCafeId(cafeId);
-    List<PricePolicy> pricePolicies = pricePolicyRepository.findAllByCafeId(cafeId);
-
+    Cafe cafe = cafeValidationCheck.findCafe(cafeId);
     CafeDetailResponseDto cafeDetailResponseDto = new CafeDetailResponseDto();
     cafeDetailResponseDto.setCafeInfo(cafeResponseDto);
-    cafeDetailResponseDto.setCafeImage(images);
-    cafeDetailResponseDto.setRooms(rooms);
-    cafeDetailResponseDto.setLessons(lessons);
-    cafeDetailResponseDto.setFees(fees);
-    cafeDetailResponseDto.setPricePolicies(pricePolicies);
+    cafeDetailResponseDto.setCafeImage(cafeImageRepository.findAllByCafeId(cafeId));
+    cafeDetailResponseDto.setRooms(cafe.getRooms());
+    cafeDetailResponseDto.setLessons(cafe.getLessons());
+    cafeDetailResponseDto.setFees(cafe.getFees());
+    cafeDetailResponseDto.setPricePolicies(cafe.getPricePolicies());
     return cafeDetailResponseDto;
   }
 }
