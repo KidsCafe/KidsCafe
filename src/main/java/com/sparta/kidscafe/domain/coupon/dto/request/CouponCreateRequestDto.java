@@ -1,5 +1,7 @@
 package com.sparta.kidscafe.domain.coupon.dto.request;
 
+import com.sparta.kidscafe.domain.cafe.entity.Cafe;
+import com.sparta.kidscafe.domain.coupon.entity.Coupon;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -22,4 +24,12 @@ public class CouponCreateRequestDto {
 
     @Future(message = "유효 기간은 현재일로부터 시작입니다.")
     private LocalDateTime validTo;
+
+    public Coupon convertToEntity(Cafe cafe) {
+        return Coupon.builder()
+                .cafe(cafe)
+                .name(name)
+                .discount_rate(discountRate)
+                .build();
+    }
 }
