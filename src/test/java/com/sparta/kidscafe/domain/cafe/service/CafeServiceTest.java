@@ -115,7 +115,7 @@ class CafeServiceTest {
     when(cafeCreateRequestDto.convertDtoToEntityByFee(cafe)).thenReturn(Collections.singletonList(mock(Fee.class)));
     when(cafeCreateRequestDto.convertDtoToEntityByPricePolicy(cafe)).thenReturn(Collections.singletonList(mock(PricePolicy.class)));
 
-    when(userValidationCheck.validMy(authUser.getId())).thenReturn(user);
+    when(userValidationCheck.validMe(authUser.getId())).thenReturn(user);
     when(mapService.convertAddressToGeo(cafe.getAddress())).thenReturn(null);
     when(cafeRepository.save(any(Cafe.class))).thenReturn(cafe);
 
@@ -126,7 +126,7 @@ class CafeServiceTest {
     assertEquals(HttpStatus.CREATED.value(), result.getStatus());
     assertEquals("[" + cafe.getName() + "] 등록 성공", result.getMessage());
 
-    verify(userValidationCheck).validMy(authUser.getId());
+    verify(userValidationCheck).validMe(authUser.getId());
     verify(cafeRepository).save(any(Cafe.class));
     verify(cafeImageRepository).findAllById(cafeCreateRequestDto.getImages());
     verify(roomRepository).saveAll(any());
@@ -144,7 +144,7 @@ class CafeServiceTest {
     List<Cafe> cafes = DummyCafe.createDummyCafes(user, 2);
 
     when(cafesSimpleRequestDto.convertDtoToEntity(user)).thenReturn(cafes);
-    when(userValidationCheck.validMy(authUser.getId())).thenReturn(user);
+    when(userValidationCheck.validMe(authUser.getId())).thenReturn(user);
 
     // when
     StatusDto result = cafeService.creatCafe(authUser, cafesSimpleRequestDto);
@@ -154,7 +154,7 @@ class CafeServiceTest {
     assertEquals("카페 [2]개 등록 성공", result.getMessage());
 
     verify(mapService, times(2)).convertAddressToGeo(any());
-    verify(userValidationCheck).validMy(authUser.getId());
+    verify(userValidationCheck).validMe(authUser.getId());
     verify(cafesSimpleRequestDto).convertDtoToEntity(user);
     verify(cafeRepository).saveAll(cafes);
   }

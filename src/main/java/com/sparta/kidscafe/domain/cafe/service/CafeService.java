@@ -52,61 +52,37 @@ public class CafeService {
   private final MapService mapService;
 
   @Transactional
-  public StatusDto createCafe(AuthUser authUser, CafeRequestDto requestDto) {
-    User user = userValidationCheck.validMy(authUser.getId());
+  public void createCafe(AuthUser authUser, CafeRequestDto requestDto) {
+    User user = userValidationCheck.validMe(authUser.getId());
     Cafe cafe = saveCafe(requestDto, user);
     saveCafeImage(cafe, requestDto.getImages());
     saveCafeDetailInfo(requestDto, cafe);
-    return StatusDto.createStatusDto(
-        HttpStatus.CREATED,
-        "[" + cafe.getName() + "] 등록 성공"
-    );
   }
 
-  public StatusDto creatCafe(AuthUser authUser, CafesSimpleRequestDto requestDto) {
-    User user = userValidationCheck.validMy(authUser.getId());
+  public void creatCafe(AuthUser authUser, CafesSimpleRequestDto requestDto) {
+    User user = userValidationCheck.validMe(authUser.getId());
     List<Cafe> cafes = requestDto.convertDtoToEntity(user);
     for(Cafe cafe : cafes) {
       Point location = mapService.convertAddressToGeo(cafe.getAddress());
       cafe.updateLocation(location);
     }
-
     cafeRepository.saveAll(cafes);
-    return StatusDto.createStatusDto(
-        HttpStatus.CREATED,
-        "카페 [" + cafes.size() + "]개 등록 성공"
-    );
   }
 
-  public PageResponseDto<CafeSimpleResponseDto> searchCafe(CafeSearchCondition condition) {
-    Page<CafeSimpleResponseDto> cafes = cafeRepository.findAllByCafeSimple(condition);
-    return PageResponseDto.success(
-        cafes,
-        HttpStatus.OK,
-        cafes.isEmpty() ? "조회 결과가 없습니다." : "카페 조회 성공"
-    );
+  public Page<CafeSimpleResponseDto> searchCafe(CafeSearchCondition condition) {
+    return cafeRepository.findAllByCafeSimple(condition);
   }
 
-  public ResponseDto<CafeDetailResponseDto> findCafe(Long cafeId) {
+  public CafeDetailResponseDto findCafe(Long cafeId) {
     CafeResponseDto cafeResponseDto = cafeRepository.findCafeById(cafeId);
-    return ResponseDto.success(
-        createCafeDetailInfo(cafeResponseDto),
-        HttpStatus.OK,
-        cafeResponseDto == null ?
-            "조회 결과가 없습니다."
-            : "[" + cafeResponseDto.getName() + "] 상세 조회 성공"
-    );
+    return createCafeDetailInfo(cafeResponseDto);
   }
 
   @Transactional
-  public StatusDto updateCafe(AuthUser authUser, Long cafeId, CafeSimpleRequestDto requestDto)  {
+  public void updateCafe(AuthUser authUser, Long cafeId, CafeSimpleRequestDto requestDto)  {
     Point location = mapService.convertAddressToGeo(requestDto.getAddress());
     Cafe cafe = cafeValidationCheck.validMyCafe(cafeId, authUser.getId());
     cafe.update(requestDto, location);
-    return StatusDto.createStatusDto(
-        HttpStatus.OK,
-        "[" + cafe.getName() + "] 수정 성공"
-    );
   }
 
   @Transactional
@@ -145,6 +121,7 @@ public class CafeService {
     List<Fee> fees = requestDto.convertDtoToEntityByFee(cafe);
     List<PricePolicy> pricePolicies = requestDto.convertDtoToEntityByPricePolicy(cafe);
 
+    // TODO. khj 양방향으로 insert되는지 확인해볼 것.
     roomRepository.saveAll(rooms);
     lessonRepository.saveAll(lessons);
     feeRepository.saveAll(fees);
