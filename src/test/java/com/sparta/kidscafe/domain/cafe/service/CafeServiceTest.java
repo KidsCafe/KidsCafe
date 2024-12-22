@@ -10,9 +10,6 @@ import static org.mockito.Mockito.when;
 
 import com.sparta.kidscafe.api.address.MapService;
 import com.sparta.kidscafe.common.dto.AuthUser;
-import com.sparta.kidscafe.common.dto.PageResponseDto;
-import com.sparta.kidscafe.common.dto.ResponseDto;
-import com.sparta.kidscafe.common.dto.StatusDto;
 import com.sparta.kidscafe.common.enums.RoleType;
 import com.sparta.kidscafe.common.util.valid.CafeValidationCheck;
 import com.sparta.kidscafe.common.util.valid.UserValidationCheck;
@@ -49,7 +46,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.http.HttpStatus;
 
 class CafeServiceTest {
 
@@ -120,12 +116,9 @@ class CafeServiceTest {
     when(cafeRepository.save(any(Cafe.class))).thenReturn(cafe);
 
     // when
-    StatusDto result = cafeService.createCafe(authUser, cafeCreateRequestDto);
+    cafeService.createCafe(authUser, cafeCreateRequestDto);
 
     // then
-    assertEquals(HttpStatus.CREATED.value(), result.getStatus());
-    assertEquals("[" + cafe.getName() + "] 등록 성공", result.getMessage());
-
     verify(userValidationCheck).validMe(authUser.getId());
     verify(cafeRepository).save(any(Cafe.class));
     verify(cafeImageRepository).findAllById(cafeCreateRequestDto.getImages());
@@ -147,14 +140,11 @@ class CafeServiceTest {
     when(userValidationCheck.validMe(authUser.getId())).thenReturn(user);
 
     // when
-    StatusDto result = cafeService.creatCafe(authUser, cafesSimpleRequestDto);
+    cafeService.creatCafe(authUser, cafesSimpleRequestDto);
 
     // then
-    assertEquals(HttpStatus.CREATED.value(), result.getStatus());
-    assertEquals("카페 [2]개 등록 성공", result.getMessage());
-
-    verify(mapService, times(2)).convertAddressToGeo(any());
     verify(userValidationCheck).validMe(authUser.getId());
+    verify(mapService, times(2)).convertAddressToGeo(any());
     verify(cafesSimpleRequestDto).convertDtoToEntity(user);
     verify(cafeRepository).saveAll(cafes);
   }
@@ -170,12 +160,10 @@ class CafeServiceTest {
     when(cafeRepository.findAllByCafeSimple(condition)).thenReturn(cafes);
 
     // when
-    PageResponseDto<CafeSimpleResponseDto> result = cafeService.searchCafe(condition);
+    Page<CafeSimpleResponseDto> result = cafeService.searchCafe(condition);
 
     // than
-    assertEquals(HttpStatus.OK.value(), result.getStatus());
-    assertEquals("카페 조회 성공", result.getMessage());
-    assertEquals(2, result.getData().size());
+    assertEquals(2, result.getSize());
     verify(cafeRepository).findAllByCafeSimple(condition);
   }
 
@@ -190,12 +178,10 @@ class CafeServiceTest {
     when(cafeRepository.findCafeById(cafeId)).thenReturn(cafeResponseDto);
 
     // when
-    ResponseDto<CafeDetailResponseDto> result = cafeService.findCafe(cafeId);
+    CafeDetailResponseDto result = cafeService.findCafe(cafeId);
 
     // then
-    assertEquals(HttpStatus.OK.value(), result.getStatus());
-    assertEquals("[Test Cafe] 상세 조회 성공", result.getMessage());
-    assertEquals("Test Cafe", result.getData().getName());
+    assertEquals("Test Cafe", result.getName());
     verify(cafeRepository).findCafeById(cafeId);
   }
 
@@ -207,12 +193,10 @@ class CafeServiceTest {
     when(cafeRepository.findCafeById(cafeId)).thenReturn(null);
 
     // when
-    ResponseDto<CafeDetailResponseDto> result = cafeService.findCafe(cafeId);
+    CafeDetailResponseDto result = cafeService.findCafe(cafeId);
 
     // then
-    assertEquals(HttpStatus.OK.value(), result.getStatus());
-    assertEquals("조회 결과가 없습니다.", result.getMessage());
-    assertNull(result.getData());
+    assertNull(result);
     verify(cafeRepository).findCafeById(cafeId);
   }
 
@@ -229,12 +213,9 @@ class CafeServiceTest {
     when(cafeValidationCheck.validMyCafe(cafeId, authUser.getId())).thenReturn(cafe);
 
     // when
-    StatusDto result = cafeService.updateCafe(authUser, cafeId, cafeSimpleRequestDto);
+    cafeService.updateCafe(authUser, cafeId, cafeSimpleRequestDto);
 
     // then
-    assertEquals(HttpStatus.OK.value(), result.getStatus());
-    assertEquals("[" + cafe.getName() + "] 수정 성공", result.getMessage());
-
     verify(cafeValidationCheck).validMyCafe(cafeId, authUser.getId());
     verify(mapService).convertAddressToGeo(any());
   }
