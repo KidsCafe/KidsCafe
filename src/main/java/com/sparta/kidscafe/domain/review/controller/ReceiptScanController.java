@@ -14,7 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/reviews")
+@RequestMapping("/api/receipt")
 public class ReceiptScanController {
 
   private final ReceiptScanService receiptScanService;
