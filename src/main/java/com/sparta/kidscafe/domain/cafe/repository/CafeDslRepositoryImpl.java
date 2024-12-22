@@ -155,26 +155,26 @@ public class CafeDslRepositoryImpl implements CafeDslRepository {
 
   private BooleanBuilder makeWhere(CafeSearchCondition condition) {
     return new BooleanBuilder()
-        .and(cafeCondition.likeName(condition.getName()))
-        .and(cafeCondition.eqRegion(condition.getRegion()))
-        .and(cafeCondition.loeSize(condition.getSize()))
-        .and(feeCondition.ageGroup(condition))
+        .and(cafeCondition.eq(cafe.user.id, condition.getUserId()))
+        .and(cafeCondition.contains(cafe.name, condition.getName()))
+        .and(cafeCondition.eq(cafe.region, condition.getRegion()))
+        .and(cafeCondition.loe(cafe.size, condition.getSize()))
+        .and(cafeCondition.isTrue(cafe.multiFamily, condition.getMultiFamily()))
+        .and(cafeCondition.isTrue(cafe.parking, condition.getParking()))
+        .and(cafeCondition.isTrue(cafe.restaurant, condition.getExistRestaurant()))
+        .and(cafeCondition.isTrue(cafe.careService, condition.getExistCareService()))
+        .and(cafeCondition.isTrue(cafe.swimmingPool, condition.getExistSwimmingPool()))
+        .and(cafeCondition.isTrue(cafe.clothesRental, condition.getExistClothesRental()))
+        .and(cafeCondition.isTrue(cafe.monitoring, condition.getExistMonitoring()))
+        .and(cafeCondition.isTrue(cafe.feedingRoom, condition.getExistFeedingRoom()))
+        .and(cafeCondition.isTrue(cafe.outdoorPlayground, condition.getExistOutdoorPlayground()))
+        .and(cafeCondition.isTrue(cafe.safetyGuard, condition.getExistSafetyGuard()))
         .and(cafeCondition.isOpening(condition.getOpening()))
-        .and(cafeCondition.multiFamily(condition.getMultiFamily()))
-        .and(cafeCondition.parking(condition.getParking()))
-        .and(cafeCondition.existRestaurant(condition.getExistRestaurant()))
-        .and(cafeCondition.existCareService(condition.getExistCareService()))
-        .and(cafeCondition.existSwimmingPool(condition.getExistSwimmingPool()))
-        .and(cafeCondition.existClothesRental(condition.getExistClothesRental()))
-        .and(cafeCondition.existMonitoring(condition.getExistMonitoring()))
-        .and(cafeCondition.existFeedingRoom(condition.getExistFeedingRoom()))
-        .and(cafeCondition.existOutdoorPlayground(condition.getExistOutdoorPlayground()))
-        .and(cafeCondition.existSafetyGuard(condition.getExistSafetyGuard()))
-        .and(feeCondition.adultPrice(condition.getAdultPrice()))
         .and(cafeCondition.goeOpenedAt(condition.getOpenedAt()))
         .and(cafeCondition.loeClosedAt(condition.getClosedAt()))
-        .and(cafeCondition.eqUserId(condition.getUserId()))
-        .and(cafeCondition.withInRadius(condition));
+        .and(cafeCondition.withInRadius(condition))
+        .and(feeCondition.ageGroup(condition))
+        .and(feeCondition.adultPrice(condition.getAdultPrice()));
   }
 
   private BooleanBuilder makeHaving(CafeSearchCondition condition) {

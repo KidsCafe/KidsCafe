@@ -6,6 +6,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberTemplate;
 import com.sparta.kidscafe.common.util.GeoUtil;
+import com.sparta.kidscafe.common.util.condition.BaseCondition;
 import com.sparta.kidscafe.domain.cafe.entity.QCafe;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,42 +15,13 @@ import java.time.format.TextStyle;
 import java.util.Locale;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 @Component
 @RequiredArgsConstructor
-public class CafeCondition {
+public class CafeCondition extends BaseCondition {
 
   private final GeoUtil geoUtil;
   private final QCafe cafe = QCafe.cafe;
-
-  public BooleanExpression likeName(String name) {
-    if (!StringUtils.hasText(name)) {
-      return null;
-    }
-    return cafe.name.contains(name);
-  }
-
-  public BooleanExpression eqUserId(Long userId) {
-    if(userId == null || userId <= 0) {
-      return null;
-    }
-    return cafe.user.id.eq(userId);
-  }
-
-  public BooleanExpression eqRegion(String region) {
-    if (region == null || region.isEmpty()) {
-      return null;
-    }
-    return cafe.region.eq(region);
-  }
-
-  public BooleanExpression loeSize(Integer size) {
-    if (size == null || size < 0) {
-      return null;
-    }
-    return cafe.size.loe(size);
-  }
 
   public BooleanExpression parking(Boolean parking) {
     if (parking == null) {
@@ -60,90 +32,6 @@ public class CafeCondition {
       return cafe.parking.isTrue();
     } else {
       return cafe.parking.isFalse();
-    }
-  }
-
-  public BooleanExpression existCareService(Boolean careService) {
-    if (careService == null) {
-      return null;
-    }
-
-    if (careService) {
-      return cafe.careService.isTrue();
-    } else {
-      return cafe.careService.isFalse();
-    }
-  }
-
-  public BooleanExpression existSwimmingPool(Boolean swimmingPool) {
-    if (swimmingPool == null) {
-      return null;
-    }
-
-    if (swimmingPool) {
-      return cafe.swimmingPool.isTrue();
-    } else {
-      return cafe.swimmingPool.isFalse();
-    }
-  }
-
-  public BooleanExpression existClothesRental(Boolean clothesRental) {
-    if (clothesRental == null) {
-      return null;
-    }
-
-    if (clothesRental) {
-      return cafe.clothesRental.isTrue();
-    } else {
-      return cafe.clothesRental.isFalse();
-    }
-  }
-
-  public BooleanExpression existMonitoring(Boolean monitoring) {
-    if (monitoring == null) {
-      return null;
-    }
-
-    if (monitoring) {
-      return cafe.monitoring.isTrue();
-    } else {
-      return cafe.monitoring.isFalse();
-    }
-  }
-
-  public BooleanExpression existFeedingRoom(Boolean feedingRoom) {
-    if (feedingRoom == null) {
-      return null;
-    }
-
-    if (feedingRoom) {
-      return cafe.feedingRoom.isTrue();
-    } else {
-      return cafe.feedingRoom.isFalse();
-    }
-  }
-
-  public BooleanExpression existOutdoorPlayground(Boolean playground) {
-    if (playground == null) {
-      return null;
-    }
-
-    if (playground) {
-      return cafe.outdoorPlayground.isTrue();
-    } else {
-      return cafe.outdoorPlayground.isFalse();
-    }
-  }
-
-  public BooleanExpression existSafetyGuard(Boolean safetyGuard) {
-    if (safetyGuard == null) {
-      return null;
-    }
-
-    if (safetyGuard) {
-      return cafe.safetyGuard.isTrue();
-    } else {
-      return cafe.safetyGuard.isFalse();
     }
   }
 
@@ -188,30 +76,6 @@ public class CafeCondition {
       innerBuilder.and(cafe.dayOff.contains(day));
     }
     return innerBuilder.getValue();
-  }
-
-  public BooleanExpression existRestaurant(Boolean restaurant) {
-    if (restaurant == null) {
-      return null;
-    }
-
-    if (restaurant) {
-      return cafe.restaurant.isTrue();
-    } else {
-      return cafe.restaurant.isFalse();
-    }
-  }
-
-  public BooleanExpression multiFamily(Boolean multiFamily) {
-    if (multiFamily == null) {
-      return null;
-    }
-
-    if (multiFamily) {
-      return cafe.multiFamily.isTrue();
-    } else {
-      return cafe.multiFamily.isFalse();
-    }
   }
 
   public BooleanExpression goeOpenedAt(LocalTime openedAt) {

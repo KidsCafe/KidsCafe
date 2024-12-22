@@ -62,7 +62,7 @@ public class CafeService {
 
   public CafeDetailResponseDto findCafe(Long cafeId) {
     CafeResponseDto cafeResponseDto = cafeRepository.findCafeById(cafeId);
-    return createCafeDetailInfo(cafeResponseDto);
+    return findCafeDetailInfo(cafeResponseDto);
   }
 
   @Transactional
@@ -109,7 +109,7 @@ public class CafeService {
     cafe.initPricePolicies(requestDto.convertDtoToEntityByPricePolicy(cafe));
   }
 
-  private CafeDetailResponseDto createCafeDetailInfo(CafeResponseDto cafeResponseDto) {
+  private CafeDetailResponseDto findCafeDetailInfo(CafeResponseDto cafeResponseDto) {
     if (cafeResponseDto == null) {
       return null;
     }
