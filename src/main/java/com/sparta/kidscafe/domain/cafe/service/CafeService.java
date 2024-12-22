@@ -88,18 +88,18 @@ public class CafeService {
     cafeRepository.deleteAll(cafes);
   }
 
-  public void saveCafeImage(Cafe cafe, List<Long> images) {
-    List<CafeImage> cafeImages = cafeImageRepository.findAllById(images);
-    for (CafeImage cafeImage : cafeImages) {
-      cafeImage.update(cafe.getId());
-    }
-  }
-
   private Cafe saveCafe(CafeRequestDto requestDto, User user) {
     Point location = mapService.convertAddressToGeo(requestDto.getAddress());
     Cafe cafe = requestDto.convertDtoToEntity(user, location);
     cafeRepository.save(cafe);
     return cafe;
+  }
+
+  public void saveCafeImage(Cafe cafe, List<Long> images) {
+    List<CafeImage> cafeImages = cafeImageRepository.findAllById(images);
+    for (CafeImage cafeImage : cafeImages) {
+      cafeImage.update(cafe.getId());
+    }
   }
 
   private void saveCafeDetailInfo(CafeRequestDto requestDto, Cafe cafe) {

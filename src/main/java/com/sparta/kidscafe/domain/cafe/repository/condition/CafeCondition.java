@@ -66,20 +66,6 @@ public class CafeCondition extends BaseCondition {
     return innerBuilder.getValue();
   }
 
-  public BooleanExpression goeOpenedAt(LocalTime openedAt) {
-    if (openedAt == null) {
-      return null;
-    }
-    return cafe.openedAt.goe(openedAt);
-  }
-
-  public BooleanExpression loeClosedAt(LocalTime closedAt) {
-    if (closedAt == null) {
-      return null;
-    }
-    return cafe.closedAt.loe(closedAt);
-  }
-
   public BooleanExpression withInRadius(CafeSearchCondition condition) {
     Double lat = condition.getLat();
     Double lon = condition.getLon();
