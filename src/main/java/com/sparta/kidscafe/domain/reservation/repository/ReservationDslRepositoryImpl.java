@@ -61,7 +61,7 @@ public class ReservationDslRepositoryImpl implements ReservationDslRepository {
     return queryFactory
         .select(room.maxCount)
         .from(room)
-        .where(roomCondition.eqId(condition.getRoomId()));
+        .where(roomCondition.eq(room.id, condition.getRoomId()));
   }
 
   private JPQLQuery<Long> reservationRoomIdQuery(ReservationSearchCondition condition) {

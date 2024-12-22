@@ -12,4 +12,6 @@ public interface CafeDslRepository {
   Page<CafeSimpleResponseDto> findAllByCafeSimple(CafeSearchCondition condition);
 
   Page<CafeResponseDto> findAllByCafe(CafeSearchCondition condition);
+
+  long searchTotalCount(CafeSearchCondition condition);
 }

@@ -56,8 +56,8 @@ public class CafeDslRepositoryImpl implements CafeDslRepository {
 
   @Override
   public Page<CafeSimpleResponseDto> findAllByCafeSimple(CafeSearchCondition condition) {
-    long cntTotal = searchCafeTotalCount(condition);
-    if (cntTotal == 0) {
+    long cntTotal = searchTotalCount(condition);
+    if (cntTotal <= 0) {
       return Page.empty();
     }
 
@@ -68,13 +68,13 @@ public class CafeDslRepositoryImpl implements CafeDslRepository {
         .having(makeHaving(condition))
         .orderBy(makeOrderBy(condition));
 
-    List<CafeSimpleResponseDto> cafes = makePaging(query, condition).fetch();
+    List<CafeSimpleResponseDto> cafes = cafeCondition.makePaging(query, condition.getPageable()).fetch();
     return new PageImpl<>(cafes, condition.getPageable(), cntTotal);
   }
 
   @Override
   public Page<CafeResponseDto> findAllByCafe(CafeSearchCondition condition) {
-    long cntTotal = searchCafeTotalCount(condition);
+    long cntTotal = searchTotalCount(condition);
     if (cntTotal == 0) {
       return Page.empty();
     }
@@ -86,11 +86,12 @@ public class CafeDslRepositoryImpl implements CafeDslRepository {
         .having(makeHaving(condition))
         .orderBy(makeOrderBy(condition));
 
-    List<CafeResponseDto> cafes = makePaging(query, condition).fetch();
+    List<CafeResponseDto> cafes = cafeCondition.makePaging(query, condition.getPageable()).fetch();
     return new PageImpl<>(cafes, condition.getPageable(), cntTotal);
   }
 
-  private long searchCafeTotalCount(CafeSearchCondition condition) {
+  @Override
+  public long searchTotalCount(CafeSearchCondition condition) {
     return Optional.ofNullable(queryFactory
         .select(cafe.id.countDistinct())
         .from(cafe)
@@ -102,6 +103,57 @@ public class CafeDslRepositoryImpl implements CafeDslRepository {
         .groupBy(cafe.id)
         .having(makeHaving(condition))
         .fetchFirst()).orElse(0L);
+  }
+
+  private BooleanBuilder makeWhere(CafeSearchCondition condition) {
+    return new BooleanBuilder()
+        .and(cafeCondition.eq(cafe.user.id, condition.getUserId()))
+        .and(cafeCondition.contains(cafe.name, condition.getName()))
+        .and(cafeCondition.eq(cafe.region, condition.getRegion()))
+        .and(cafeCondition.loe(cafe.size, condition.getSize()))
+        .and(cafeCondition.isTrue(cafe.multiFamily, condition.getMultiFamily()))
+        .and(cafeCondition.isTrue(cafe.parking, condition.getParking()))
+        .and(cafeCondition.isTrue(cafe.restaurant, condition.getExistRestaurant()))
+        .and(cafeCondition.isTrue(cafe.careService, condition.getExistCareService()))
+        .and(cafeCondition.isTrue(cafe.swimmingPool, condition.getExistSwimmingPool()))
+        .and(cafeCondition.isTrue(cafe.clothesRental, condition.getExistClothesRental()))
+        .and(cafeCondition.isTrue(cafe.monitoring, condition.getExistMonitoring()))
+        .and(cafeCondition.isTrue(cafe.feedingRoom, condition.getExistFeedingRoom()))
+        .and(cafeCondition.isTrue(cafe.outdoorPlayground, condition.getExistOutdoorPlayground()))
+        .and(cafeCondition.isTrue(cafe.safetyGuard, condition.getExistSafetyGuard()))
+        .and(cafeCondition.goe(cafe.openedAt, condition.getOpenedAt()))
+        .and(cafeCondition.loe(cafe.closedAt, condition.getClosedAt()))
+        .and(cafeCondition.isOpening(condition.getOpening()))
+        .and(cafeCondition.withInRadius(condition))
+        .and(feeCondition.ageGroup(condition))
+        .and(feeCondition.adultPrice(condition.getAdultPrice()));
+  }
+
+  private BooleanBuilder makeHaving(CafeSearchCondition condition) {
+    BooleanBuilder builder = new BooleanBuilder();
+    builder.and(reviewCondition.betweenAvgStar(condition));
+    builder.and(roomCondition.existRoom(condition.getExistRoom()));
+    builder.and(lessonCondition.existLesson(condition.getExistLesson()));
+    return builder;
+  }
+
+  private OrderSpecifier<?> makeOrderBy(CafeSearchCondition condition) {
+    Order order = condition.isAsc() ? Order.ASC : Order.DESC;
+    Expression<?> expression = makeOrderBy(condition.getSortBy());
+    if (expression instanceof ComparableExpressionBase<?> orderExpression) {
+      return new OrderSpecifier<>(order, orderExpression);
+    }
+
+    return new OrderSpecifier<>(Order.ASC, Expressions.constant(1));
+  }
+
+  private Expression<?> makeOrderBy(CafeSearchSortBy sortBy) {
+    return switch (sortBy) {
+      case REVIEW_COUNT -> review.id.count();
+      case REVIEW_AVG -> review.star.avg();
+      case ROOM_EXIST -> roomCondition.selectExistRoom();
+      default -> cafe.name;
+    };
   }
 
   private JPAQuery<CafeSimpleResponseDto> simpleBaseQuery() {
@@ -151,65 +203,5 @@ public class CafeDslRepositoryImpl implements CafeDslRepository {
         .leftJoin(review).on(review.cafe.eq(cafe))
         .leftJoin(room).on(room.cafe.eq(cafe))
         .leftJoin(lesson).on(lesson.cafe.eq(cafe));
-  }
-
-  private BooleanBuilder makeWhere(CafeSearchCondition condition) {
-    return new BooleanBuilder()
-        .and(cafeCondition.eq(cafe.user.id, condition.getUserId()))
-        .and(cafeCondition.contains(cafe.name, condition.getName()))
-        .and(cafeCondition.eq(cafe.region, condition.getRegion()))
-        .and(cafeCondition.loe(cafe.size, condition.getSize()))
-        .and(cafeCondition.isTrue(cafe.multiFamily, condition.getMultiFamily()))
-        .and(cafeCondition.isTrue(cafe.parking, condition.getParking()))
-        .and(cafeCondition.isTrue(cafe.restaurant, condition.getExistRestaurant()))
-        .and(cafeCondition.isTrue(cafe.careService, condition.getExistCareService()))
-        .and(cafeCondition.isTrue(cafe.swimmingPool, condition.getExistSwimmingPool()))
-        .and(cafeCondition.isTrue(cafe.clothesRental, condition.getExistClothesRental()))
-        .and(cafeCondition.isTrue(cafe.monitoring, condition.getExistMonitoring()))
-        .and(cafeCondition.isTrue(cafe.feedingRoom, condition.getExistFeedingRoom()))
-        .and(cafeCondition.isTrue(cafe.outdoorPlayground, condition.getExistOutdoorPlayground()))
-        .and(cafeCondition.isTrue(cafe.safetyGuard, condition.getExistSafetyGuard()))
-        .and(cafeCondition.isOpening(condition.getOpening()))
-        .and(cafeCondition.goeOpenedAt(condition.getOpenedAt()))
-        .and(cafeCondition.loeClosedAt(condition.getClosedAt()))
-        .and(cafeCondition.withInRadius(condition))
-        .and(feeCondition.ageGroup(condition))
-        .and(feeCondition.adultPrice(condition.getAdultPrice()));
-  }
-
-  private BooleanBuilder makeHaving(CafeSearchCondition condition) {
-    BooleanBuilder builder = new BooleanBuilder();
-    builder.and(reviewCondition.betweenAvgStar(condition));
-    builder.and(roomCondition.existRoom(condition.getExistRoom()));
-    builder.and(lessonCondition.existLesson(condition.getExistLesson()));
-    return builder;
-  }
-
-  private OrderSpecifier<?> makeOrderBy(CafeSearchCondition condition) {
-    Order order = condition.isAsc() ? Order.ASC : Order.DESC;
-    Expression<?> expression = makeOrderBy(condition.getSortBy());
-    if (expression instanceof ComparableExpressionBase<?> orderExpression) {
-      return new OrderSpecifier<>(order, orderExpression);
-    }
-
-    return new OrderSpecifier<>(Order.ASC, Expressions.constant(1));
-  }
-
-  private Expression<?> makeOrderBy(CafeSearchSortBy sortBy) {
-    return switch (sortBy) {
-      case REVIEW_COUNT -> review.id.count();
-      case REVIEW_AVG -> review.star.avg();
-      case ROOM_EXIST -> roomCondition.selectExistRoom();
-      default -> cafe.name;
-    };
-  }
-
-  private <T> JPAQuery<T> makePaging(JPAQuery<T> query, CafeSearchCondition condition) {
-    if (condition.getPageable() != null) {
-      query
-          .limit(condition.getPageable().getPageSize())
-          .offset(condition.getPageable().getOffset());
-    }
-    return query;
   }
 }

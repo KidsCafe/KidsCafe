@@ -23,18 +23,6 @@ public class CafeCondition extends BaseCondition {
   private final GeoUtil geoUtil;
   private final QCafe cafe = QCafe.cafe;
 
-  public BooleanExpression parking(Boolean parking) {
-    if (parking == null) {
-      return null;
-    }
-
-    if (parking) {
-      return cafe.parking.isTrue();
-    } else {
-      return cafe.parking.isFalse();
-    }
-  }
-
   public Predicate isOpening(Boolean opening) {
     if (opening == null || !opening) {
       return null;
@@ -79,25 +67,10 @@ public class CafeCondition extends BaseCondition {
   }
 
   public BooleanExpression goeOpenedAt(LocalTime openedAt) {
-    // goe 크거나 같음, loe 작거나 같음
     if (openedAt == null) {
       return null;
     }
     return cafe.openedAt.goe(openedAt);
-  }
-
-  public BooleanExpression loeOpenedAt(LocalTime openedAt) {
-    if (openedAt == null) {
-      return null;
-    }
-    return cafe.openedAt.loe(openedAt);
-  }
-
-  public BooleanExpression goeClosedAt(LocalTime closedAt) {
-    if (closedAt == null) {
-      return null;
-    }
-    return cafe.closedAt.goe(closedAt);
   }
 
   public BooleanExpression loeClosedAt(LocalTime closedAt) {
