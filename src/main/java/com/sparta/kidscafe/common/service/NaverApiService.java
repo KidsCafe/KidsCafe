@@ -18,8 +18,8 @@ public class NaverApiService {
 
   private static final Logger logger = LoggerFactory.getLogger(NaverApiService.class);
 
-  private final String CLIENT_ID = "zamhzkrtbo"; // 네이버 API Client ID
-  private final String CLIENT_SECRET = "4NV9jqLplbSBjSuoZc9AwI4sY6Df5w5feUaa5d7f"; // 네이버 API Client Secret
+  private final String CLIENT_ID = "zamhzkrtbo";
+  private final String CLIENT_SECRET = "4NV9jqLplbSBjSuoZc9AwI4sY6Df5w5feUaa5d7f";
 
   private final RestTemplate restTemplate;
 
@@ -27,12 +27,6 @@ public class NaverApiService {
     this.restTemplate = new RestTemplate();
   }
 
-  /**
-   * Geocoding API 호출 주소를 입력받아 위도(latitude)와 경도(longitude)를 반환합니다.
-   *
-   * @param address 검색할 주소
-   * @return 좌표 정보 (latitude, longitude)
-   */
   public Map<String, Object> getCoordinates(String address) {
     String apiUrl = "https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode";
     UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(apiUrl)
@@ -41,35 +35,23 @@ public class NaverApiService {
     return executeApiRequest(uriBuilder.toUriString(), "Geocoding API");
   }
 
-  /**
-   * Local Search API 호출 키워드를 입력받아 검색 결과를 반환합니다.
-   *
-   * @param keyword 검색 키워드
-   * @return 검색 결과 데이터
-   */
   public Map<String, Object> searchLocal(String keyword) {
-    String apiUrl = "https://naveropenapi.apigw.ntruss.com/search/local.json";
+    String apiUrl = "https://naveropenapi.apigw.ntruss.com/v1/search/local.json"; // 수정된 URL
     UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(apiUrl)
         .queryParam("query", keyword)
-        .queryParam("display", 10);
+        .queryParam("display", 10)
+        .queryParam("start", 1)
+        .queryParam("sort", "sim"); // 유사도순 정렬
 
     return executeApiRequest(uriBuilder.toUriString(), "Local Search API");
   }
 
-  /**
-   * 공통 API 요청 실행 메서드
-   *
-   * @param url     호출할 API URL
-   * @param apiName API 이름 (로그 출력용)
-   * @return API 응답 데이터
-   */
   private Map<String, Object> executeApiRequest(String url, String apiName) {
     HttpHeaders headers = createHeaders();
     HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
     try {
-      ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
-          Map.class);
+      ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, Map.class);
 
       if (response.getStatusCode() == HttpStatus.OK) {
         logger.info("{} 호출 성공: {}", apiName, url);
@@ -84,11 +66,6 @@ public class NaverApiService {
     }
   }
 
-  /**
-   * API 요청 헤더 생성
-   *
-   * @return 요청 헤더
-   */
   private HttpHeaders createHeaders() {
     HttpHeaders headers = new HttpHeaders();
     headers.set("X-NCP-APIGW-API-KEY-ID", CLIENT_ID);
