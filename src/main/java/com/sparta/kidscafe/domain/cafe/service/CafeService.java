@@ -1,6 +1,6 @@
 package com.sparta.kidscafe.domain.cafe.service;
 
-import com.sparta.kidscafe.api.address.MapService;
+import com.sparta.kidscafe.api.map.MapService;
 import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.util.valid.CafeValidationCheck;
 import com.sparta.kidscafe.common.util.valid.UserValidationCheck;
