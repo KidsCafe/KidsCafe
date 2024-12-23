@@ -1,9 +1,8 @@
 package com.sparta.kidscafe.domain.cafe.repository.condition;
 
+import java.time.LocalTime;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
-
-import java.time.LocalTime;
 
 @Getter
 @SuperBuilder(builderMethodName = "createBuilder")
