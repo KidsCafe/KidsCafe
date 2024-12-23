@@ -29,10 +29,25 @@ public class ListResponseDto<T> extends StatusDto {
         .build();
   }
 
+  public static <T> ListResponseDto<T> create(List<T> data) {
+    return ListResponseDto.<T>createResponseBuilder()
+        .data(data)
+        .status(createStatus(data).value())
+        .message(createMessage(data))
+        .build();
+  }
+
   private static <T> HttpStatus createStatus(List<T> data) {
     if(data == null || data.isEmpty())
       return HttpStatus.NOT_FOUND;
     else
       return HttpStatus.OK;
+  }
+
+  private static <T> String createMessage(List<T> data) {
+    if(data.isEmpty())
+      return "조회 결과가 없습니다.";
+    else
+      return "조회 성공";
   }
 }
