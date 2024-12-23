@@ -6,7 +6,6 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.sparta.kidscafe.common.enums.AgeGroup;
 import com.sparta.kidscafe.domain.cafe.repository.condition.CafeSearchCondition;
 import com.sparta.kidscafe.domain.fee.entity.QFee;
-import java.util.Arrays;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -29,7 +28,7 @@ public class FeeCondition {
   }
 
   public BooleanExpression eqCafeId(Long cafeId) {
-    if(cafeId == null)
+    if (cafeId == null)
       return null;
 
     return fee.cafe.id.eq(cafeId);

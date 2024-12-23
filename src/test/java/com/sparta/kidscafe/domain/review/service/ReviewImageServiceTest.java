@@ -1,44 +1,19 @@
 package com.sparta.kidscafe.domain.review.service;
 
-import static com.sparta.kidscafe.domain.cafe.entity.QCafeImage.cafeImage;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import com.sparta.kidscafe.common.dto.AuthUser;
-import com.sparta.kidscafe.common.dto.ListResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
 import com.sparta.kidscafe.common.enums.ImageType;
 import com.sparta.kidscafe.common.enums.RoleType;
 import com.sparta.kidscafe.common.util.FileStorageUtil;
-import com.sparta.kidscafe.common.util.valid.CafeValidationCheck;
-import com.sparta.kidscafe.domain.cafe.dto.request.CafeImageDeleteRequestDto;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
-import com.sparta.kidscafe.domain.cafe.entity.CafeImage;
-import com.sparta.kidscafe.domain.cafe.repository.CafeImageRepository;
-import com.sparta.kidscafe.domain.cafe.service.CafeImageService;
-import com.sparta.kidscafe.domain.image.dto.ImageResponseDto;
-import com.sparta.kidscafe.domain.image.service.ImageService;
 import com.sparta.kidscafe.domain.review.entity.Review;
 import com.sparta.kidscafe.domain.review.entity.ReviewImage;
 import com.sparta.kidscafe.domain.review.repository.ReviewImageRepository;
 import com.sparta.kidscafe.domain.review.repository.ReviewRepository;
 import com.sparta.kidscafe.domain.user.entity.User;
 import com.sparta.kidscafe.dummy.DummyCafe;
-import com.sparta.kidscafe.dummy.DummyCafeImage;
-import com.sparta.kidscafe.dummy.DummyReview;
 import com.sparta.kidscafe.dummy.DummyReviewImage;
 import com.sparta.kidscafe.dummy.DummyUser;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -48,21 +23,28 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
 public class ReviewImageServiceTest {
 
+  private final String dirPath = "http://sparta.com/mock/images";
   @InjectMocks
   private ReviewImageService reviewImageService;
-
   @Mock
   private FileStorageUtil fileUtil;
-
   @Mock
   private ReviewRepository reviewRepository;
-
   @Mock
   private ReviewImageRepository reviewImageRepository;
-
-  private final String dirPath = "http://sparta.com/mock/images";
 
   @BeforeEach
   void setUp() {
@@ -81,7 +63,7 @@ public class ReviewImageServiceTest {
     AuthUser authUser = createAuthUser();
     User user = DummyUser.createDummyUser(authUser.getRoleType());
     Cafe cafe = DummyCafe.createDummyCafe(user, reviewId);
-    Review review = new Review(1L, new User(1L,"test@gmail.com", RoleType.USER), cafe, 5, "Great!");
+    Review review = new Review(1L, new User(1L, "test@gmail.com", RoleType.USER), cafe, 5, "Great!");
 
     // given - image
     String imagePath = dirPath + "image.jpg";
@@ -115,7 +97,7 @@ public class ReviewImageServiceTest {
     AuthUser authUser = createAuthUser();
     User user = DummyUser.createDummyUser(authUser.getRoleType());
     Cafe cafe = DummyCafe.createDummyCafe(user, reviewId);
-    Review review = new Review(1L, new User(1L,"test@gmail.com", RoleType.USER), cafe, 5, "Great!");
+    Review review = new Review(1L, new User(1L, "test@gmail.com", RoleType.USER), cafe, 5, "Great!");
 
     // given - image
     Long imageId = 1L;

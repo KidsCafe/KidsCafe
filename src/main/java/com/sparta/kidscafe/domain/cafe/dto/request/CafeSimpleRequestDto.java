@@ -7,10 +7,13 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import java.time.LocalTime;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.locationtech.jts.geom.Point;
 
-@Data
+@Builder
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class CafeSimpleRequestDto {
@@ -35,21 +38,36 @@ public class CafeSimpleRequestDto {
   private boolean multiFamily;
   private boolean parking;
   private boolean restaurant;
+  private boolean careService;
+  private boolean swimmingPool;
+  private boolean clothesRental;
+  private boolean monitoring;
+  private boolean feedingRoom;
+  private boolean outdoorPlayground;
+  private boolean safetyGuard;
   private String hyperLink;
   private LocalTime openedAt;
   private LocalTime closedAt;
 
-  public Cafe convertDtoToEntityByCafe(User user) {
+  public Cafe convertDtoToEntity(User user, Point location) {
     return Cafe.builder()
         .user(user)
         .name(name)
         .region(region)
         .address(address)
+        .location(location)
         .size(size)
-        .multiFamily(multiFamily)
         .dayOff(dayOff)
+        .multiFamily(multiFamily)
         .parking(parking)
         .restaurant(restaurant)
+        .careService(careService)
+        .swimmingPool(swimmingPool)
+        .clothesRental(clothesRental)
+        .monitoring(monitoring)
+        .feedingRoom(feedingRoom)
+        .outdoorPlayground(outdoorPlayground)
+        .safetyGuard(safetyGuard)
         .hyperlink(hyperLink)
         .openedAt(openedAt)
         .closedAt(closedAt)

@@ -1,13 +1,5 @@
 package com.sparta.kidscafe.domain.image;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.enums.RoleType;
 import com.sparta.kidscafe.common.util.LocalFileStorageUtil;
@@ -17,13 +9,19 @@ import com.sparta.kidscafe.domain.image.service.ImageService;
 import com.sparta.kidscafe.dummy.DummyCafeImage;
 import com.sparta.kidscafe.exception.BusinessException;
 import com.sparta.kidscafe.exception.ErrorCode;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
 
 public class ImageServiceTest {
 

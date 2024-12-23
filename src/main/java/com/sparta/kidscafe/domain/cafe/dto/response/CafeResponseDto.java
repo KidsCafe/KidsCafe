@@ -2,32 +2,35 @@ package com.sparta.kidscafe.domain.cafe.dto.response;
 
 import com.querydsl.core.annotations.QueryProjection;
 import java.time.LocalTime;
-import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
-@Builder
 @Getter
+@Setter
+@AllArgsConstructor
 @NoArgsConstructor
-public class CafeResponseDto {
+@SuperBuilder(builderMethodName = "createBuilder")
+public class CafeResponseDto extends CafeSimpleResponseDto {
 
-  private Long id;
-  private String name;
   private String address;
   private Double longitude;
   private Double latitude;
   private int size;
-  private double star;
-  private Long reviewCount;
-  private String dayOff;
   private boolean multiFamily;
-  private boolean existRoom;
-  private boolean existLesson;
   private boolean parking;
   private boolean existRestaurant;
-  private String hyperLink;
-  private LocalTime openedAt;
-  private LocalTime closedAt;
+  private boolean existCareService;
+  private boolean existSwimmingPool;
+  private boolean existClothesRental;
+  private boolean existMonitoring;
+  private boolean existFeedingRoom;
+  private boolean existOutdoorPlayground;
+  private boolean existSafetyGuard;
+  private boolean existRoom;
+  private boolean existLesson;
 
   @QueryProjection
   public CafeResponseDto(
@@ -41,29 +44,43 @@ public class CafeResponseDto {
       Long reviewCount,
       String dayOff,
       boolean multiFamily,
-      boolean existRoom,
-      boolean existLesson,
       boolean parking,
       boolean existRestaurant,
+      boolean existCareService,
+      boolean existSwimmingPool,
+      boolean existClothesRental,
+      boolean existMonitoring,
+      boolean existFeedingRoom,
+      boolean existOutdoorPlayground,
+      boolean existSafetyGuard,
+      boolean existRoom,
+      boolean existLesson,
       String hyperLink,
       LocalTime openedAt,
       LocalTime closedAt) {
-    this.id = id;
-    this.name = name;
+    setId(id);
+    setName(name);
     this.address = address;
     this.longitude = longitude;
     this.latitude = latitude;
     this.size = size;
-    this.star = star;
-    this.reviewCount = reviewCount;
-    this.dayOff = dayOff;
+    setStar(star);
+    setReviewCount(reviewCount);
+    setDayOff(dayOff);
     this.multiFamily = multiFamily;
-    this.existRoom = existRoom;
-    this.existLesson = existLesson;
     this.parking = parking;
     this.existRestaurant = existRestaurant;
-    this.hyperLink = hyperLink;
-    this.openedAt = openedAt;
-    this.closedAt = closedAt;
+    this.existCareService = existCareService;
+    this.existSwimmingPool = existSwimmingPool;
+    this.existClothesRental = existClothesRental;
+    this.existMonitoring = existMonitoring;
+    this.existFeedingRoom = existFeedingRoom;
+    this.existOutdoorPlayground = existOutdoorPlayground;
+    this.existSafetyGuard = existSafetyGuard;
+    this.existRoom = existRoom;
+    this.existLesson = existLesson;
+    setHyperLink(hyperLink);
+    setOpenedAt(openedAt);
+    setClosedAt(closedAt);
   }
 }

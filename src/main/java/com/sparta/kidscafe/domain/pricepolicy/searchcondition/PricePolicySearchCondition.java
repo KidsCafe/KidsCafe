@@ -14,24 +14,24 @@ import java.util.Locale;
 @Getter
 public class PricePolicySearchCondition {
 
-    private Long cafeId;
-    private TargetType targetType;
-    private Long targetId;
-    private String working;
+  private Long cafeId;
+  private TargetType targetType;
+  private Long targetId;
+  private String working;
 
-    public static PricePolicySearchCondition create(
-            Reservation reservation,
-            ReservationDetail detail) {
-        // 예약 날짜
-        LocalDateTime startedAt = reservation.getStartedAt();
-        String today = startedAt
-                .getDayOfWeek()
-                .getDisplayName(TextStyle.SHORT, Locale.KOREAN);
+  public static PricePolicySearchCondition create(
+      Reservation reservation,
+      ReservationDetail detail) {
+    // 예약 날짜
+    LocalDateTime startedAt = reservation.getStartedAt();
+    String today = startedAt
+        .getDayOfWeek()
+        .getDisplayName(TextStyle.SHORT, Locale.KOREAN);
 
-        return PricePolicySearchCondition.builder()
-                .targetType(detail.getTargetType())
-                .targetId(detail.getTargetId())
-                .working(today)
-                .build();
-    }
+    return PricePolicySearchCondition.builder()
+        .targetType(detail.getTargetType())
+        .targetId(detail.getTargetId())
+        .working(today)
+        .build();
+  }
 }

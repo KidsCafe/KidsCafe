@@ -61,6 +61,9 @@ public enum ErrorCode {
   COUPON_TABLE_OWN_CREATE("COUPON_TABLE_OWN_CREATE", "사장님 본인 가게에만 쿠폰 발급이 가능합니다.", HttpStatus.FORBIDDEN),
   COUPON_NOT_FOUND("COUPON_NOT_FOUND", "해당 쿠폰을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 
+  // 활동 클래스 관련 에러
+  LESSON_NOT_FOUND("LESSON_NOT_FOUND", "해당 활동 클래스를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+
   // 공통 에러
   FAIL_ENCODING("FAIL_ENCODING", "잘못된 인코딩을 사용하였습니다.", HttpStatus.BAD_REQUEST),
   JSON_INVALID("JSON_INVALID", "잘못된 JSON형식 전송", HttpStatus.BAD_REQUEST),

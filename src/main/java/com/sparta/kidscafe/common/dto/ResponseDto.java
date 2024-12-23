@@ -19,4 +19,26 @@ public class ResponseDto<T> extends StatusDto{
         .status(status.value())
         .build();
   }
+
+  public static <T> ResponseDto<T> create(T data) {
+    return ResponseDto.<T>createResponseBuilder()
+        .data(data)
+        .message(createMessage(data))
+        .status(createStatus(data).value())
+        .build();
+  }
+
+  private static <T> String createMessage(T data) {
+    if(data == null)
+      return "조회 결과가 없습니다.";
+    else
+      return "조회 성공";
+  }
+
+  private static <T> HttpStatus createStatus(T data) {
+    if(data == null)
+      return HttpStatus.NOT_FOUND;
+    else
+      return HttpStatus.OK;
+  }
 }

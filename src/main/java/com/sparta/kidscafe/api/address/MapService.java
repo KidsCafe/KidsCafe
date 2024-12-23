@@ -1,7 +1,6 @@
 package com.sparta.kidscafe.api.address;
 
 import com.sparta.kidscafe.common.util.GeoUtil;
-import java.net.URI;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.locationtech.jts.geom.Point;
@@ -14,14 +13,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
+
 @Service
 public class MapService {
 
-  @Value("${kakao.rest-api-key}")
-  private String restApiKey;
-
   private final RestTemplate restTemplate;
   private final GeoUtil geoUtil;
+  @Value("${kakao.rest-api-key}")
+  private String restApiKey;
 
   public MapService(RestTemplateBuilder builder, GeoUtil geoUtil) {
     this.restTemplate = builder.build();
@@ -60,7 +60,7 @@ public class MapService {
   private Point fromJsonToAddress(String responseEntity) {
     JSONObject jsonObject = new JSONObject(responseEntity);
     JSONArray documents = jsonObject.getJSONArray("documents");
-    if(documents.isEmpty())
+    if (documents.isEmpty())
       return null;
 
     JSONObject address = documents.getJSONObject(0);

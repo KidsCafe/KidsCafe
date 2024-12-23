@@ -1,9 +1,5 @@
 package com.sparta.kidscafe.domain.room.service;
 
-import static com.sparta.kidscafe.exception.ErrorCode.CAFE_NOT_FOUND;
-import static com.sparta.kidscafe.exception.ErrorCode.FORBIDDEN;
-import static com.sparta.kidscafe.exception.ErrorCode.ROOM_NOT_FOUND;
-
 import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.ListResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
@@ -14,12 +10,14 @@ import com.sparta.kidscafe.domain.room.dto.response.RoomResponseDto;
 import com.sparta.kidscafe.domain.room.entity.Room;
 import com.sparta.kidscafe.domain.room.repository.RoomRepository;
 import com.sparta.kidscafe.exception.BusinessException;
-import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+import static com.sparta.kidscafe.exception.ErrorCode.*;
 
 @Transactional
 @Service
@@ -33,7 +31,7 @@ public class RoomService {
 
     Long id = authUser.getId();
 
-    Cafe cafe = cafeRepository.findById(cafeId).orElseThrow(()-> new BusinessException(CAFE_NOT_FOUND));
+    Cafe cafe = cafeRepository.findById(cafeId).orElseThrow(() -> new BusinessException(CAFE_NOT_FOUND));
 
     if (!id.equals(cafe.getUser().getId())) {
       throw new BusinessException(FORBIDDEN);
@@ -52,13 +50,13 @@ public class RoomService {
   @Transactional(readOnly = true)
   public ListResponseDto<RoomResponseDto> getRooms(Long cafeId) {
 
-    cafeRepository.findById(cafeId).orElseThrow(()-> new BusinessException(CAFE_NOT_FOUND));
+    cafeRepository.findById(cafeId).orElseThrow(() -> new BusinessException(CAFE_NOT_FOUND));
 
     List<Room> roomList = roomRepository.findAllByCafeId(cafeId);
 
     return ListResponseDto.success(roomList.stream()
-        .map(RoomResponseDto::from)
-        .toList(),
+            .map(RoomResponseDto::from)
+            .toList(),
         HttpStatus.OK,
         "룸 조회 성공");
   }
@@ -67,7 +65,7 @@ public class RoomService {
 
     Long id = authUser.getId();
 
-    Room room = roomRepository.findById(roomId).orElseThrow(()-> new BusinessException(ROOM_NOT_FOUND));
+    Room room = roomRepository.findById(roomId).orElseThrow(() -> new BusinessException(ROOM_NOT_FOUND));
 
     //캐싱적용 가능 부분
     if (!id.equals(room.getCafe().getUser().getId())) {
@@ -86,7 +84,7 @@ public class RoomService {
 
     Long id = authUser.getId();
 
-    Room room = roomRepository.findById(roomId).orElseThrow(()-> new BusinessException(ROOM_NOT_FOUND));
+    Room room = roomRepository.findById(roomId).orElseThrow(() -> new BusinessException(ROOM_NOT_FOUND));
 
     //캐싱적용 가능 부분
     if (!id.equals(room.getCafe().getUser().getId())) {

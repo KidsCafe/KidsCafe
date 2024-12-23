@@ -7,11 +7,11 @@ import java.util.List;
 
 public interface PricePolicyRepository extends JpaRepository<PricePolicy, Long>, PricePolicyDslRepository {
 
-    List<PricePolicy> findAllByCafeId(Long cafeId);
+  List<PricePolicy> findAllByCafeId(Long cafeId);
 
-    List<PricePolicy> findAllByCafeIdAndTargetId(Long cafeId, Long targetId);
+  List<PricePolicy> findAllByCafeIdAndTargetId(Long cafeId, Long targetId);
 
-    boolean existsByCafeId(Long cafeId);
+  boolean existsByCafeId(Long cafeId);
 
-    List<PricePolicy> findByCafeIdAndDayTypeContains(Long cafeId, String dayType);
+  List<PricePolicy> findByCafeIdAndDayTypeContains(Long cafeId, String dayType);
 }
