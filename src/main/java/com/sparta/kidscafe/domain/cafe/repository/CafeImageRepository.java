@@ -10,4 +10,6 @@ public interface CafeImageRepository extends JpaRepository<CafeImage, Long> {
   List<CafeImage> findAllByCafeId(Long cafeId);
 
   void deleteByCafeId(Long cafeId);
+
+  boolean existsByCafeId(Long cafeId);
 }
