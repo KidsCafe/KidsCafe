@@ -127,7 +127,7 @@ public class CafeCrawlerService {
   }
 
   private CafeResponseDto mapToResponseDto(Cafe cafe) {
-    return CafeResponseDto.builder()
+    return CafeResponseDto.createBuilder()
         .id(cafe.getId())
         .name(cafe.getName())
         .address(cafe.getAddress())
