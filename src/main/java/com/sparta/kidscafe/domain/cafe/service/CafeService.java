@@ -12,6 +12,7 @@ import com.sparta.kidscafe.domain.cafe.dto.request.CafeSimpleRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafesSimpleCreateRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeDetailResponseDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeResponseDto;
+import com.sparta.kidscafe.domain.cafe.dto.response.CafeSearchResponseDto;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
 import com.sparta.kidscafe.domain.cafe.entity.CafeImage;
 import com.sparta.kidscafe.domain.cafe.repository.CafeImageRepository;
@@ -27,9 +28,12 @@ import com.sparta.kidscafe.domain.room.entity.Room;
 import com.sparta.kidscafe.domain.room.repository.RoomRepository;
 import com.sparta.kidscafe.domain.user.entity.User;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.Point;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -171,4 +175,17 @@ public class CafeService {
     cafeDetailResponseDto.setPricePolicies(pricePolicies);
     return cafeDetailResponseDto;
   }
+
+  // DB 검색
+//  public PageResponseDto<CafeSearchResponseDto> searchCafeV1(String name, int page, int size) {
+//    Pageable pageable = PageRequest.of(page, size);
+//    Page<Cafe> cafePage = cafeRepository.findByNameContaining(name, pageable);
+//    Page<CafeSearchResponseDto> cafes = cafePage
+//        .map(cafe -> new CafeSearchResponseDto(
+//            cafe.getId(),
+//            cafe.getName(),
+//            cafe.getAddress()
+//        ));
+//    return PageResponseDto.success(cafes, HttpStatus.OK, "카페 검색 성공");
+//  }
 }
