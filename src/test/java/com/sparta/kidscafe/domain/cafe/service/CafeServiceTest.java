@@ -100,6 +100,7 @@ class CafeServiceTest {
     when(requestCafe.convertDtoToEntityByPricePolicy(cafe)).thenReturn(Collections.singletonList(mock(PricePolicy.class)));
 
     when(userValidationCheck.findUser(authUser.getId())).thenReturn(user);
+    doNothing().when(cafeValidationCheck).validOverMaximum(authUser.getId());
     when(mapService.convertAddressToGeo(cafe.getAddress())).thenReturn(null);
     when(cafeRepository.save(any(Cafe.class))).thenReturn(cafe);
 
@@ -108,6 +109,7 @@ class CafeServiceTest {
 
     // then
     verify(userValidationCheck).findUser(authUser.getId());
+    verify(cafeValidationCheck).validOverMaximum(authUser.getId());
     verify(cafeRepository).save(any(Cafe.class));
     verify(cafeImageRepository).findAllById(requestCafe.getImages());
   }

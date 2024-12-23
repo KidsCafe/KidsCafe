@@ -36,6 +36,7 @@ public class CafeService {
   @Transactional
   public void createCafe(AuthUser authUser, CafeRequestDto requestDto) {
     User user = userValidationCheck.findUser(authUser.getId());
+    cafeValidationCheck.validOverMaximum(authUser.getId());
     Cafe cafe = saveCafe(requestDto, user);
     saveCafeImage(cafe, requestDto.getImages());
     saveCafeDetailInfo(requestDto, cafe);

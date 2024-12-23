@@ -7,6 +7,8 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.sparta.kidscafe.common.enums.ImageType;
 import com.sparta.kidscafe.exception.BusinessException;
 import com.sparta.kidscafe.exception.ErrorCode;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,11 +24,10 @@ public class S3FileStorageUtil implements FileStorageUtil {
 
   @Override
   public String makeDirectory(ImageType imageType, Long id) {
-    String dirPath = id
+    return id
         + "/"
         + imageType.toString().toLowerCase()
         + "/";
-    return dirPath;
   }
 
   @Override
@@ -37,6 +38,8 @@ public class S3FileStorageUtil implements FileStorageUtil {
 
     try {
       amazonS3.putObject(bucket, uploadPath, image.getInputStream(), metadata);
+      String path = amazonS3.getUrl(bucket, uploadPath).toString();
+      return URLDecoder.decode(path, StandardCharsets.UTF_8);
     } catch (AmazonS3Exception e) {
       throw new BusinessException(ErrorCode.IMAGE_S3_UPLOAD_FAILED);
     } catch (SdkClientException e) {
@@ -44,8 +47,6 @@ public class S3FileStorageUtil implements FileStorageUtil {
     } catch (Exception e) {
       throw new BusinessException(ErrorCode.IMAGE_UPLOAD_FAILED);
     }
-
-    return amazonS3.getUrl(bucket, uploadPath).toString();
   }
 
   @Override
