@@ -1,13 +1,13 @@
 package com.sparta.kidscafe.dummy;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.sparta.kidscafe.common.enums.LoginType;
 import com.sparta.kidscafe.common.enums.RoleType;
 import com.sparta.kidscafe.common.util.PasswordEncoder;
 import com.sparta.kidscafe.common.util.TestUtil;
 import com.sparta.kidscafe.domain.user.entity.User;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DummyUser {
 

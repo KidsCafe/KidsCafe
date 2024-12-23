@@ -18,22 +18,22 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class UserOwnerController {
 
-    private final UserOwnerService userOwnerService;
+  private final UserOwnerService userOwnerService;
 
-    @GetMapping("/api/owners/users")
-    public ResponseEntity<ListResponseDto<UserResponseDto>> getUsersWhoFavoritedOwner(
-            @Auth AuthUser authUser,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
-        // 인증된 사용자 정보 활용 (OWNER 권한 확인)
-        if (authUser.getRoleType() != RoleType.OWNER) {
-            throw new BusinessException(ErrorCode.FORBIDDEN);
-        }
-
-        // UserOwnerService에서 ListResponseDto 반환
-        ListResponseDto<UserResponseDto> responseDto = userOwnerService.getUsersWhoFavoritedOwner(authUser, page, size);
-
-        return ResponseEntity.ok(responseDto);
+  @GetMapping("/api/owners/users")
+  public ResponseEntity<ListResponseDto<UserResponseDto>> getUsersWhoFavoritedOwner(
+      @Auth AuthUser authUser,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size
+  ) {
+    // 인증된 사용자 정보 활용 (OWNER 권한 확인)
+    if (authUser.getRoleType() != RoleType.OWNER) {
+      throw new BusinessException(ErrorCode.FORBIDDEN);
     }
+
+    // UserOwnerService에서 ListResponseDto 반환
+    ListResponseDto<UserResponseDto> responseDto = userOwnerService.getUsersWhoFavoritedOwner(authUser, page, size);
+
+    return ResponseEntity.ok(responseDto);
+  }
 }

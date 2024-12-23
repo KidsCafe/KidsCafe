@@ -13,7 +13,7 @@ public class ReviewCondition {
   private final QReview review = QReview.review;
 
   public BooleanExpression betweenAvgStar(CafeSearchCondition condition) {
-    if(condition.getMinStar() == null || condition.getMaxStar() == null) {
+    if (condition.getMinStar() == null || condition.getMaxStar() == null) {
       return null;
     }
 

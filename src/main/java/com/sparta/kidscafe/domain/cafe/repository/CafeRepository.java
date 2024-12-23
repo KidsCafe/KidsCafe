@@ -1,6 +1,8 @@
 package com.sparta.kidscafe.domain.cafe.repository;
 
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
+import org.springframework.data.jpa.repository.JpaRepository;
+
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
@@ -21,4 +23,7 @@ public interface CafeRepository extends JpaRepository<Cafe, Long>, CafeDslReposi
 //  List<Cafe> findByKeyword(@Param("keyword") String keyword);
 
 //  Page<Cafe> findByNameContaining(String name, Pageable pageable);
+}
+
+  List<Cafe> findAllByRegion(String region);
 }

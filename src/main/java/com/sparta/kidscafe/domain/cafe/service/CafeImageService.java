@@ -26,13 +26,8 @@ public class CafeImageService {
   private final FileStorageUtil fileStorage;
 
   @Transactional
-  public ListResponseDto<ImageResponseDto> uploadCafeImage(AuthUser authUser,
-      Long cafeId, List<MultipartFile> images) {
-    List<ImageResponseDto> responseImages = uploadCafeImage(authUser.getId(), cafeId, images);
-    return ListResponseDto.success(
-        responseImages,
-        HttpStatus.CREATED,
-        "이미지 [" + images.size() + "]장 등록 성공");
+  public List<ImageResponseDto> uploadCafeImage(AuthUser authUser, Long cafeId, List<MultipartFile> images) {
+    return uploadCafeImage(authUser.getId(), cafeId, images);
   }
 
   @Transactional
@@ -44,8 +39,7 @@ public class CafeImageService {
     }
   }
 
-  private List<ImageResponseDto> uploadCafeImage(Long userId, Long cafeId,
-      List<MultipartFile> images) {
+  private List<ImageResponseDto> uploadCafeImage(Long userId, Long cafeId, List<MultipartFile> images) {
     List<ImageResponseDto> responseImages = new ArrayList<>();
     for (MultipartFile image : images) {
       String imagePath = uploadCafeImage(userId, image);

@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 public class UserValidationCheck {
   private final UserRepository userRepository;
 
-  public User validMy(Long userId) {
+  public User findUser(Long userId) {
     return userRepository.findById(userId)
         .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
   }

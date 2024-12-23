@@ -18,22 +18,22 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class UserAdminController {
 
-    private final UserAdminService userAdminService;
+  private final UserAdminService userAdminService;
 
-    @GetMapping("/api/admin/users")
-    public ResponseEntity<ListResponseDto<UserResponseDto>> getAdminUsers(
-            @Auth AuthUser authUser,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
-        // 인증된 사용자 정보 활용 (예: 관리자 권한 확인)
-        if (authUser.getRoleType() != RoleType.ADMIN) {
-            throw new BusinessException(ErrorCode.FORBIDDEN);
-        }
-
-        // UserAdminService에서 ListResponseDto 반환
-        ListResponseDto<UserResponseDto> responseDto = userAdminService.getAdminUsers(page, size);
-
-        return ResponseEntity.ok(responseDto);
+  @GetMapping("/api/admin/users")
+  public ResponseEntity<ListResponseDto<UserResponseDto>> getAdminUsers(
+      @Auth AuthUser authUser,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size
+  ) {
+    // 인증된 사용자 정보 활용 (예: 관리자 권한 확인)
+    if (authUser.getRoleType() != RoleType.ADMIN) {
+      throw new BusinessException(ErrorCode.FORBIDDEN);
     }
+
+    // UserAdminService에서 ListResponseDto 반환
+    ListResponseDto<UserResponseDto> responseDto = userAdminService.getAdminUsers(page, size);
+
+    return ResponseEntity.ok(responseDto);
+  }
 }

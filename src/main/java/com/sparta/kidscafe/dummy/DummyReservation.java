@@ -6,6 +6,7 @@ import com.sparta.kidscafe.domain.reservation.entity.Reservation;
 import com.sparta.kidscafe.domain.reservation.entity.ReservationDetail;
 import com.sparta.kidscafe.domain.reservation.enums.ReservationStatus;
 import com.sparta.kidscafe.domain.user.entity.User;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class DummyReservation {
     );
 
     LocalDateTime tempDateTime = randomStartedAt;
-    if(randomFinishedAt.isBefore(randomStartedAt)) {
+    if (randomFinishedAt.isBefore(randomStartedAt)) {
       randomStartedAt = randomFinishedAt;
       randomFinishedAt = tempDateTime;
     }

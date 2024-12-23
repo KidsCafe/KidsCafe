@@ -2,10 +2,12 @@ package com.sparta.kidscafe.domain.cafe.controller;
 
 import com.sparta.kidscafe.common.annotation.Auth;
 import com.sparta.kidscafe.common.dto.AuthUser;
+import com.sparta.kidscafe.common.dto.ListResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
 import com.sparta.kidscafe.common.util.valid.AuthValidationCheck;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeImageDeleteRequestDto;
 import com.sparta.kidscafe.domain.cafe.service.CafeImageService;
+import com.sparta.kidscafe.domain.image.dto.ImageResponseDto;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -34,9 +36,11 @@ public class CafeImageController {
       @RequestPart(value = "images") List<MultipartFile> images
   ) {
     Long parseId = StringUtils.hasText(cafeId) ? Long.parseLong(cafeId) : null;
+    List<ImageResponseDto> responseImages = cafeImageService.uploadCafeImage(authUser, parseId, images);
+    String message = "이미지 [" + images.size() + "]장 등록 성공";
     return ResponseEntity
         .status(HttpStatus.CREATED)
-        .body(cafeImageService.uploadCafeImage(authUser, parseId, images));
+        .body(ListResponseDto.create(responseImages,message));
   }
 
   @DeleteMapping("/cafes/images")

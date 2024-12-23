@@ -16,7 +16,7 @@ public enum ReservationStatus {
   private final boolean canBeCancelledByOwner;
 
   ReservationStatus(boolean isCancelled, boolean canBeCancelledByUser,
-      boolean canBeCancelledByOwner) {
+                    boolean canBeCancelledByOwner) {
     this.isCancelled = isCancelled;
     this.canBeCancelledByUser = canBeCancelledByUser;
     this.canBeCancelledByOwner = canBeCancelledByOwner;

@@ -4,10 +4,11 @@ import com.sparta.kidscafe.common.util.GeoUtil;
 import com.sparta.kidscafe.common.util.TestUtil;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
 import com.sparta.kidscafe.domain.user.entity.User;
+import org.locationtech.jts.geom.Point;
+
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import org.locationtech.jts.geom.Point;
 
 public class DummyCafe {
 
@@ -47,9 +48,9 @@ public class DummyCafe {
 
   public static List<Cafe> createDummyCafes(User owner, int size) {
     List<Cafe> cafes = new ArrayList<>();
-      for (int idx = 0; idx < size; idx++) {
-          cafes.add(createDummyCafe(owner, null));
-      }
+    for (int idx = 0; idx < size; idx++) {
+      cafes.add(createDummyCafe(owner, null));
+    }
     return cafes;
   }
 }

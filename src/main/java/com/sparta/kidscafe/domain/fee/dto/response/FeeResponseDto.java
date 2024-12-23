@@ -1,14 +1,13 @@
 package com.sparta.kidscafe.domain.fee.dto.response;
 
-import java.time.LocalDateTime;
-
 import com.sparta.kidscafe.common.enums.AgeGroup;
 import com.sparta.kidscafe.domain.fee.entity.Fee;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 @Builder
 @Getter

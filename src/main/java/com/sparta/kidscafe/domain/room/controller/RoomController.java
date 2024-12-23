@@ -12,14 +12,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,10 +23,10 @@ public class RoomController {
   private final ReviewService reviewService;
 
   @PostMapping("/cafes/{cafeId}/rooms")
-  public ResponseEntity<StatusDto> createRoom (
+  public ResponseEntity<StatusDto> createRoom(
       @Auth AuthUser authUser,
       @Valid @RequestBody RoomCreateRequestDto request,
-      @PathVariable ("cafeId") Long cafeId
+      @PathVariable("cafeId") Long cafeId
   ) {
     StatusDto response = roomService.createRoom(authUser, request, cafeId);
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -41,7 +34,7 @@ public class RoomController {
 
   @GetMapping("/cafes/{cafeId}/rooms")
   public ResponseEntity<ListResponseDto<RoomResponseDto>> getRooms(
-      @PathVariable ("cafeId") Long cafeId
+      @PathVariable("cafeId") Long cafeId
   ) {
     return ResponseEntity
         .status(HttpStatus.OK)
@@ -49,9 +42,9 @@ public class RoomController {
   }
 
   @PatchMapping("/cafes/rooms/{roomId}")
-  public ResponseEntity<StatusDto> updateRoom (
+  public ResponseEntity<StatusDto> updateRoom(
       @Auth AuthUser authUser,
-      @PathVariable ("roomId") Long roomId,
+      @PathVariable("roomId") Long roomId,
       @Valid @RequestBody RoomCreateRequestDto request
   ) {
     StatusDto response = roomService.updateRoom(authUser, roomId, request);
@@ -59,9 +52,9 @@ public class RoomController {
   }
 
   @DeleteMapping("/cafes/rooms/{roomId}")
-  public ResponseEntity<Void> deleteRoom (
+  public ResponseEntity<Void> deleteRoom(
       @Auth AuthUser authUser,
-      @PathVariable ("roomId") Long roomId
+      @PathVariable("roomId") Long roomId
   ) {
     roomService.deleteRoom(authUser, roomId);
     return ResponseEntity.noContent().build();
