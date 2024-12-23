@@ -4,15 +4,14 @@ import com.sparta.kidscafe.common.service.NaverApiService;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeResponseDto;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
 import com.sparta.kidscafe.domain.cafe.repository.CafeRepository;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 @Service
 public class CafeCrawlerService {
