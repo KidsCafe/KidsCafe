@@ -28,27 +28,38 @@ public class CafeCrawlerService {
     this.geometryFactory = new GeometryFactory();
   }
 
-  /**
-   * 부산시의 모든 구에 대해 키즈카페 데이터를 크롤링합니다.
-   */
-  public void crawlCafesByDistrict() {
-    String[] districts = {
-        "중구", "서구", "동구", "영도구", "부산진구", "동래구", "남구",
-        "북구", "해운대구", "사하구", "금정구", "강서구", "연제구", "수영구", "사상구"
+  public void crawlCafesNationwide() {
+    String[][] regions = {
+        {"서울특별시", "강남구", "서초구", "송파구", "강북구"},
+        {"부산광역시", "중구", "서구", "동구", "영도구"},
+        {"대구광역시", "중구", "동구", "서구", "남구"},
+        {"인천광역시", "중구", "동구", "남구", "부평구"},
+        {"대전광역시", "동구", "중구", "서구", "유성구"},
+        {"광주광역시", "동구", "서구", "남구", "북구"},
+        {"울산광역시", "중구", "남구", "동구", "북구"},
+        {"세종특별자치시"},
+        {"경기도", "수원시", "성남시", "의정부시", "안양시"},
+        {"강원도", "춘천시", "원주시", "강릉시"},
+        {"충청북도", "청주시", "충주시", "제천시"},
+        {"충청남도", "천안시", "공주시", "보령시"},
+        {"전라북도", "전주시", "군산시", "익산시"},
+        {"전라남도", "목포시", "여수시", "순천시"},
+        {"경상북도", "포항시", "경주시", "구미시"},
+        {"경상남도", "창원시", "진주시", "통영시"},
+        {"제주특별자치도", "제주시", "서귀포시"}
     };
 
-    for (String district : districts) {
-      crawlCafesByDistrict(district);
+    for (String[] region : regions) {
+      String city = region[0];
+      for (int i = 1; i < region.length; i++) {
+        String district = region[i];
+        crawlCafesByRegion(city, district);
+      }
     }
   }
 
-  /**
-   * 특정 구에 대해 키즈카페 데이터를 크롤링합니다.
-   *
-   * @param district 구 이름
-   */
-  public void crawlCafesByDistrict(String district) {
-    String keyword = district + " 키즈카페";
+  public void crawlCafesByRegion(String city, String district) {
+    String keyword = city + " " + district + " 키즈카페";
     Map<String, Object> searchResult = naverApiService.searchLocal(keyword);
 
     Object itemsObject = searchResult.get("items");
@@ -61,18 +72,13 @@ public class CafeCrawlerService {
 
     List<Cafe> cafeEntities = new ArrayList<>();
     for (Map<String, Object> cafeData : cafes) {
-      Cafe cafe = mapToCafeEntity(cafeData, district);
+      Cafe cafe = mapToCafeEntity(cafeData, city + " " + district);
       cafeEntities.add(cafe);
     }
 
     cafeRepository.saveAll(cafeEntities);
   }
 
-  /**
-   * 저장된 모든 키즈카페 데이터를 조회합니다.
-   *
-   * @return CafeResponseDto 리스트
-   */
   public List<CafeResponseDto> getAllCafes() {
     List<Cafe> cafes = cafeRepository.findAll();
     List<CafeResponseDto> responseDtos = new ArrayList<>();
@@ -82,26 +88,13 @@ public class CafeCrawlerService {
     return responseDtos;
   }
 
-  /**
-   * 특정 카페 정보를 조회합니다.
-   *
-   * @param cafeId 카페 ID
-   * @return CafeResponseDto
-   */
   public CafeResponseDto getCafeDetails(Long cafeId) {
     Cafe cafe = cafeRepository.findById(cafeId)
         .orElseThrow(() -> new IllegalArgumentException("해당 카페를 찾을 수 없습니다."));
     return mapToResponseDto(cafe);
   }
 
-  /**
-   * 네이버 API 데이터를 Cafe 엔티티로 매핑합니다.
-   *
-   * @param cafeData 네이버 API에서 가져온 데이터
-   * @param district 구 이름
-   * @return Cafe 엔티티
-   */
-  private Cafe mapToCafeEntity(Map<String, Object> cafeData, String district) {
+  private Cafe mapToCafeEntity(Map<String, Object> cafeData, String region) {
     String address = (String) cafeData.get("roadAddress");
     String name = cafeData.get("title").toString().replaceAll("<[^>]*>", "");
 
@@ -114,32 +107,26 @@ public class CafeCrawlerService {
 
     return Cafe.builder()
         .name(name)
-        .region(district)
+        .region(region)
         .address(address)
         .location(location)
-        .size(500) // 기본값
-        .dayOff("주말") // 기본값
-        .parking(true) // 기본값
-        .restaurant(false) // 기본값
-        .careService(false) // 기본값
-        .swimmingPool(false) // 기본값
-        .clothesRental(false) // 기본값
-        .monitoring(false) // 기본값
-        .feedingRoom(false) // 기본값
-        .outdoorPlayground(false) // 기본값
-        .safetyGuard(false) // 기본값
+        .size(500)
+        .dayOff("주말")
+        .parking(true)
+        .restaurant(false)
+        .careService(false)
+        .swimmingPool(false)
+        .clothesRental(false)
+        .monitoring(false)
+        .feedingRoom(false)
+        .outdoorPlayground(false)
+        .safetyGuard(false)
         .hyperlink((String) cafeData.get("link"))
         .openedAt(java.time.LocalTime.of(9, 0))
         .closedAt(java.time.LocalTime.of(21, 0))
         .build();
   }
 
-  /**
-   * Cafe 엔티티를 CafeResponseDto로 변환합니다.
-   *
-   * @param cafe Cafe 엔티티
-   * @return CafeResponseDto
-   */
   private CafeResponseDto mapToResponseDto(Cafe cafe) {
     return CafeResponseDto.builder()
         .id(cafe.getId())
