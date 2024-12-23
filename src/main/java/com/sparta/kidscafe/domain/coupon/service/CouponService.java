@@ -14,6 +14,8 @@ import com.sparta.kidscafe.exception.BusinessException;
 import com.sparta.kidscafe.exception.ErrorCode;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,7 @@ public class CouponService {
 
   private void validationOwner(AuthUser authUser, Cafe cafe) {
     RoleType roleType = authUser.getRoleType();
+
     if(roleType == RoleType.ADMIN) {
       return;
     }
@@ -35,13 +38,13 @@ public class CouponService {
       throw new BusinessException(ErrorCode.COUPON_TABLE_UNAUTHORIZED);
     }
 
-    if(roleType == RoleType.OWNER) {
+    if(roleType == RoleType.OWNER && !authUser.getId().equals(cafe.getUser().getId())) {
       throw new BusinessException(ErrorCode.COUPON_TABLE_OWN_CREATE);
     }
   }
 
   @Transactional
-  public StatusDto createCoupon(AuthUser authUser, Long cafeId, @Valid CouponCreateRequestDto couponCreateRequestDto) {
+  public StatusDto createCoupon(AuthUser authUser, Long cafeId, CouponCreateRequestDto couponCreateRequestDto) {
     Cafe cafe = cafeRepository.findById(cafeId)
             .orElseThrow(() -> new BusinessException(ErrorCode.CAFE_NOT_FOUND));
 
@@ -51,13 +54,29 @@ public class CouponService {
     couponRepository.save(coupon);
 
     return StatusDto.builder()
-            .status(HttpStatus.OK.value())
+            .status(HttpStatus.CREATED.value())
             .message(coupon.getName() + "쿠폰 생성")
             .build();
   }
 
+  public ListResponseDto<CouponResponseDto> getCouponByUser(AuthUser authUser){
+    List<Coupon> coupons = couponRepository.findByCafeId(authUser.getId());
+    return ListResponseDto.success(
+        coupons.stream()
+            .map(CouponResponseDto::from)
+            .collect(Collectors.toList()), HttpStatus.OK, "쿠폰 조회");
+  }
 
+  public ListResponseDto<CouponResponseDto> getCouponByOwner(AuthUser authUser, Long cafeId){
+    Cafe cafe = cafeRepository.findById(cafeId)
+        .orElseThrow(() -> new BusinessException(ErrorCode.CAFE_NOT_FOUND));
 
-  public ListResponseDto<CouponResponseDto> getCouponByUser;
-  public ListResponseDto<CouponResponseDto> getCouponByOwner;
+    validationOwner(authUser, cafe);
+
+    List<Coupon> coupons = couponRepository.findByCafeId(cafeId);
+    return ListResponseDto.success(
+        coupons.stream()
+            .map(CouponResponseDto::from)
+            .collect(Collectors.toList()), HttpStatus.OK, "쿠폰 조회");
+  }
 }
