@@ -1,3 +1,4 @@
+/*
 package com.sparta.kidscafe.api.cafe.runner;
 
 import com.sparta.kidscafe.api.cafe.service.CafeCrawlerService;
@@ -56,3 +57,4 @@ public class CafeCrawlerRunner implements CommandLineRunner {
     System.out.println("크롤링 작업이 완료되었습니다!");
   }
 }
+*/
