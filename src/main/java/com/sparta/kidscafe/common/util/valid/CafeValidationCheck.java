@@ -12,6 +12,11 @@ import org.springframework.stereotype.Service;
 public class CafeValidationCheck {
   private final CafeRepository cafeRepository;
 
+  public Cafe findCafe(Long id){
+    return cafeRepository.findById(id)
+        .orElseThrow(() -> new BusinessException(ErrorCode.CAFE_NOT_FOUND));
+  }
+
   public Cafe validMyCafe(Long cafeId, Long userId) {
     return cafeRepository.findByIdAndUserId(cafeId, userId)
         .orElseThrow(() -> new BusinessException(ErrorCode.CAFE_NOT_FOUND));

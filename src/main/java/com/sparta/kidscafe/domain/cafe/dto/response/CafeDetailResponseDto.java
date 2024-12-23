@@ -9,44 +9,16 @@ import com.sparta.kidscafe.domain.pricepolicy.dto.response.PricePolicyResponseDt
 import com.sparta.kidscafe.domain.pricepolicy.entity.PricePolicy;
 import com.sparta.kidscafe.domain.room.dto.response.RoomResponseDto;
 import com.sparta.kidscafe.domain.room.entity.Room;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-
-@Builder
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CafeDetailResponseDto {
-
-  private Long id;
-  private String name;
-  private String address;
-  private Double longitude;
-  private Double latitude;
-  private int size;
-  private double star;
-  private Long reviewCount;
-  private String dayOff;
-  private boolean parking;
-  private boolean multiFamily;
-  private boolean careService;
-  private boolean swimmingPool;
-  private boolean clothesRental;
-  private boolean monitoring;
-  private boolean feedingRoom;
-  private boolean outdoorPlayground;
-  private boolean safetyGuard;
-  private boolean existRestaurant;
-  private boolean existRoom;
-  private String hyperLink;
-  private LocalTime openedAt;
-  private LocalTime closedAt;
+public class CafeDetailResponseDto extends CafeResponseDto {
 
   private List<CafeImageResponseDto> images;
   private List<RoomResponseDto> rooms;
@@ -55,29 +27,29 @@ public class CafeDetailResponseDto {
   private List<PricePolicyResponseDto> pricePolicies;
 
   public void setCafeInfo(CafeResponseDto cafeInfo) {
-    id = cafeInfo.getId();
-    name = cafeInfo.getName();
-    address = cafeInfo.getAddress();
-    longitude = cafeInfo.getLongitude();
-    latitude = cafeInfo.getLatitude();
-    size = cafeInfo.getSize();
-    star = cafeInfo.getStar();
-    reviewCount = cafeInfo.getReviewCount();
-    dayOff = cafeInfo.getDayOff();
-    multiFamily = cafeInfo.isMultiFamily();
-    parking = cafeInfo.isParking();
-    existRestaurant = cafeInfo.isExistRestaurant();
-    careService = cafeInfo.isExistCareService();
-    swimmingPool = cafeInfo.isExistSwimmingPool();
-    clothesRental = cafeInfo.isExistClothesRental();
-    monitoring = cafeInfo.isExistMonitoring();
-    feedingRoom = cafeInfo.isExistFeedingRoom();
-    outdoorPlayground = cafeInfo.isExistOutdoorPlayground();
-    safetyGuard = cafeInfo.isExistSafetyGuard();
-    existRoom = cafeInfo.isExistRoom();
-    hyperLink = cafeInfo.getHyperLink();
-    openedAt = cafeInfo.getOpenedAt();
-    closedAt = cafeInfo.getClosedAt();
+    setId(cafeInfo.getId());
+    setName(cafeInfo.getName());
+    setAddress(cafeInfo.getAddress());
+    setLongitude(cafeInfo.getLongitude());
+    setLatitude(cafeInfo.getLatitude());
+    setSize(cafeInfo.getSize());
+    setStar(cafeInfo.getStar());
+    setReviewCount(cafeInfo.getReviewCount());
+    setDayOff(cafeInfo.getDayOff());
+    setMultiFamily(cafeInfo.isMultiFamily());
+    setParking(cafeInfo.isParking());
+    setExistRestaurant(cafeInfo.isExistRestaurant());
+    setExistCareService(cafeInfo.isExistCareService());
+    setExistSwimmingPool(cafeInfo.isExistSwimmingPool());
+    setExistClothesRental(cafeInfo.isExistClothesRental());
+    setExistMonitoring(cafeInfo.isExistMonitoring());
+    setExistOutdoorPlayground(cafeInfo.isExistOutdoorPlayground());
+    setExistSafetyGuard(cafeInfo.isExistSafetyGuard());
+    setExistRoom(cafeInfo.isExistRoom());
+    setExistLesson(cafeInfo.isExistLesson());
+    setHyperLink(cafeInfo.getHyperLink());
+    setOpenedAt(cafeInfo.getOpenedAt());
+    setClosedAt(cafeInfo.getClosedAt());
   }
 
   public void setCafeImage(List<CafeImage> images) {

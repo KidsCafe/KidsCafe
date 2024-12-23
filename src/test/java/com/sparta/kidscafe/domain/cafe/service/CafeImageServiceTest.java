@@ -1,7 +1,15 @@
 package com.sparta.kidscafe.domain.cafe.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.sparta.kidscafe.common.dto.AuthUser;
-import com.sparta.kidscafe.common.dto.ListResponseDto;
 import com.sparta.kidscafe.common.enums.ImageType;
 import com.sparta.kidscafe.common.enums.RoleType;
 import com.sparta.kidscafe.common.util.FileStorageUtil;
@@ -15,36 +23,32 @@ import com.sparta.kidscafe.domain.user.entity.User;
 import com.sparta.kidscafe.dummy.DummyCafe;
 import com.sparta.kidscafe.dummy.DummyCafeImage;
 import com.sparta.kidscafe.dummy.DummyUser;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
 
 public class CafeImageServiceTest {
 
-  private final String dirPath = "http://sparta.com/mock/images";
   @InjectMocks
   private CafeImageService cafeImageService;
+
   @Mock
   private CafeValidationCheck cafeValidationCheck;
+
   @Mock
   private CafeImageRepository cafeImageRepository;
+
   @Mock
   private FileStorageUtil fileUtil;
+
+  private final String dirPath = "http://sparta.com/mock/images";
 
   @BeforeEach
   void setUp() {
@@ -76,11 +80,10 @@ public class CafeImageServiceTest {
     when(cafeImageRepository.save(cafeImage)).thenReturn(cafeImage);
 
     // when
-    ListResponseDto<ImageResponseDto> result = cafeImageService.uploadCafeImage(authUser, cafeId, images);
+    List<ImageResponseDto> result = cafeImageService.uploadCafeImage(authUser, cafeId, images);
 
     // then
-    assertEquals(HttpStatus.CREATED.value(), result.getStatus());
-    assertEquals(1, result.getData().size());
+    assertEquals(1, result.size());
     verify(fileUtil, times(1)).makeDirectory(ImageType.CAFE, authUser.getId());
     verify(fileUtil, times(1)).makeFileName(dirPath, mockImage);
     verify(fileUtil, times(1)).uploadImage(imagePath, mockImage);

@@ -16,8 +16,23 @@ public class ListResponseDto<T> extends StatusDto {
   public static <T> ListResponseDto<T> success(List<T> data, HttpStatus status, String message) {
     return ListResponseDto.<T>createResponseBuilder()
         .data(data)
-        .status(status.value())
+        .status(createStatus(data).value())
         .message(message)
         .build();
+  }
+
+  public static <T> ListResponseDto<T> create(List<T> data, String message) {
+    return ListResponseDto.<T>createResponseBuilder()
+        .data(data)
+        .status(createStatus(data).value())
+        .message(message)
+        .build();
+  }
+
+  private static <T> HttpStatus createStatus(List<T> data) {
+    if(data == null || data.isEmpty())
+      return HttpStatus.NOT_FOUND;
+    else
+      return HttpStatus.OK;
   }
 }

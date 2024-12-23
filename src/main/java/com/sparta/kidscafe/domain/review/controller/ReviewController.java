@@ -4,11 +4,8 @@ import com.sparta.kidscafe.common.annotation.Auth;
 import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.PageResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
-import com.sparta.kidscafe.domain.review.dto.request.ReceiptScanRequestDto;
 import com.sparta.kidscafe.domain.review.dto.request.ReviewCreateRequestDto;
-import com.sparta.kidscafe.domain.review.dto.response.ReceiptScanResponseDto;
 import com.sparta.kidscafe.domain.review.dto.response.ReviewResponseDto;
-import com.sparta.kidscafe.domain.review.service.ReceiptScanService;
 import com.sparta.kidscafe.domain.review.service.ReviewService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
@@ -18,7 +15,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,7 +22,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class ReviewController {
 
   private final ReviewService reviewService;
-  private final ReceiptScanService receiptScanService;
 
   @PostMapping("/cafes/{cafeId}/reviews")
   public ResponseEntity<StatusDto> createReview(
@@ -77,15 +72,5 @@ public class ReviewController {
   ) {
     reviewService.deleteReview(authUser, reviewId);
     return ResponseEntity.noContent().build();
-  }
-
-  @PostMapping("/reviews/scan")
-  public ResponseEntity<ReceiptScanResponseDto> scanReceipt(
-      @RequestParam("receiptImage") MultipartFile receiptImage
-  ) {
-    ReceiptScanRequestDto requestDto = new ReceiptScanRequestDto();
-    requestDto.setReceiptImage(receiptImage);
-    ReceiptScanResponseDto responseDto = receiptScanService.scanReceipt(requestDto);
-    return ResponseEntity.status(HttpStatus.OK).body(responseDto);
   }
 }

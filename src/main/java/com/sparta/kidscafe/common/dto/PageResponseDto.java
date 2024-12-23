@@ -21,15 +21,47 @@ public class PageResponseDto<T> extends StatusDto {
 
   public static <T> PageResponseDto<T> success(Page<T> data, HttpStatus status, String message) {
     Pageable pageable = data.getPageable();
-    int page = pageable.isPaged() ? pageable.getPageNumber() + 1 : 0;
-    int size = pageable.isPaged() ? pageable.getPageSize() : 0;
     return PageResponseDto.<T>createResponseBuilder()
         .data(data.hasContent() ? data.getContent() : null)
         .status(status.value())
         .message(message)
-        .page(page)
-        .size(size)
+        .page(createPage(pageable))
+        .size(createPageSize(pageable))
         .totalPage(data.getTotalPages())
         .build();
+  }
+
+  public static <T> PageResponseDto<T> create(Page<T> data) {
+    Pageable pageable = data.getPageable();
+    return PageResponseDto.<T>createResponseBuilder()
+        .data(data.hasContent() ? data.getContent() : null)
+        .status(createStatus(data).value())
+        .message(createMessage(data))
+        .page(createPage(pageable))
+        .size(createPageSize(pageable))
+        .totalPage(data.getTotalPages())
+        .build();
+  }
+
+  private static int createPage(Pageable pageable) {
+    return pageable.isPaged() ? pageable.getPageNumber() + 1 : 0;
+  }
+
+  private static int createPageSize(Pageable pageable) {
+    return pageable.isPaged() ? pageable.getPageSize() : 0;
+  }
+
+  private static <T> String createMessage(Page<T> data) {
+    if(data.isEmpty())
+      return "조회 결과가 없습니다.";
+    else
+      return "조회 성공";
+  }
+
+  private static <T> HttpStatus createStatus(Page<T> data) {
+    if(data.isEmpty())
+      return HttpStatus.NOT_FOUND;
+    else
+      return HttpStatus.OK;
   }
 }

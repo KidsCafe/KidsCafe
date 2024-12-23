@@ -5,13 +5,15 @@ import com.sparta.kidscafe.domain.user.entity.User;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.time.LocalTime;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.locationtech.jts.geom.Point;
 
-@Data
+@Builder
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class CafeSimpleRequestDto {
@@ -47,12 +49,13 @@ public class CafeSimpleRequestDto {
   private LocalTime openedAt;
   private LocalTime closedAt;
 
-  public Cafe convertDtoToEntityByCafe(User user) {
+  public Cafe convertDtoToEntity(User user, Point location) {
     return Cafe.builder()
         .user(user)
         .name(name)
         .region(region)
         .address(address)
+        .location(location)
         .size(size)
         .dayOff(dayOff)
         .multiFamily(multiFamily)

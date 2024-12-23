@@ -13,4 +13,6 @@ public interface CafeRepository extends JpaRepository<Cafe, Long>, CafeDslReposi
   Optional<Cafe> findByIdAndUserId(Long id, Long userId);
 
   List<Cafe> findAllByUserIdAndIdIn(Long userId, List<Long> ids);
+
+  List<Cafe> findAllByRegion(String region);
 }
