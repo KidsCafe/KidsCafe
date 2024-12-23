@@ -1,13 +1,5 @@
 package com.sparta.kidscafe.domain.cafe.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import com.sparta.kidscafe.api.address.MapService;
 import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.enums.RoleType;
@@ -31,8 +23,6 @@ import com.sparta.kidscafe.domain.user.entity.User;
 import com.sparta.kidscafe.dummy.DummyCafe;
 import com.sparta.kidscafe.dummy.DummyCafeImage;
 import com.sparta.kidscafe.dummy.DummyUser;
-import java.util.Collections;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -41,6 +31,13 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+
+import java.util.Collections;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.*;
 
 class CafeServiceTest {
 
@@ -90,7 +87,7 @@ class CafeServiceTest {
 
   @Test
   @DisplayName("카페 등록 성공 - 사장님")
-  void createCafeOwner_Success()  {
+  void createCafeOwner_Success() {
     // given
     AuthUser authUser = createAuthUser(RoleType.OWNER);
     User user = DummyUser.createDummyUser(authUser.getRoleType());

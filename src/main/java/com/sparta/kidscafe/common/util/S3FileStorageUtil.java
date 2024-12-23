@@ -22,12 +22,11 @@ public class S3FileStorageUtil implements FileStorageUtil {
 
   @Override
   public String makeDirectory(ImageType imageType, Long id) {
-    StringBuilder dirPath = new StringBuilder();
-    dirPath.append(id);
-    dirPath.append("/");
-    dirPath.append(imageType.toString().toLowerCase());
-    dirPath.append("/");
-    return dirPath.toString();
+    String dirPath = id
+        + "/"
+        + imageType.toString().toLowerCase()
+        + "/";
+    return dirPath;
   }
 
   @Override

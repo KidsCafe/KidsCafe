@@ -18,7 +18,7 @@ public class CafeSearchPageRequestDto {
   private boolean asc;
 
   public Pageable getPageable() {
-    if(page < 1) {
+    if (page < 1) {
       return null;
     }
 

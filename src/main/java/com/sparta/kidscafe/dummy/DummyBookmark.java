@@ -9,17 +9,17 @@ import java.util.List;
 
 public class DummyBookmark {
 
-    public static Bookmark createDummyBookmark(User user, Cafe cafe) {
-        return Bookmark.builder()
-                .user(user)
-                .cafe(cafe)
-                .build();
-    }
+  public static Bookmark createDummyBookmark(User user, Cafe cafe) {
+    return Bookmark.builder()
+        .user(user)
+        .cafe(cafe)
+        .build();
+  }
 
-    public static List<Bookmark> createDummyBookmarks(User user, List<Cafe> cafes) {
-        List<Bookmark> bookmarks = new ArrayList<>();
-        for (Cafe cafe : cafes)
-            bookmarks.add(createDummyBookmark(user, cafe));
-        return bookmarks;
-    }
+  public static List<Bookmark> createDummyBookmarks(User user, List<Cafe> cafes) {
+    List<Bookmark> bookmarks = new ArrayList<>();
+    for (Cafe cafe : cafes)
+      bookmarks.add(createDummyBookmark(user, cafe));
+    return bookmarks;
+  }
 }

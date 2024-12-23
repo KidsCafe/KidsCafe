@@ -1,16 +1,16 @@
 package com.sparta.kidscafe.domain.reservation.dto.request;
 
 import com.sparta.kidscafe.common.enums.TargetType;
-import com.sparta.kidscafe.domain.reservation.dto.request.ReservationCreateRequestDto.ReservationDetailRequestDto;
 import com.sparta.kidscafe.domain.reservation.repository.condition.ReservationSearchCondition;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import java.time.LocalDateTime;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Getter
@@ -29,19 +29,6 @@ public class ReservationUpdateRequestDto {
   @Valid
   private List<ReservationDetailUpdateRequestDto> details;
 
-  @Getter
-  @NoArgsConstructor
-  @AllArgsConstructor
-  public static class ReservationDetailUpdateRequestDto {
-
-    private Long id;
-    @NotNull
-    private TargetType targetType;
-    @NotNull
-    private Long targetId;
-    @NotNull
-    private Long count;
-  }
   public ReservationSearchCondition createSearchCondition(Long cafeId, Long reservationId) {
     return ReservationSearchCondition.builder()
         .reservationId(reservationId)
@@ -68,6 +55,20 @@ public class ReservationUpdateRequestDto {
       totalCount += detail.getCount();
     }
     return totalCount;
+  }
+
+  @Getter
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public static class ReservationDetailUpdateRequestDto {
+
+    private Long id;
+    @NotNull
+    private TargetType targetType;
+    @NotNull
+    private Long targetId;
+    @NotNull
+    private Long count;
   }
 }
 

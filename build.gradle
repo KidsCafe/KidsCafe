@@ -76,6 +76,9 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test' // Spring Boot Test
     testImplementation 'org.mockito:mockito-core' // Mockito for mocking
     testImplementation 'org.mockito:mockito-junit-jupiter' // Mockito with JUnit 5
+
+    // Tess4J 추가
+    implementation 'net.sourceforge.tess4j:tess4j:5.4.0'
 }
 
 test {

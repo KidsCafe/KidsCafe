@@ -4,18 +4,7 @@ import com.sparta.kidscafe.common.entity.Timestamped;
 import com.sparta.kidscafe.common.enums.ReportType;
 import com.sparta.kidscafe.domain.review.entity.Review;
 import com.sparta.kidscafe.domain.user.entity.User;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -47,7 +36,7 @@ public class Report extends Timestamped {
   @Enumerated(value = EnumType.STRING)
   private ReportType status = ReportType.PENDING;
 
-  public void UpdateReportType (ReportType status) {
+  public void UpdateReportType(ReportType status) {
     this.status = status;
   }
 }

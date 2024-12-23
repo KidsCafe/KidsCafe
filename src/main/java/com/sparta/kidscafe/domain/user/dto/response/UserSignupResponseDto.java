@@ -7,8 +7,8 @@ import lombok.Getter;
 @Builder
 public class UserSignupResponseDto {
 
-    private Long id;
-    private String email;
-    private String name;
-    private String role;
+  private Long id;
+  private String email;
+  private String name;
+  private String role;
 }
