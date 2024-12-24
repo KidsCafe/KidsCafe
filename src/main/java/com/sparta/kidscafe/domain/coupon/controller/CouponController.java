@@ -47,4 +47,18 @@ public class CouponController {
         .status(HttpStatus.OK)
         .body(couponService.getCouponByOwner(authUser, cafeId));
   }
+
+  @PostMapping("/{couponId}/assign/{userId}")
+  public ResponseEntity<StatusDto> assignCouponToUser(@PathVariable Long couponId, @PathVariable Long userId) {
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(couponService.assignCouponToUser(couponId, userId));
+  }
+
+  @PostMapping("/{couponId}/use")
+  public ResponseEntity<StatusDto> useCoupon(@Auth AuthUser authUser, @PathVariable Long couponId) {
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(couponService.useCoupon(authUser, couponId));
+  }
 }

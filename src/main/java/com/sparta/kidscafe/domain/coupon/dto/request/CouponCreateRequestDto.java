@@ -31,7 +31,7 @@ public class CouponCreateRequestDto {
         .name(name)
         .discount_rate(discountRate)
         .validTo(validTo)
-        .used(false)
+        .isUsed(false)
         .build();
   }
 }
