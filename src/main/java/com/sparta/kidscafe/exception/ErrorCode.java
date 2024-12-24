@@ -22,6 +22,9 @@ public enum ErrorCode {
   IMAGE_REMOVE_FAILED("IMAGE_REMOVE_FAILED", "카페 이미지 삭제에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
   IMAGE_NOT_EXIST("IMAGE_NOT_EXIST", "이미지가 존재하지 않습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
   IMAGE_SDK_ERROR("IMAGE_UPLOAD_FAILED", "SDK 오류로 인한 파일 업로드 실패", HttpStatus.INTERNAL_SERVER_ERROR),
+  IMAGE_OVER_MAXIMUM_COUNT("IMAGE_OVER_MAXIMUM", "최대 등록 가능한 이미지는 20장 입니다.", HttpStatus.BAD_REQUEST),
+  IMAGE_OVER_MAXIMUM_SIZE("IMAGE_OVER_MAXIMUM_SIZE", "용량을 초과하는 이미지가 있습니다.", HttpStatus.BAD_REQUEST),
+  IMAGE_UNSUPPORTED_FORMAT("IMAGE_UNSUPPORTED_FORMAT", "지원되지 않는 형식입니다.", HttpStatus.BAD_REQUEST),
 
   // Review 관련 에러
   REVIEW_NOT_FOUND("REVIEW_NOT_FOUND", "리뷰를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
