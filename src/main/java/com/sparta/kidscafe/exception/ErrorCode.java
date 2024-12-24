@@ -60,6 +60,8 @@ public enum ErrorCode {
   COUPON_TABLE_UNAUTHORIZED("COUPON_TABLE_UNATHORIZED", "일반 사용자는 쿠폰 발급의 권한이 없습니다.", HttpStatus.FORBIDDEN),
   COUPON_TABLE_OWN_CREATE("COUPON_TABLE_OWN_CREATE", "사장님 본인 가게에만 쿠폰 발급이 가능합니다.", HttpStatus.FORBIDDEN),
   COUPON_NOT_FOUND("COUPON_NOT_FOUND", "해당 쿠폰을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+  COUPON_ALREADY_USED("COUPON_ALREADY_USED", "이미 사용된 쿠폰입니다.", HttpStatus.BAD_REQUEST),
+  COUPON_NOT_OWNED("COUPON_NOT_OWNED", "본인 쿠폰만 사용가능합니다.", HttpStatus.BAD_REQUEST),
 
   // 활동 클래스 관련 에러
   LESSON_NOT_FOUND("LESSON_NOT_FOUND", "해당 활동 클래스를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
