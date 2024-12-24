@@ -1,8 +1,11 @@
 package com.sparta.kidscafe.domain.lesson;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.sparta.kidscafe.common.dto.AuthUser;
-import com.sparta.kidscafe.common.dto.ListResponseDto;
-import com.sparta.kidscafe.common.dto.StatusDto;
 import com.sparta.kidscafe.common.enums.RoleType;
 import com.sparta.kidscafe.common.util.valid.CafeValidationCheck;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
@@ -15,21 +18,14 @@ import com.sparta.kidscafe.domain.user.entity.User;
 import com.sparta.kidscafe.dummy.DummyCafe;
 import com.sparta.kidscafe.dummy.DummyLesson;
 import com.sparta.kidscafe.dummy.DummyUser;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpStatus;
-
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class LessonServiceTest {
   @InjectMocks
@@ -75,11 +71,9 @@ public class LessonServiceTest {
     when(lessonRepository.save(any(Lesson.class))).thenReturn(lesson);
 
     // when
-    StatusDto result = lessonService.createLesson(authUser, cafeId, requestDto);
+    lessonService.createLesson(authUser, cafeId, requestDto);
 
     // then
-    assertEquals(HttpStatus.CREATED.value(), result.getStatus());
-    assertEquals("[" + requestDto.getName() + "] 생성 성공", result.getMessage());
     verify(lessonRepository).save(any(Lesson.class));
   }
 
@@ -98,15 +92,12 @@ public class LessonServiceTest {
     when(lessonRepository.findAllByCafeId(cafeId)).thenReturn(lessons);
 
     // when
-    ListResponseDto<LessonResponseDto> result = lessonService.searchLesson(authUser, cafeId);
+    List<LessonResponseDto> result = lessonService.searchLesson(authUser, cafeId);
 
     // then
     verify(cafeValidationCheck).validMyCafe(cafeId, authUser.getId());
     verify(lessonRepository).findAllByCafeId(cafeId);
-
-    assertEquals(HttpStatus.OK.value(), result.getStatus());
-    assertEquals("활동 클래스 조회 성공", result.getMessage());
-    assertEquals(responseLessons.size(), result.getData().size());
+    assertEquals(responseLessons.size(), result.size());
   }
 
   @Test
@@ -122,11 +113,10 @@ public class LessonServiceTest {
     when(lessonRepository.findById(lessonId)).thenReturn(Optional.of(lesson));
 
     // when
-    StatusDto result = lessonService.updateLesson(lessonId, requestDto);
+    lessonService.updateLesson(lessonId, requestDto);
 
     // then
-    assertEquals(HttpStatus.OK.value(), result.getStatus());
-    assertEquals("[" + requestDto.getName() + "] 수정 성공", result.getMessage());
+    verify(lessonRepository).findById(lessonId);
   }
 
   @Test

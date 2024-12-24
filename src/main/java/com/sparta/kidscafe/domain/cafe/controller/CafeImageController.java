@@ -5,6 +5,7 @@ import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.ListResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
 import com.sparta.kidscafe.common.util.valid.AuthValidationCheck;
+import com.sparta.kidscafe.common.util.valid.ImageValidationCheck;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeImageDeleteRequestDto;
 import com.sparta.kidscafe.domain.cafe.service.CafeImageService;
 import com.sparta.kidscafe.domain.image.dto.ImageResponseDto;
@@ -35,7 +36,8 @@ public class CafeImageController {
       @RequestParam(value = "cafeId", required = false) String cafeId,
       @RequestPart(value = "images") List<MultipartFile> images
   ) {
-    Long parseId = StringUtils.hasText(cafeId) ? Long.parseLong(cafeId) : null;
+    Long parseId = getCageId(cafeId);
+    ImageValidationCheck.validCafeImage(images);
     List<ImageResponseDto> responseImages = cafeImageService.uploadCafeImage(authUser, parseId, images);
     String message = "이미지 [" + images.size() + "]장 등록 성공";
     return ResponseEntity
@@ -51,5 +53,9 @@ public class CafeImageController {
     AuthValidationCheck.validNotUser(authUser);
     cafeImageService.deleteImage(authUser, requestDto);
     return ResponseEntity.noContent().build();
+  }
+
+  public Long getCageId(String cafeId) {
+    return StringUtils.hasText(cafeId) ? Long.parseLong(cafeId) : null;
   }
 }

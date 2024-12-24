@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class CafeValidationCheck {
+  private final Long CAFE_MAXIMUM_COUNT = 20L;
   private final CafeRepository cafeRepository;
 
   public Cafe findCafe(Long id){
@@ -20,5 +21,11 @@ public class CafeValidationCheck {
   public Cafe validMyCafe(Long cafeId, Long userId) {
     return cafeRepository.findByIdAndUserId(cafeId, userId)
         .orElseThrow(() -> new BusinessException(ErrorCode.CAFE_NOT_FOUND));
+  }
+
+  public void validOverMaximum(Long userId) {
+    Long count = cafeRepository.countByUserId(userId);
+    if(count >= CAFE_MAXIMUM_COUNT)
+      throw new BusinessException(ErrorCode.CAFE_OVER_MAXIMUM);
   }
 }

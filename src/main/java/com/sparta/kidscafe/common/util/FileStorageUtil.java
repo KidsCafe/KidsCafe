@@ -17,10 +17,6 @@ public interface FileStorageUtil {
     LocalDateTime now = LocalDateTime.now();
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
     String formattedDateTime = now.format(formatter);
-
-    String imagePath = dirPath + formattedDateTime
-        + "_"
-        + image.getOriginalFilename();
-    return imagePath;
+    return dirPath + formattedDateTime + "_" + image.getOriginalFilename();
   }
 }
