@@ -47,8 +47,16 @@ public class Coupon extends Timestamped {
 	private Integer discount_rate;
 
 	@Column(nullable = false)
-	private boolean used;
+	private boolean isUsed;
 
 	@Column(nullable = false)
 	private LocalDateTime validTo;
+
+	public void assignToUser(User user){
+		this.user = user;
+	}
+
+	public void markAsUsed(){
+		this.isUsed = true;
+	}
 }
