@@ -1,5 +1,6 @@
 package com.sparta.kidscafe.api.oauth2.service;
 
+import com.sparta.kidscafe.common.config.WebConfig;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Map;
@@ -29,7 +30,6 @@ import lombok.RequiredArgsConstructor;
 public class OAuth2Service {
 
 	private final InMemoryProviderRepository inMemoryProviderRepository;
-	// private final OAuth2TokenProvider tokenProvider;
 	private final JwtUtil jwtUtil;
 	private final UserRepository userRepository;
 
@@ -57,6 +57,21 @@ public class OAuth2Service {
 			.accessToken(accessToken)
 			.build();
 	}
+
+//	public OAuth2UserProfileDto signinForKakao(String provider, String accessToken) {
+//		if(!"kakao".equals(provider)) {
+//			throw new IllegalArgumentException("지원하지 않는 provider입니다.");
+//		}
+//
+//		Map<String, Object> userAttributes = webClient.get()
+//				.uri("https://kapi.kakao.com/v2/user/me")
+//				.headers(headers -> headers.setBearerAuth(accessToken))
+//				.retrieve()
+//				.bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
+//				})
+//				.block();
+//		return OAuth2Attributes.KAKAO.of(userAttributes);
+//	}
 
 	private User saveOrUpdate(OAuth2UserProfileDto userProfileDto) {
 		return userRepository.findByOauthIdAndProvider(userProfileDto.getOauthId(), userProfileDto.getProvider())
@@ -107,5 +122,4 @@ public class OAuth2Service {
 			})
 			.block();
 	}
-
 }

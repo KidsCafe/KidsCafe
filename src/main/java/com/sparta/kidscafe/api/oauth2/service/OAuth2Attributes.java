@@ -2,7 +2,6 @@ package com.sparta.kidscafe.api.oauth2.service;
 
 import com.sparta.kidscafe.api.oauth2.controller.dto.OAuth2UserProfileDto;
 import com.sparta.kidscafe.common.enums.LoginType;
-
 import java.util.Arrays;
 import java.util.Map;
 
@@ -41,13 +40,27 @@ public enum OAuth2Attributes {
     public OAuth2UserProfileDto of(Map<String, Object> attributes) {
       Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
       Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
-
       return OAuth2UserProfileDto.builder()
           .oauthId(String.valueOf(attributes.get("id")))
           .email((String) kakaoAccount.get("email"))
           .name((String) profile.get("nickname"))
           .nickname((String) profile.get("nickname"))
+          .loginType(LoginType.OAUTH)
           .provider("KAKAO")
+          .build();
+    }
+  },
+  GOOGLE("google"){
+    @Override
+    public OAuth2UserProfileDto of(Map<String, Object> attributes) {
+      return OAuth2UserProfileDto.builder()
+          .oauthId((String) attributes.get("sub"))
+          .email((String) attributes.get("email"))
+          .name((String) attributes.get("name"))
+          .nickname((String) attributes.getOrDefault("given_name", "[default_nickname]"))
+          .address("[default_address]")
+          .loginType(LoginType.OAUTH)
+          .provider("GOOGLE")
           .build();
     }
   };
