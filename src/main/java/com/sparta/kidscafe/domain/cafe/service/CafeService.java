@@ -98,7 +98,7 @@ public class CafeService {
   public void saveCafeImage(Cafe cafe, List<Long> images) {
     List<CafeImage> cafeImages = cafeImageRepository.findAllById(images);
     for (CafeImage cafeImage : cafeImages) {
-      cafeImage.update(cafe.getId());
+      cafeImage.update(cafe, cafeImage.getImagePath());
     }
   }
 
