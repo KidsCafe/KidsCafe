@@ -47,7 +47,7 @@ public enum ErrorCode {
   PRICE_POLICY_MISMATCH("PRICE_POLICY_MISMATCH", "카페에 해당하지 않는 가격 정책입니다.", HttpStatus.BAD_REQUEST),
 
   // FEE 관련 에러
-  FEE_TABLE_UNAUTHORIZED("FEE_TABLE_UNAUTHORIZED", "일반유저는 가격책정의 권한이 없습니다.", HttpStatus.FORBIDDEN),
+  FEE_TABLE_UNAUTHORIZED("FEE_TABLE_UNAUTHORIZED", "일반 사용자는 가격책정의 권한이 없습니다.", HttpStatus.FORBIDDEN),
   FEE_TABLE_OWN_CREATE("FEE_TABLE_OWN_CREATE", "사장님 본인 가게에만 가격책정이 가능합니다.", HttpStatus.FORBIDDEN),
   FEE_NOT_FOUND("FEE_NOT_FOUND", "해당 요금을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 
@@ -59,6 +59,13 @@ public enum ErrorCode {
   REPORT_NOT_FOUND("REPORT_NOT_FOUND", "신고를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
   INVALID_REPORT_STATUS("INVALID_REPORT_STATUS", "잘못된 신고 상태입니다.", HttpStatus.BAD_REQUEST),
   REPORT_STATUS_NOT_CHANGEABLE("REPORT_STATUS_NOT_CHANGEABLE", "현재 상태에서 요청된 상태로 변경할 수 없습니다.", HttpStatus.BAD_REQUEST),
+
+  // Coupon 관련 에러
+  COUPON_TABLE_UNAUTHORIZED("COUPON_TABLE_UNATHORIZED", "일반 사용자는 쿠폰 발급의 권한이 없습니다.", HttpStatus.FORBIDDEN),
+  COUPON_TABLE_OWN_CREATE("COUPON_TABLE_OWN_CREATE", "사장님 본인 가게에만 쿠폰 발급이 가능합니다.", HttpStatus.FORBIDDEN),
+  COUPON_NOT_FOUND("COUPON_NOT_FOUND", "해당 쿠폰을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+  COUPON_ALREADY_USED("COUPON_ALREADY_USED", "이미 사용된 쿠폰입니다.", HttpStatus.BAD_REQUEST),
+  COUPON_NOT_OWNED("COUPON_NOT_OWNED", "본인 쿠폰만 사용가능합니다.", HttpStatus.BAD_REQUEST),
 
   // 활동 클래스 관련 에러
   LESSON_NOT_FOUND("LESSON_NOT_FOUND", "해당 활동 클래스를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
