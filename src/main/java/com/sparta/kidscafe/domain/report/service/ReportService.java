@@ -1,12 +1,5 @@
 package com.sparta.kidscafe.domain.report.service;
 
-import static com.sparta.kidscafe.exception.ErrorCode.FORBIDDEN;
-import static com.sparta.kidscafe.exception.ErrorCode.INVALID_REPORT_STATUS;
-import static com.sparta.kidscafe.exception.ErrorCode.REPORT_NOT_FOUND;
-import static com.sparta.kidscafe.exception.ErrorCode.REPORT_STATUS_NOT_CHANGEABLE;
-import static com.sparta.kidscafe.exception.ErrorCode.REVIEW_NOT_FOUND;
-import static com.sparta.kidscafe.exception.ErrorCode.USER_NOT_FOUND;
-
 import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.PageResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
@@ -25,11 +18,12 @@ import com.sparta.kidscafe.exception.BusinessException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static com.sparta.kidscafe.exception.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -47,12 +41,12 @@ public class ReportService {
 
     User user = userRepository.findById(id).orElseThrow(() -> new BusinessException(USER_NOT_FOUND));
 
-    Review review = reviewRepository.findById(reviewId).orElseThrow(()-> new BusinessException (REVIEW_NOT_FOUND));
+    Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new BusinessException(REVIEW_NOT_FOUND));
 
-    Boolean ownerCafe = cafeRepository.existsByIdAndUserId(review.getCafe().getId(),id);
+    Boolean ownerCafe = cafeRepository.existsByIdAndUserId(review.getCafe().getId(), id);
 
     if (!ownerCafe) {
-      throw new BusinessException (FORBIDDEN);
+      throw new BusinessException(FORBIDDEN);
     }
 
     Report newReport = Report.builder()
@@ -84,7 +78,7 @@ public class ReportService {
         report.getStatus()
     ));
 
-    return PageResponseDto.success(reportDtos,HttpStatus.OK, "신고 목록 조회 성공");
+    return PageResponseDto.success(reportDtos, HttpStatus.OK, "신고 목록 조회 성공");
   }
 
   public PageResponseDto<ReportResponseDto> getReports(Pageable pageable) {
@@ -99,12 +93,12 @@ public class ReportService {
         report.getStatus()
     ));
 
-    return PageResponseDto.success(reportDtos,HttpStatus.OK, "신고 목록 조회 성공");
+    return PageResponseDto.success(reportDtos, HttpStatus.OK, "신고 목록 조회 성공");
   }
 
   public StatusDto updateReport(ReportUpdateDto request, Long reportId) {
 
-    Report report = reportRepository.findById(reportId).orElseThrow(()-> new BusinessException (REPORT_NOT_FOUND));
+    Report report = reportRepository.findById(reportId).orElseThrow(() -> new BusinessException(REPORT_NOT_FOUND));
 
     ReportType currentStatus = report.getStatus();
     ReportType requestedStatus = request.status(); // 요청된 상태
@@ -126,7 +120,7 @@ public class ReportService {
         // IN_PROGRESS 상태에서 COMPLETED 변경
         if (requestedStatus == ReportType.COMPLETED) {
           report.UpdateReportType(ReportType.COMPLETED);
-        }  else {
+        } else {
           throw new BusinessException(REPORT_STATUS_NOT_CHANGEABLE);
         }
         break;
@@ -150,5 +144,5 @@ public class ReportService {
         .status(HttpStatus.OK.value())
         .message("신고 상태변경 완료")
         .build();
-    }
+  }
 }

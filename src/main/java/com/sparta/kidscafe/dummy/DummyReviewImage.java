@@ -1,12 +1,9 @@
 package com.sparta.kidscafe.dummy;
 
-import static com.sparta.kidscafe.domain.review.entity.QReview.review;
-
 import com.sparta.kidscafe.common.util.TestUtil;
-import com.sparta.kidscafe.domain.cafe.entity.Cafe;
-import com.sparta.kidscafe.domain.cafe.entity.CafeImage;
 import com.sparta.kidscafe.domain.review.entity.Review;
 import com.sparta.kidscafe.domain.review.entity.ReviewImage;
+
 import java.util.ArrayList;
 import java.util.List;
 

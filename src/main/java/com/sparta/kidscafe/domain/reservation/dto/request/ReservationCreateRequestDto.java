@@ -7,13 +7,14 @@ import com.sparta.kidscafe.domain.reservation.entity.ReservationDetail;
 import com.sparta.kidscafe.domain.reservation.enums.ReservationStatus;
 import com.sparta.kidscafe.domain.reservation.repository.condition.ReservationSearchCondition;
 import com.sparta.kidscafe.domain.user.entity.User;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Getter
@@ -25,27 +26,6 @@ public class ReservationCreateRequestDto {
   private String finishedAt;
   private int totalPrice;
   private List<ReservationDetailRequestDto> details;
-
-  @Getter
-  @NoArgsConstructor
-  @AllArgsConstructor
-  public static class ReservationDetailRequestDto {
-
-    private TargetType targetType;
-    private Long targetId;
-    private int price;
-    private Long count;
-
-    public ReservationDetail convertDtoToEntity(Reservation reservation) {
-      return ReservationDetail.builder()
-          .reservation(reservation)
-          .targetType(targetType)
-          .targetId(targetId)
-          .count(count)
-          .price(price)
-          .build();
-    }
-  }
 
   public Reservation convertDtoToEntity(Cafe cafe, User user) {
     return Reservation.builder()
@@ -94,5 +74,26 @@ public class ReservationCreateRequestDto {
       }
     }
     return totalCount;
+  }
+
+  @Getter
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public static class ReservationDetailRequestDto {
+
+    private TargetType targetType;
+    private Long targetId;
+    private int price;
+    private Long count;
+
+    public ReservationDetail convertDtoToEntity(Reservation reservation) {
+      return ReservationDetail.builder()
+          .reservation(reservation)
+          .targetType(targetType)
+          .targetId(targetId)
+          .count(count)
+          .price(price)
+          .build();
+    }
   }
 }

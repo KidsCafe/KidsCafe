@@ -6,12 +6,11 @@ import com.sparta.kidscafe.common.dto.PageResponseDto;
 import com.sparta.kidscafe.common.dto.ResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
 import com.sparta.kidscafe.common.util.valid.AuthValidationCheck;
-import com.sparta.kidscafe.domain.cafe.dto.request.CafeCreateRequestDto;
+import com.sparta.kidscafe.domain.cafe.dto.request.CafeRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeSearchRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeSimpleRequestDto;
-import com.sparta.kidscafe.domain.cafe.dto.request.CafesSimpleCreateRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeDetailResponseDto;
-import com.sparta.kidscafe.domain.cafe.dto.response.CafeResponseDto;
+import com.sparta.kidscafe.domain.cafe.dto.response.CafeSimpleResponseDto;
 import com.sparta.kidscafe.domain.cafe.service.CafeService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -37,54 +36,58 @@ public class CafeController {
   @PostMapping("/owners/cafes")
   public ResponseEntity<StatusDto> createCafe(
       @Auth AuthUser authUser,
-      @Valid @RequestBody CafeCreateRequestDto requestDto
+      @Valid @RequestBody CafeRequestDto requestDto
   ) {
     AuthValidationCheck.validOwner(authUser);
+    cafeService.createCafe(authUser, requestDto);
+    String message = "[" + requestDto.getName() + "] 등록 성공";
     return ResponseEntity
         .status(HttpStatus.CREATED)
-        .body(cafeService.createCafe(authUser, requestDto));
+        .body(StatusDto.createStatusDto(HttpStatus.CREATED, message));
   }
 
   @PostMapping("/admin/cafes")
   public ResponseEntity<StatusDto> createCafe(
       @Auth AuthUser authUser,
-      @Valid @RequestBody CafesSimpleCreateRequestDto requestDto
+      @Valid @RequestBody List<CafeSimpleRequestDto> requestDto
   ) {
     AuthValidationCheck.validAdmin(authUser);
+    cafeService.creatCafe(authUser, requestDto);
+    String message = "카페 [" + requestDto.size() + "]개 등록 성공";
     return ResponseEntity
         .status(HttpStatus.CREATED)
-        .body(cafeService.creatCafe(authUser, requestDto));
+        .body(StatusDto.createStatusDto(HttpStatus.CREATED, message));
   }
 
   @GetMapping("/cafes")
-  public ResponseEntity<PageResponseDto<CafeResponseDto>> searchCafe(
+  public ResponseEntity<PageResponseDto<CafeSimpleResponseDto>> searchCafe(
       @RequestBody CafeSearchRequestDto requestDto
   ) {
     return ResponseEntity
         .status(HttpStatus.OK)
-        .body(cafeService.searchCafe(requestDto.getSearchCondition()));
+        .body(PageResponseDto.create(cafeService.searchCafe(requestDto.getSearchCondition())));
   }
 
-  @GetMapping("owners/cafes")
-  public ResponseEntity<PageResponseDto<CafeResponseDto>> searchCafeByOwner(
+  @GetMapping("/owners/cafes")
+  public ResponseEntity<PageResponseDto<CafeSimpleResponseDto>> searchCafeByOwner(
       @Auth AuthUser authUser,
       @RequestBody CafeSearchRequestDto requestDto
   ) {
     AuthValidationCheck.validOwner(authUser);
     return ResponseEntity
         .status(HttpStatus.OK)
-        .body(cafeService.searchCafe(requestDto.getSearchCondition()));
+        .body(PageResponseDto.create(cafeService.searchCafe(requestDto.getSearchCondition())));
   }
 
-  @GetMapping("admin/cafes")
-  public ResponseEntity<PageResponseDto<CafeResponseDto>> searchCafeByAdmin(
+  @GetMapping("/admin/cafes")
+  public ResponseEntity<PageResponseDto<CafeSimpleResponseDto>> searchCafeByAdmin(
       @Auth AuthUser authUser,
       @RequestBody CafeSearchRequestDto requestDto
   ) {
     AuthValidationCheck.validAdmin(authUser);
     return ResponseEntity
         .status(HttpStatus.OK)
-        .body(cafeService.searchCafe(requestDto.getSearchCondition()));
+        .body(PageResponseDto.create(cafeService.searchCafe(requestDto.getSearchCondition())));
   }
 
   @GetMapping("/cafes/{cafeId}")
@@ -93,7 +96,7 @@ public class CafeController {
   ) {
     return ResponseEntity
         .status(HttpStatus.OK)
-        .body(cafeService.findCafe(cafeId));
+        .body(ResponseDto.create(cafeService.findCafe(cafeId)));
   }
 
   @PatchMapping("/cafes/{cafeId}")
@@ -103,12 +106,14 @@ public class CafeController {
       @Valid @RequestBody CafeSimpleRequestDto requestDto
   ) {
     AuthValidationCheck.validOwner(authUser);
+    cafeService.updateCafe(authUser, cafeId, requestDto);
+    String message = "[" + requestDto.getName() + "] 수정 성공";
     return ResponseEntity
         .status(HttpStatus.OK)
-        .body(cafeService.updateCafe(authUser, cafeId, requestDto));
+        .body(StatusDto.createStatusDto(HttpStatus.OK, message));
   }
 
-  @DeleteMapping("owners/cafes/{cafeId}")
+  @DeleteMapping("/owners/cafes/{cafeId}")
   public ResponseEntity<Void> deleteCafe(
       @Auth AuthUser authUser,
       @PathVariable Long cafeId
@@ -118,7 +123,7 @@ public class CafeController {
     return ResponseEntity.noContent().build();
   }
 
-  @DeleteMapping("admin/cafes")
+  @DeleteMapping("/admin/cafes")
   public ResponseEntity<Void> deleteCafe(
       @Auth AuthUser authUser,
       @RequestBody List<Long> cafes

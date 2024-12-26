@@ -1,4 +1,4 @@
 package com.sparta.kidscafe.domain.review.controller;
 
-public class ReviewControllerTes {
+public class ReviewControllerTest {
 }

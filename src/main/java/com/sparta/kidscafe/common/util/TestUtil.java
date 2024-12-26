@@ -21,6 +21,11 @@ public class TestUtil {
     return Math.round(randomValue * 10) / 10.0;
   }
 
+  public static double getRandomDouble(double min, double max) {
+    double range = max - min;
+    return Math.random() * range;
+  }
+
   public static int getRandomPrice(int min, int max) {
     int range = (max/1000) - (min/1000) + 1;
     int randomPrice = (int)(Math.random() * range) + (min/1000);

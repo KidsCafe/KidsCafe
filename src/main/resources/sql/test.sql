@@ -163,7 +163,8 @@ where ro.id = 1;
 select re.id
 from reservation re
          left join reservation_detail rd on re.id = rd.reservation_id
-where rd.target_id = 1 and rd.target_type = 'ROOM';
+where rd.target_id = 1
+  and rd.target_type = 'ROOM';
 
 # 1번 방에 예약한 인원을 찾는다.
 select sum(rd.count)
@@ -171,18 +172,21 @@ from reservation_detail rd
 where rd.reservation_id in (select re.id
                             from reservation re
                                      left join reservation_detail rd on re.id = rd.reservation_id
-                            where rd.target_id = 1 and rd.target_type = 'ROOM')
-  and target_type='FEE';
+                            where rd.target_id = 1
+                              and rd.target_type = 'ROOM')
+  and target_type = 'FEE';
 
 # 1번 방에 14~16시 사이에 예약한 인원을 찾는다.
 select sum(rd.count)
-from reservation_detail rd left join reservation re on rd.reservation_id = re.id
+from reservation_detail rd
+         left join reservation re on rd.reservation_id = re.id
 where rd.reservation_id in (select re.id
                             from reservation re
                                      left join reservation_detail rd on re.id = rd.reservation_id
-                            where rd.target_id = 1 and rd.target_type = 'ROOM')
-  and target_type='FEE'
-  and ( re.finished_at >= '2024-12-05 14:00:00' and re.started_at <= '2024-12-05 16:00:00');
+                            where rd.target_id = 1
+                              and rd.target_type = 'ROOM')
+  and target_type = 'FEE'
+  and (re.finished_at >= '2024-12-05 14:00:00' and re.started_at <= '2024-12-05 16:00:00');
 
 #  1번카페가 영업중일 때고, 1번방에 14~16시 사이에 예약한 인원을 찾는다.
 select sum(rd.count)
@@ -192,10 +196,12 @@ from reservation_detail rd
 where rd.reservation_id in (select re.id
                             from reservation re
                                      left join reservation_detail rd on re.id = rd.reservation_id
-                            where rd.target_id = 1 and rd.target_type = 'ROOM')
-  and target_type='FEE'
-  and ( re.finished_at >= '2024-12-05 14:00:00' and re.started_at <= '2024-12-05 16:00:00')
-  and c.closed_at >= '2024-12-05 14:00:00' and c.opened_at <= '2024-12-05 16:00:00'
+                            where rd.target_id = 1
+                              and rd.target_type = 'ROOM')
+  and target_type = 'FEE'
+  and (re.finished_at >= '2024-12-05 14:00:00' and re.started_at <= '2024-12-05 16:00:00')
+  and c.closed_at >= '2024-12-05 14:00:00'
+  and c.opened_at <= '2024-12-05 16:00:00'
   and c.day_off not like '%화%';
 
 #  1번카페가 영업중일 때고, 1번방에 14~16시 사이에 예약한 인원과 방의 정원을 찾는다.
@@ -206,10 +212,12 @@ from reservation_detail rd
 where rd.reservation_id in (select re.id
                             from reservation re
                                      left join reservation_detail rd on re.id = rd.reservation_id
-                            where rd.target_id = 1 and rd.target_type = 'ROOM')
-  and target_type='FEE'
-  and ( re.finished_at >= '2024-12-05 14:00:00' and re.started_at <= '2024-12-05 16:00:00')
-  and c.closed_at >= '2024-12-05 14:00:00' and c.opened_at <= '2024-12-05 16:00:00'
+                            where rd.target_id = 1
+                              and rd.target_type = 'ROOM')
+  and target_type = 'FEE'
+  and (re.finished_at >= '2024-12-05 14:00:00' and re.started_at <= '2024-12-05 16:00:00')
+  and c.closed_at >= '2024-12-05 14:00:00'
+  and c.opened_at <= '2024-12-05 16:00:00'
   and c.day_off not like '%화%';
 
 #  1번카페가 영업중일 때고, 1번방에 14~16시 사이에 예약한 인원과 방의 정원을 찾는다. [새로운 주문 3명]
@@ -221,11 +229,13 @@ where rd.reservation_id in (select re.id
                             from reservation re
                                      left join reservation_detail rd on re.id = rd.reservation_id
                             where rd.target_id = 1
-                                  and rd.target_type = 'ROOM'
-                                  and ( re.finished_at >= '2024-12-05 14:00:00' and re.started_at <= '2024-12-05 16:00:00'))
-  and target_type='FEE'
-  and c.closed_at >= '2024-12-05 14:00:00' and c.opened_at <= '2024-12-05 16:00:00' # 1번카페가 영업중일 때고
-  and c.day_off not like '%화%'; # 1번카페가 영업중일 때고
+                              and rd.target_type = 'ROOM'
+                              and (re.finished_at >= '2024-12-05 14:00:00' and re.started_at <= '2024-12-05 16:00:00'))
+  and target_type = 'FEE'
+  and c.closed_at >= '2024-12-05 14:00:00'
+  and c.opened_at <= '2024-12-05 16:00:00' # 1번카페가 영업중일 때고
+  and c.day_off not like '%화%';
+# 1번카페가 영업중일 때고
 # 필요한 조건 변수 ..
 # 1. 총 인원
 # 2. 방 번호
@@ -234,7 +244,8 @@ where rd.reservation_id in (select re.id
 
 # 적용되는 정책이 있는지
 select p.rate
-from fee f left join price_policy p on f.id = p.target_id
+from fee f
+         left join price_policy p on f.id = p.target_id
 where target_type = 'FEE'
   and day_type like '%토%'
   and target_id = 1;
@@ -244,7 +255,8 @@ where target_type = 'FEE'
 # targetId
 
 select p.rate
-from room r left join price_policy p on r.id = p.target_id
+from room r
+         left join price_policy p on r.id = p.target_id
 where target_type = 'ROOM'
   and day_type like '%토%'
   and target_id = 1;
@@ -262,13 +274,28 @@ where rd.reservation_id in (select re.id
                                      left join reservation_detail rd on re.id = rd.reservation_id
                             where rd.target_id = 1
                               and rd.target_type = 'ROOM'
-                              and ( re.finished_at >= '2024-12-15 17:00:00' and re.started_at <= '2024-12-15 19:00:00'))
-  and target_type='FEE'
-  and c.closed_at >= '2024-12-15 19:00:00' and c.opened_at <= '2024-12-15 17:00:00' # 1번카페가 영업중일 때고
-  and c.day_off not like '%일%'; # 1번카페가 영업중일 때고
+                              and (re.finished_at >= '2024-12-15 17:00:00' and re.started_at <= '2024-12-15 19:00:00'))
+  and target_type = 'FEE'
+  and c.closed_at >= '2024-12-15 19:00:00'
+  and c.opened_at <= '2024-12-15 17:00:00' # 1번카페가 영업중일 때고
+  and c.day_off not like '%일%';
+# 1번카페가 영업중일 때고
 # 필요한 조건 변수 ..
 # 1. 총 인원
 # 2. 방 번호
 # 3. 예매 시작 시간
 # 4. 예매 마감 시간
 
+
+SELECT ST_X(location) AS longitude, -- 경도 추출
+       ST_Y(location) AS latitude   -- 위도 추출
+FROM cafe;
+
+SELECT ST_Longitude(location) AS longitude, -- 경도 추출
+       ST_Latitude(location)  AS latitude   -- 위도 추출
+FROM cafe;
+
+SELECT id,
+       ST_SRID(location)   AS srid,
+       ST_AsText(location) AS point_text
+FROM cafe;

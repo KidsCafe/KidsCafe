@@ -19,42 +19,42 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class UserProfileController {
 
-    private final UserProfileService userProfileService;
+  private final UserProfileService userProfileService;
 
-    @GetMapping("/api/users/profile")
-    public ResponseEntity<ResponseDto<UserProfileResponseDto>> getUserProfile(@Auth AuthUser authUser) {
-        // 인증된 사용자 권한 확인
-        if (authUser.getRoleType() != RoleType.USER) {
-            throw new BusinessException(ErrorCode.FORBIDDEN);
-        }
-
-        // 서비스 계층에서 프로필 조회
-        ResponseDto<UserProfileResponseDto> responseDto = userProfileService.getUserProfile(authUser);
-
-        return ResponseEntity.ok(responseDto);
+  @GetMapping("/api/users/profile")
+  public ResponseEntity<ResponseDto<UserProfileResponseDto>> getUserProfile(@Auth AuthUser authUser) {
+    // 인증된 사용자 권한 확인
+    if (authUser.getRoleType() != RoleType.USER) {
+      throw new BusinessException(ErrorCode.FORBIDDEN);
     }
 
-    @PatchMapping("/api/users/profile")
-    public ResponseEntity<ResponseDto<UserProfileResponseDto>> updateUserProfile(
-            @Auth AuthUser authUser,
-            @RequestBody @Valid UserProfileUpdateRequestDto requestDto) {
-        // 인증된 사용자 권한 확인
-        if (authUser.getRoleType() != RoleType.USER) {
-            throw new BusinessException(ErrorCode.FORBIDDEN);
-        }
+    // 서비스 계층에서 프로필 조회
+    ResponseDto<UserProfileResponseDto> responseDto = userProfileService.getUserProfile(authUser);
 
-        // 서비스 계층에서 프로필 수정 처리
-        ResponseDto<UserProfileResponseDto> responseDto = userProfileService.updateUserProfile(authUser, requestDto);
+    return ResponseEntity.ok(responseDto);
+  }
 
-        return ResponseEntity.ok(responseDto);
+  @PatchMapping("/api/users/profile")
+  public ResponseEntity<ResponseDto<UserProfileResponseDto>> updateUserProfile(
+      @Auth AuthUser authUser,
+      @RequestBody @Valid UserProfileUpdateRequestDto requestDto) {
+    // 인증된 사용자 권한 확인
+    if (authUser.getRoleType() != RoleType.USER) {
+      throw new BusinessException(ErrorCode.FORBIDDEN);
     }
 
-    @DeleteMapping("/api/users/me")
-    public ResponseEntity<ResponseDto<Void>> deleteUser(
-            @Auth AuthUser authUser,
-            @RequestBody @Valid UserDeleteRequestDto requestDto) {
-        // 서비스 계층에서 회원 탈퇴 처리
-        userProfileService.deleteUser(authUser, requestDto);
-        return ResponseEntity.noContent().build();
-    }
+    // 서비스 계층에서 프로필 수정 처리
+    ResponseDto<UserProfileResponseDto> responseDto = userProfileService.updateUserProfile(authUser, requestDto);
+
+    return ResponseEntity.ok(responseDto);
+  }
+
+  @DeleteMapping("/api/users/me")
+  public ResponseEntity<ResponseDto<Void>> deleteUser(
+      @Auth AuthUser authUser,
+      @RequestBody @Valid UserDeleteRequestDto requestDto) {
+    // 서비스 계층에서 회원 탈퇴 처리
+    userProfileService.deleteUser(authUser, requestDto);
+    return ResponseEntity.noContent().build();
+  }
 }

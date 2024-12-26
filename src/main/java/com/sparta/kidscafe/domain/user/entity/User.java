@@ -23,90 +23,92 @@ import java.util.List;
 @Table(name = "user")
 public class User extends Timestamped implements OAuthMember {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Column(nullable = false, length = 50, unique = true)
-    private String email;
+  @Column(nullable = false, length = 50, unique = true)
+  private String email;
 
-    @Column(nullable = false)
-    private String password;
+  @Column(nullable = false)
+  private String password;
 
-    @Column(nullable = false, length = 30)
-    private String name;
+  @Column(nullable = false, length = 30)
+  private String name;
 
-    @Column(nullable = false, length = 30)
-    private String nickname;
+  @Column(nullable = false, length = 30)
+  private String nickname;
 
-    @Column(nullable = false)
-    private String address;
+  @Column(nullable = false)
+  private String address;
 
-    @Column
-    private String imagePath;
+  @Column
+  private String imagePath;
 
-    @Enumerated(value = EnumType.STRING)
-    @Column(nullable = false)
-    private RoleType role;
+  @Enumerated(value = EnumType.STRING)
+  @Column(nullable = false)
+  private RoleType role;
 
-    @Enumerated(value = EnumType.STRING)
-    @Column(nullable = false)
-    private LoginType loginType;
+  @Enumerated(value = EnumType.STRING)
+  @Column(nullable = false)
+  private LoginType loginType;
 
-    @Column
-    private String oauthId;
+  @Column
+  private String oauthId;
 
-    @Column
-    private String provider;
+  @Column
+  private String provider;
 
-    @Builder.Default
-    @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
-    private List<Bookmark> bookmarks = new ArrayList<>();
+  @Builder.Default
+  @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST,
+      CascadeType.REMOVE}, orphanRemoval = true)
+  private List<Bookmark> bookmarks = new ArrayList<>();
 
-    @Builder.Default
-    @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
-    private List<Review> reviews = new ArrayList<>();
+  @Builder.Default
+  @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST,
+      CascadeType.REMOVE}, orphanRemoval = true)
+  private List<Review> reviews = new ArrayList<>();
 
-    @Builder.Default
-    @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
-    private List<Reservation> reservations = new ArrayList<>();
+  @Builder.Default
+  @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST,
+      CascadeType.REMOVE}, orphanRemoval = true)
+  private List<Reservation> reservations = new ArrayList<>();
 
-    // 최소 필드로 생성자 추가
-    public User(Long id, String email, RoleType role) {
-        this.id = id;
-        this.email = email;
-        this.role = role;
+
+  public User(Long id, String email, RoleType role) {
+    this.id = id;
+    this.email = email;
+    this.role = role;
+  }
+
+  public User updateOAuth(String email, String name, String nickname) {
+    this.email = email;
+    if (name != null && !name.isBlank()) {
+      this.name = name;
     }
-
-    // OAuth 사용자 정보 업데이트 메서드
-    public User updateOAuth(String email, String name, String nickname) {
-        this.email = email;
-        if (name != null && !name.isBlank()) {
-            this.name = name;
-        }
-        if (nickname != null && !nickname.isBlank()) {
-            this.nickname = nickname;
-        }
-        return this;
+    if (nickname != null && !nickname.isBlank()) {
+      this.nickname = nickname;
     }
+    return this;
+  }
 
-    // 프로필 업데이트 메서드
-    public void updateProfile(String name, String nickname, String address) {
-        if (name != null && !name.isBlank()) {
-            this.name = name;
-        }
-        if (nickname != null && !nickname.isBlank()) {
-            this.nickname = nickname;
-        }
-        if (address != null && !address.isBlank()) {
-            this.address = address;
-        }
+  // 프로필 업데이트 메서드
+  public void updateProfile(String name, String nickname, String address) {
+    if (name != null && !name.isBlank()) {
+      this.name = name;
     }
+    if (nickname != null && !nickname.isBlank()) {
+      this.nickname = nickname;
+    }
+    if (address != null && !address.isBlank()) {
+      this.address = address;
+    }
+  }
 
-    // 비밀번호 변경 메서드
-    public void changePassword(String newPassword) {
-        if (newPassword != null && !newPassword.isBlank()) {
-            this.password = newPassword;
-        }
+  // 비밀번호 변경 메서드
+  public void changePassword(String newPassword) {
+    if (newPassword != null && !newPassword.isBlank()) {
+      this.password = newPassword;
     }
+  }
 }

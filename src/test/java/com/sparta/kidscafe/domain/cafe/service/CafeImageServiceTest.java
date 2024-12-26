@@ -10,12 +10,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.sparta.kidscafe.common.dto.AuthUser;
-import com.sparta.kidscafe.common.dto.ListResponseDto;
 import com.sparta.kidscafe.common.enums.ImageType;
 import com.sparta.kidscafe.common.enums.RoleType;
 import com.sparta.kidscafe.common.util.FileStorageUtil;
-import com.sparta.kidscafe.common.util.LocalFileStorageUtil;
 import com.sparta.kidscafe.common.util.valid.CafeValidationCheck;
+import com.sparta.kidscafe.common.util.valid.ImageValidationCheck;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeImageDeleteRequestDto;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
 import com.sparta.kidscafe.domain.cafe.entity.CafeImage;
@@ -34,10 +33,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpStatus;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
-
 
 public class CafeImageServiceTest {
 
@@ -46,6 +42,9 @@ public class CafeImageServiceTest {
 
   @Mock
   private CafeValidationCheck cafeValidationCheck;
+
+  @Mock
+  private ImageValidationCheck imageValidationCheck;
 
   @Mock
   private CafeImageRepository cafeImageRepository;
@@ -81,18 +80,19 @@ public class CafeImageServiceTest {
 
     when(fileUtil.makeDirectory(ImageType.CAFE, authUser.getId())).thenReturn(dirPath);
     when(fileUtil.makeFileName(dirPath, mockImage)).thenReturn(imagePath);
+    doNothing().when(imageValidationCheck).cafeImageOverCount(cafeId, images.size());
     doNothing().when(mockImage).transferTo(any(File.class));
     when(cafeImageRepository.save(cafeImage)).thenReturn(cafeImage);
 
     // when
-    ListResponseDto<ImageResponseDto> result = cafeImageService.uploadCafeImage(authUser, cafeId, images);
+    List<ImageResponseDto> result = cafeImageService.uploadCafeImage(authUser, cafeId, images);
 
     // then
-    assertEquals(HttpStatus.CREATED.value(), result.getStatus());
-    assertEquals(1, result.getData().size());
+    assertEquals(1, result.size());
     verify(fileUtil, times(1)).makeDirectory(ImageType.CAFE, authUser.getId());
     verify(fileUtil, times(1)).makeFileName(dirPath, mockImage);
     verify(fileUtil, times(1)).uploadImage(imagePath, mockImage);
+    verify(imageValidationCheck, times(1)).cafeImageOverCount(cafeId, images.size());
     verify(cafeImageRepository, times(1)).save(any());
   }
 
