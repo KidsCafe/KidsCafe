@@ -1,4 +1,4 @@
-package com.sparta.kidscafe.api.address;
+package com.sparta.kidscafe.api.map;
 
 import com.sparta.kidscafe.common.util.GeoUtil;
 import org.json.JSONArray;

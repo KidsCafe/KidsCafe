@@ -5,6 +5,7 @@ import com.sparta.kidscafe.common.dto.ListResponseDto;
 import com.sparta.kidscafe.common.enums.ImageType;
 import com.sparta.kidscafe.common.util.FileStorageUtil;
 import com.sparta.kidscafe.common.util.valid.CafeValidationCheck;
+import com.sparta.kidscafe.common.util.valid.ImageValidationCheck;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeImageDeleteRequestDto;
 import com.sparta.kidscafe.domain.cafe.entity.CafeImage;
 import com.sparta.kidscafe.domain.cafe.repository.CafeImageRepository;
@@ -23,10 +24,12 @@ public class CafeImageService {
 
   private final CafeValidationCheck cafeValidationCheck;
   private final CafeImageRepository cafeImageRepository;
+  private final ImageValidationCheck imageValidationCheck;
   private final FileStorageUtil fileStorage;
 
   @Transactional
   public List<ImageResponseDto> uploadCafeImage(AuthUser authUser, Long cafeId, List<MultipartFile> images) {
+    imageValidationCheck.cafeImageOverCount(cafeId, images.size());
     return uploadCafeImage(authUser.getId(), cafeId, images);
   }
 
