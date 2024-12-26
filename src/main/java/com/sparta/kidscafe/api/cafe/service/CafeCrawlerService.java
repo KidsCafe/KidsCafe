@@ -1,144 +1,113 @@
 package com.sparta.kidscafe.api.cafe.service;
 
-import com.sparta.kidscafe.common.service.NaverApiService;
-import com.sparta.kidscafe.domain.cafe.dto.response.CafeResponseDto;
+import com.sparta.kidscafe.api.naver.response.NaverApiResponse;
+import com.sparta.kidscafe.api.naver.service.NaverApiService;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
 import com.sparta.kidscafe.domain.cafe.repository.CafeRepository;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CafeCrawlerService {
+
+  private static final Logger logger = LoggerFactory.getLogger(CafeCrawlerService.class);
 
   private final NaverApiService naverApiService;
   private final CafeRepository cafeRepository;
   private final GeometryFactory geometryFactory;
 
-  @Autowired
   public CafeCrawlerService(NaverApiService naverApiService, CafeRepository cafeRepository) {
     this.naverApiService = naverApiService;
     this.cafeRepository = cafeRepository;
     this.geometryFactory = new GeometryFactory();
   }
 
-  public void crawlCafesNationwide() {
-    String[][] regions = {
-        {"서울특별시", "강남구", "서초구", "송파구", "강북구"},
-        {"부산광역시", "중구", "서구", "동구", "영도구"},
-        {"대구광역시", "중구", "동구", "서구", "남구"},
-        {"인천광역시", "중구", "동구", "남구", "부평구"},
-        {"대전광역시", "동구", "중구", "서구", "유성구"},
-        {"광주광역시", "동구", "서구", "남구", "북구"},
-        {"울산광역시", "중구", "남구", "동구", "북구"},
-        {"세종특별자치시"},
-        {"경기도", "수원시", "성남시", "의정부시", "안양시"},
-        {"강원도", "춘천시", "원주시", "강릉시"},
-        {"충청북도", "청주시", "충주시", "제천시"},
-        {"충청남도", "천안시", "공주시", "보령시"},
-        {"전라북도", "전주시", "군산시", "익산시"},
-        {"전라남도", "목포시", "여수시", "순천시"},
-        {"경상북도", "포항시", "경주시", "구미시"},
-        {"경상남도", "창원시", "진주시", "통영시"},
-        {"제주특별자치도", "제주시", "서귀포시"}
-    };
+  // 특정 지역 크롤링 및 저장
+  public void crawlCafesByRegion(String city, String district) {
+    String keyword = city + " " + district + " 키즈카페";
+    int start = 1;
+    int display = 10; // 한 번에 가져올 데이터 개수
 
-    for (String[] region : regions) {
-      String city = region[0];
-      for (int i = 1; i < region.length; i++) {
-        String district = region[i];
-        crawlCafesByRegion(city, district);
+    while (start <= 20) { // 최대 20개까지 요청
+      try {
+        // Naver API 호출
+        NaverApiResponse response = naverApiService.searchLocal(keyword, display, start, "random");
+
+        if (response.getItems() == null || response.getItems().isEmpty()) {
+          logger.warn("No cafes found for region: {} {}, start: {}", city, district, start);
+          break;
+        }
+
+        // 응답 데이터를 Cafe 엔티티로 변환
+        List<Cafe> cafeEntities = response.getItems().stream()
+            .map(item -> mapToCafeEntity(item, city + " " + district))
+            .collect(Collectors.toList());
+
+        // 변환된 데이터를 저장
+        if (!cafeEntities.isEmpty()) {
+          cafeRepository.saveAll(cafeEntities);
+          logger.info("Saved {} cafes for region: {} {}, start: {}", cafeEntities.size(), city, district, start);
+        } else {
+          logger.warn("No valid cafes to save for region: {} {}, start: {}", city, district, start);
+        }
+
+        start += display; // 다음 페이지 요청
+      } catch (Exception e) {
+        logger.error("Error during cafe crawling for region: {} {}, start: {}, error: {}", city, district, start, e.getMessage(), e);
+        break;
       }
     }
   }
 
-  public void crawlCafesByRegion(String city, String district) {
-    String keyword = city + " " + district + " 키즈카페";
-    Map<String, Object> searchResult = naverApiService.searchLocal(keyword);
+  // Cafe 엔티티로 매핑
+  private Cafe mapToCafeEntity(NaverApiResponse.Item item, String region) {
+    try {
+      // 좌표 변환
+      Point location = createPoint(item.getMapx(), item.getMapy());
 
-    Object itemsObject = searchResult.get("items");
-    if (!(itemsObject instanceof List<?>)) {
-      throw new IllegalArgumentException("네이버 API의 items 형식이 올바르지 않습니다.");
+      // Cafe 엔티티 생성
+      return Cafe.builder()
+          .name(item.getTitle().replaceAll("<[^>]*>", "")) // HTML 태그 제거
+          .hyperlink(item.getLink())
+          .address(item.getAddress())
+          .location(location)
+          .region(region)
+          .openedAt(java.time.LocalTime.of(9, 0)) // 기본 오픈 시간
+          .closedAt(java.time.LocalTime.of(21, 0)) // 기본 닫는 시간
+          .size(500) // 기본 크기 설정
+          .parking(false) // 기본값 주차 불가능 설정
+          .multiFamily(false) // 기본값 설정
+          .restaurant(false) // 기본값 설정
+          .careService(false) // 기본값 설정
+          .swimmingPool(false) // 기본값 설정
+          .clothesRental(false) // 기본값 설정
+          .monitoring(false) // 기본값 설정
+          .feedingRoom(false) // 기본값 설정
+          .outdoorPlayground(false) // 기본값 설정
+          .safetyGuard(false) // 기본값 설정
+          .build();
+    } catch (Exception e) {
+      logger.error("Error mapping cafe item to entity: {}, error: {}", item, e.getMessage());
+      return null;
     }
-
-    @SuppressWarnings("unchecked")
-    List<Map<String, Object>> cafes = (List<Map<String, Object>>) itemsObject;
-
-    List<Cafe> cafeEntities = new ArrayList<>();
-    for (Map<String, Object> cafeData : cafes) {
-      Cafe cafe = mapToCafeEntity(cafeData, city + " " + district);
-      cafeEntities.add(cafe);
-    }
-
-    cafeRepository.saveAll(cafeEntities);
   }
 
-  public List<CafeResponseDto> getAllCafes() {
-    List<Cafe> cafes = cafeRepository.findAll();
-    List<CafeResponseDto> responseDtos = new ArrayList<>();
-    for (Cafe cafe : cafes) {
-      responseDtos.add(mapToResponseDto(cafe));
+  // 좌표 생성ㅣ
+  private Point createPoint(String mapx, String mapy) {
+    try {
+      double longitude = Double.parseDouble(mapx) / 1_000_000.0; // 좌표는 소수점 형식으로 변환
+      double latitude = Double.parseDouble(mapy) / 1_000_000.0;
+      return geometryFactory.createPoint(new Coordinate(longitude, latitude));
+    } catch (Exception e) {
+      logger.warn("Invalid coordinates: mapx={}, mapy={}", mapx, mapy);
+      return null;
     }
-    return responseDtos;
-  }
-
-  public CafeResponseDto getCafeDetails(Long cafeId) {
-    Cafe cafe = cafeRepository.findById(cafeId)
-        .orElseThrow(() -> new IllegalArgumentException("해당 카페를 찾을 수 없습니다."));
-    return mapToResponseDto(cafe);
-  }
-
-  private Cafe mapToCafeEntity(Map<String, Object> cafeData, String region) {
-    String address = (String) cafeData.get("roadAddress");
-    String name = cafeData.get("title").toString().replaceAll("<[^>]*>", "");
-
-    Point location = null;
-    if (cafeData.containsKey("mapx") && cafeData.containsKey("mapy")) {
-      double longitude = Double.parseDouble(cafeData.get("mapx").toString());
-      double latitude = Double.parseDouble(cafeData.get("mapy").toString());
-      location = geometryFactory.createPoint(new Coordinate(longitude, latitude));
-    }
-
-    return Cafe.builder()
-        .name(name)
-        .region(region)
-        .address(address)
-        .location(location)
-        .size(500)
-        .dayOff("주말")
-        .parking(true)
-        .restaurant(false)
-        .careService(false)
-        .swimmingPool(false)
-        .clothesRental(false)
-        .monitoring(false)
-        .feedingRoom(false)
-        .outdoorPlayground(false)
-        .safetyGuard(false)
-        .hyperlink((String) cafeData.get("link"))
-        .openedAt(java.time.LocalTime.of(9, 0))
-        .closedAt(java.time.LocalTime.of(21, 0))
-        .build();
-  }
-
-  private CafeResponseDto mapToResponseDto(Cafe cafe) {
-    return CafeResponseDto.createBuilder()
-        .id(cafe.getId())
-        .name(cafe.getName())
-        .address(cafe.getAddress())
-        .longitude(cafe.getLocation() != null ? cafe.getLocation().getX() : null)
-        .latitude(cafe.getLocation() != null ? cafe.getLocation().getY() : null)
-        .size(cafe.getSize())
-        .dayOff(cafe.getDayOff())
-        .parking(cafe.isParking())
-        .hyperLink(cafe.getHyperlink())
-        .openedAt(cafe.getOpenedAt())
-        .closedAt(cafe.getClosedAt())
-        .build();
   }
 }
