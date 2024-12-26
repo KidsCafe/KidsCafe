@@ -1,5 +1,6 @@
 package com.sparta.kidscafe.api.oauth2.service;
 
+import com.sparta.kidscafe.common.config.WebConfig;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Map;
@@ -29,7 +30,6 @@ import lombok.RequiredArgsConstructor;
 public class OAuth2Service {
 
 	private final InMemoryProviderRepository inMemoryProviderRepository;
-	// private final OAuth2TokenProvider tokenProvider;
 	private final JwtUtil jwtUtil;
 	private final UserRepository userRepository;
 
@@ -82,8 +82,10 @@ public class OAuth2Service {
 
 	private MultiValueMap<String, String> tokenRequest(String code, OAuth2Provider provider) {
 		MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-		formData.add("code", code);
 		formData.add("grant_type", "authorization_code");
+		formData.add("client_id", provider.getClientId());
+		formData.add("client_secret", provider.getClientSecret());
+		formData.add("code", code);
 		formData.add("redirect_uri", provider.getRedirectUrl());
 
 		return formData;
@@ -107,5 +109,4 @@ public class OAuth2Service {
 			})
 			.block();
 	}
-
 }
