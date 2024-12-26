@@ -46,6 +46,9 @@ public class FeeService {
 
   @Transactional
   public StatusDto createFee(AuthUser authUser, Long cafeId, FeeCreateRequestDto feeCreateRequestDto) {
+    if(authUser.getRoleType() == RoleType.USER){
+      throw new BusinessException(ErrorCode.FEE_TABLE_UNAUTHORIZED);
+    }
     Cafe cafe = cafeRepository.findById(cafeId)
         .orElseThrow(() -> new BusinessException(ErrorCode.CAFE_NOT_FOUND));
 
@@ -70,6 +73,9 @@ public class FeeService {
 
   @Transactional
   public StatusDto updateFee(AuthUser authUser, Long cafeId, Long feeId, FeeUpdateRequestDto feeUpdateRequestDto) {
+    if(authUser.getRoleType() == RoleType.USER){
+      throw new BusinessException(ErrorCode.FEE_TABLE_UNAUTHORIZED);
+    }
     Cafe cafe = cafeRepository.findById(cafeId)
         .orElseThrow(() -> new BusinessException(ErrorCode.CAFE_NOT_FOUND));
     Fee fee = feeRepository.findById(feeId)
