@@ -1,8 +1,59 @@
-<a href="https://github.com/login/oauth/authorize?client_id=Ov23li1CxpOgrrxdzXlI&scope=id,name,email">Github
-    Login</a><br>
-<a href="https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=hyWky8b3tigrMoD9qkWi&redirect_uri=http://localhost:8080/redirect/oauth&state=RANDOM_STATE_VALUE">Naver
-    Login</a><br>
-<a href="https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=f8c6a500083cfe4e7eb261d11821df16&redirect_uri=http://localhost:8080/redirect/oauth&scope=profile_nickname%20account_email">Kakao
-    Login</a>
-<a href="https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=f8c6a500083cfe4e7eb261d11821df16&redirect_uri=http://localhost:8080/redirect/oauth&response_type=code">Kakao
-    Login2</a>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Login</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<div class="container d-flex justify-content-center align-items-center vh-100">
+    <div class="card shadow-lg p-4" style="width: 400px;">
+        <div class="card-body">
+            <h3 class="card-title text-center mb-4">KidsCafe</h3>
+            <p class="text-center text-muted">소셜 로그인으로 간편하게 회원가입하세요</p>
+
+            <div class="d-grid gap-3 mt-4">
+                <a href="https://github.com/login/oauth/authorize?client_id=Ov23li1CxpOgrrxdzXlI&scope=id,name,email"
+                   class="btn btn-dark btn-lg">
+                    <i class="bi bi-github"></i> GitHub
+                </a>
+                <a href="https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=hyWky8b3tigrMoD9qkWi&redirect_uri=http://localhost:8080/redirect/oauth&state=RANDOM_STATE_VALUE"
+                   class="btn btn-success btn-lg"> Naver
+                </a>
+                <a href="https://kauth.kakao.com/oauth/authorize?client_id=ae3444874726b7be86c8cba18264a4c9&redirect_uri=http://localhost:8080/redirect/oauth&response_type=code"
+                   class="btn btn-kakao btn-lg">
+                    <img src="https://developers.kakao.com/assets/img/about/logos/kakaolink/kakaolink_btn_medium.png" alt="Kakao">
+                    Kakao
+                </a>
+                <a href="https://accounts.google.com/o/oauth2/v2/auth?scope=https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email&client_id=165933428826-6mde2kbeap6qtuiu70civplbtqc9f77n.apps.googleusercontent.com&response_type=code&redirect_uri=http://localhost:8080/redirect/oauth&access_type=offline&state=RANDOM_STATE_VALUE"
+                   class="btn btn-danger btn-lg">
+                    <i class="bi bi-google"></i> Google
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Bootstrap Icons -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
+</body>
+</html>
+<style>
+    .btn-kakao {
+        background-color: #FEE500;
+        color: #000;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .btn-kakao img {
+        height: 20px;
+        margin-right: 8px;
+    }
+</style>

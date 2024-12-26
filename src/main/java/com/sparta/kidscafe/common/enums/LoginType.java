@@ -9,9 +9,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum LoginType {
   BASIC("BASIC"),
-  GITHUB("GITHUB"),
-  NAVER("NAVER"),
-  KAKAO("KAKAO");
+  OAUTH("OAUTH");
 
   private final String LoginTypeValue;
 

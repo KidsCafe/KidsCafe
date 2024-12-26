@@ -36,7 +36,7 @@ public class OAuth2UserProfileDto {
 			.password("UNKNOWN")
 			.nickname(nickname != null ? nickname : "")
 			.name(name != null ? name : "")
-			.address(address != null ? address : "")
+			.address("UNKNOWN")
 			.role(RoleType.USER)
 			.loginType(loginType != null ? loginType :LoginType.BASIC)
 			.provider(provider)
