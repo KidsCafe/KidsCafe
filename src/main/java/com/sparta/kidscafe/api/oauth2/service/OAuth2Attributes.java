@@ -13,8 +13,8 @@ public enum OAuth2Attributes {
           .oauthId(String.valueOf(attributes.get("id")))
           .email((String) attributes.get("email"))
           .name((String) attributes.get("name"))
-          .nickname((String) attributes.getOrDefault("nickname", "[default_nickname]"))
-          .address((String) attributes.getOrDefault("address", "[default_address]"))
+          .nickname((String) attributes.get("name"))
+          .address("[default_address]")
           .loginType(LoginType.OAUTH)
           .provider("GITHUB")
           .build();
@@ -28,8 +28,8 @@ public enum OAuth2Attributes {
           .oauthId(String.valueOf(response.get("id")))
           .email((String) response.get("email"))
           .name((String) response.get("name"))
-          .nickname((String) response.getOrDefault("nickname", "[default_nickname]"))
-          .address((String) response.getOrDefault("address", "[default_address]"))
+          .nickname((String) response.get("nickname"))
+          .address("[default_address]")
           .loginType(LoginType.OAUTH)
           .provider("NAVER")
           .build();
@@ -45,6 +45,7 @@ public enum OAuth2Attributes {
           .email((String) kakaoAccount.get("email"))
           .name((String) profile.get("nickname"))
           .nickname((String) profile.get("nickname"))
+          .address("[default_address]")
           .loginType(LoginType.OAUTH)
           .provider("KAKAO")
           .build();
