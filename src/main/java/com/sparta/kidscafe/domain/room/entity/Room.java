@@ -2,7 +2,6 @@ package com.sparta.kidscafe.domain.room.entity;
 
 import com.sparta.kidscafe.common.entity.Timestamped;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
-import com.sparta.kidscafe.domain.room.dto.request.RoomCreateRequestDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -12,11 +11,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.sql.Update;
 
 @Getter
 @Builder
@@ -25,6 +24,7 @@ import org.hibernate.sql.Update;
 @Entity
 @Table(name = "room")
 public class Room extends Timestamped {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -48,11 +48,21 @@ public class Room extends Timestamped {
   @Column(nullable = false)
   private int price;
 
-  public void updateRoom(RoomCreateRequestDto requestDto) {
-    this.name = requestDto.getName();
-    this.description = requestDto.getDescription();
-    this.minCount = requestDto.getMinCount();
-    this.maxCount = requestDto.getMaxCount();
-    this.price = requestDto.getPrice();
+  // Map<String, Object> 데이터를 처리하는 생성자
+  public Room(Cafe cafe, Map<String, Object> data) {
+    this.cafe = cafe;
+    this.name = data.get("name").toString();
+    this.description = data.getOrDefault("description", "").toString();
+    this.minCount = Integer.parseInt(data.getOrDefault("minCount", "1").toString());
+    this.maxCount = Integer.parseInt(data.getOrDefault("maxCount", "2").toString());
+    this.price = Integer.parseInt(data.getOrDefault("price", "0").toString());
+  }
+
+  public void updateRoom(String name, String description, int minCount, int maxCount, int price) {
+    this.name = name;
+    this.description = description;
+    this.minCount = minCount;
+    this.maxCount = maxCount;
+    this.price = price;
   }
 }

@@ -1,5 +1,14 @@
 package com.sparta.kidscafe.domain.bookmark.service;
 
+import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.PageResponseDto;
 import com.sparta.kidscafe.common.enums.RoleType;
@@ -13,6 +22,8 @@ import com.sparta.kidscafe.domain.user.entity.User;
 import com.sparta.kidscafe.domain.user.repository.UserRepository;
 import com.sparta.kidscafe.exception.BusinessException;
 import com.sparta.kidscafe.exception.ErrorCode;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,18 +33,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
-
-import java.util.List;
-import java.util.Optional;
-
-import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -130,7 +135,8 @@ public class BookmarkServiceTest {
     );
     Page<Bookmark> mockPage = new PageImpl<>(bookmarks, pageable, bookmarks.size());
 
-    when(bookmarkRepository.findAllByUserId(eq(authUser.getId()), any(Pageable.class))).thenReturn(mockPage);
+    when(bookmarkRepository.findAllByUserId(eq(authUser.getId()), any(Pageable.class))).thenReturn(
+        mockPage);
 
     // When
     PageResponseDto<BookmarkUserRetreiveResponseDto> response = bookmarkService.getBookmarkByUser(
@@ -167,13 +173,18 @@ public class BookmarkServiceTest {
   @DisplayName("사용자 전용 즐겨찾기 조회: 실패 - 즐겨찾기 목록이 비어있는 경우")
   void getBookmarkByUser_NoBookmarks() {
     // Given
-    Page<Bookmark> emptyPage = Page.empty();
-    when(bookmarkRepository.findAllByUserId(eq(authUser.getId()), any(Pageable.class))).thenReturn(emptyPage);
+    Page<Bookmark> emptyPage = new PageImpl<>(List.of(), pageable, 0); // 빈 페이지 생성
+    when(bookmarkRepository.findAllByUserId(eq(authUser.getId()), any(Pageable.class))).thenReturn(
+        emptyPage);
+
     // When & Then
     BusinessException ex = assertThrows(BusinessException.class, () ->
         bookmarkService.getBookmarkByUser(authUser, 0, 10)
     );
+
+    // 예외 코드 및 메시지 검증
     assertEquals(ErrorCode.NO_BOOKMARKS_FOUND, ex.getErrorCode());
+    assertEquals("즐겨찾기 목록이 비어있습니다.", ex.getMessage());
   }
 
   @Test
@@ -197,7 +208,8 @@ public class BookmarkServiceTest {
     );
     Page<Bookmark> bookmarkPage = new PageImpl<>(bookmarkList, pageable, bookmarkList.size());
 
-    when(bookmarkRepository.findAllByCafeId(eq(cafeId), any(Pageable.class))).thenReturn(bookmarkPage);
+    when(bookmarkRepository.findAllByCafeId(eq(cafeId), any(Pageable.class))).thenReturn(
+        bookmarkPage);
 
     // When
     PageResponseDto<BookmarkOwnerRetreiveResponseDto> response =
@@ -231,7 +243,8 @@ public class BookmarkServiceTest {
 
     // When & Then
     BusinessException ex = assertThrows(
-        BusinessException.class, () -> bookmarkService.getBookmarkByOwner(authUser, cafeId, page, size)
+        BusinessException.class,
+        () -> bookmarkService.getBookmarkByOwner(authUser, cafeId, page, size)
     );
     assertEquals(ErrorCode.UNAUTHORIZED, ex.getErrorCode());
   }
