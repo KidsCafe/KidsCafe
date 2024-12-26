@@ -14,6 +14,7 @@ import com.sparta.kidscafe.common.enums.ImageType;
 import com.sparta.kidscafe.common.enums.RoleType;
 import com.sparta.kidscafe.common.util.FileStorageUtil;
 import com.sparta.kidscafe.common.util.valid.CafeValidationCheck;
+import com.sparta.kidscafe.common.util.valid.ImageValidationCheck;
 import com.sparta.kidscafe.domain.cafe.dto.request.CafeImageDeleteRequestDto;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
 import com.sparta.kidscafe.domain.cafe.entity.CafeImage;
@@ -41,6 +42,9 @@ public class CafeImageServiceTest {
 
   @Mock
   private CafeValidationCheck cafeValidationCheck;
+
+  @Mock
+  private ImageValidationCheck imageValidationCheck;
 
   @Mock
   private CafeImageRepository cafeImageRepository;
@@ -76,6 +80,7 @@ public class CafeImageServiceTest {
 
     when(fileUtil.makeDirectory(ImageType.CAFE, authUser.getId())).thenReturn(dirPath);
     when(fileUtil.makeFileName(dirPath, mockImage)).thenReturn(imagePath);
+    doNothing().when(imageValidationCheck).cafeImageOverCount(cafeId, images.size());
     doNothing().when(mockImage).transferTo(any(File.class));
     when(cafeImageRepository.save(cafeImage)).thenReturn(cafeImage);
 
@@ -87,6 +92,7 @@ public class CafeImageServiceTest {
     verify(fileUtil, times(1)).makeDirectory(ImageType.CAFE, authUser.getId());
     verify(fileUtil, times(1)).makeFileName(dirPath, mockImage);
     verify(fileUtil, times(1)).uploadImage(imagePath, mockImage);
+    verify(imageValidationCheck, times(1)).cafeImageOverCount(cafeId, images.size());
     verify(cafeImageRepository, times(1)).save(any());
   }
 
