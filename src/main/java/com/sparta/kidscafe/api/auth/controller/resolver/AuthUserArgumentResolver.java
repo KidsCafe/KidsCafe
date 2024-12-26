@@ -48,7 +48,6 @@ public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
 		RoleType roleType = RoleType.valueOf(jwtUtil.extractRoleType(accessToken));
 		LoginType loginType = LoginType.valueOf(jwtUtil.extractLoginType(accessToken));
 
-		// 일반 로그인 사용자
 		if (loginType == LoginType.BASIC) {
 			return new AuthUser(userId, email, roleType);
 		}
