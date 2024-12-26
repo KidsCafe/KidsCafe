@@ -1,5 +1,15 @@
 package com.sparta.kidscafe.domain.room.service;
 
+import static com.sparta.kidscafe.exception.ErrorCode.FORBIDDEN;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.ListResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
@@ -12,20 +22,15 @@ import com.sparta.kidscafe.domain.room.entity.Room;
 import com.sparta.kidscafe.domain.room.repository.RoomRepository;
 import com.sparta.kidscafe.domain.user.entity.User;
 import com.sparta.kidscafe.exception.BusinessException;
+import java.util.List;
+import java.util.Optional;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
-
-import java.util.List;
-import java.util.Optional;
-
-import static com.sparta.kidscafe.exception.ErrorCode.FORBIDDEN;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
 
 class RoomServiceTest {
 
@@ -41,18 +46,26 @@ class RoomServiceTest {
   private AuthUser mockAuthUser;
   private Cafe mockCafe;
   private Room mockRoom;
+  private AutoCloseable closeable; // AutoCloseable 선언
 
   @BeforeEach
   void setUp() {
-    MockitoAnnotations.openMocks(this);
+    closeable = MockitoAnnotations.openMocks(this); // try-with-resources에 사용될 AutoCloseable 설정
 
     Long userId = 1L;
     mockAuthUser = new AuthUser(userId, "testUser", RoleType.OWNER);
 
-    User mockUser = new User(userId, "testUser", RoleType.OWNER);
-    mockCafe = Cafe.builder().id(1L).user(mockUser).build();
+    User mockUser = User.builder()
+        .id(userId)
+        .nickname("testUser")
+        .role(RoleType.OWNER)
+        .build();
+    mockCafe = Cafe.builder()
+        .id(1L)
+        .user(mockUser)
+        .build();
 
-    mockRoom = mock(Room.class); // mock 객체로 변경
+    mockRoom = mock(Room.class);
     when(mockRoom.getCafe()).thenReturn(mockCafe);
   }
 
@@ -72,7 +85,11 @@ class RoomServiceTest {
   @Test
   void testCreateRoom_Forbidden() {
     Long userId = 2L;
-    User mockUser = new User(userId, "testUser", RoleType.OWNER);
+    User mockUser = User.builder()
+        .id(userId)
+        .nickname("testUser")
+        .role(RoleType.OWNER)
+        .build();
     mockCafe = Cafe.builder().id(1L).user(mockUser).build();
 
     RoomCreateRequestDto request = mock(RoomCreateRequestDto.class);
@@ -99,14 +116,29 @@ class RoomServiceTest {
 
   @Test
   void testUpdateRoom_Success() {
+    // given
     RoomCreateRequestDto request = mock(RoomCreateRequestDto.class);
+    when(request.getName()).thenReturn("Updated Room Name");
+    when(request.getDescription()).thenReturn("Updated Description");
+    when(request.getMinCount()).thenReturn(2);
+    when(request.getMaxCount()).thenReturn(10);
+    when(request.getPrice()).thenReturn(5000);
+
     when(roomRepository.findById(1L)).thenReturn(Optional.of(mockRoom));
 
+    // when
     StatusDto result = roomService.updateRoom(mockAuthUser, 1L, request);
 
-    verify(mockRoom, times(1)).updateRoom(request);
+    // then
+    verify(mockRoom, times(1)).updateRoom(
+        "Updated Room Name",
+        "Updated Description",
+        2,
+        10,
+        5000
+    ); // 엔티티의 메서드와 동일한 인자를 전달
     assertEquals(HttpStatus.OK.value(), result.getStatus());
-    assertEquals("룸 수정완료", result.getMessage());
+    assertEquals("룸 수정 완료", result.getMessage());
   }
 
   @Test
@@ -117,5 +149,10 @@ class RoomServiceTest {
 
     verify(roomRepository, times(1)).delete(mockRoom);
   }
-}
 
+  // AfterEach 추가 AutoCloseable 닫기
+  @AfterEach
+  void tearDown() throws Exception {
+    closeable.close(); // openMocks로 연 AutoCloseable 자원 정리
+  }
+}
