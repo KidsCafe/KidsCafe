@@ -58,21 +58,6 @@ public class OAuth2Service {
 			.build();
 	}
 
-//	public OAuth2UserProfileDto signinForKakao(String provider, String accessToken) {
-//		if(!"kakao".equals(provider)) {
-//			throw new IllegalArgumentException("지원하지 않는 provider입니다.");
-//		}
-//
-//		Map<String, Object> userAttributes = webClient.get()
-//				.uri("https://kapi.kakao.com/v2/user/me")
-//				.headers(headers -> headers.setBearerAuth(accessToken))
-//				.retrieve()
-//				.bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
-//				})
-//				.block();
-//		return OAuth2Attributes.KAKAO.of(userAttributes);
-//	}
-
 	private User saveOrUpdate(OAuth2UserProfileDto userProfileDto) {
 		return userRepository.findByOauthIdAndProvider(userProfileDto.getOauthId(), userProfileDto.getProvider())
 			.map(user -> user.updateOAuth(userProfileDto.getEmail(), userProfileDto.getName(), userProfileDto.getNickname()))
@@ -97,8 +82,10 @@ public class OAuth2Service {
 
 	private MultiValueMap<String, String> tokenRequest(String code, OAuth2Provider provider) {
 		MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-		formData.add("code", code);
 		formData.add("grant_type", "authorization_code");
+		formData.add("client_id", provider.getClientId());
+		formData.add("client_secret", provider.getClientSecret());
+		formData.add("code", code);
 		formData.add("redirect_uri", provider.getRedirectUrl());
 
 		return formData;
