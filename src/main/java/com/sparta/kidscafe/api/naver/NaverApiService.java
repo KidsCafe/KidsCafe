@@ -1,6 +1,5 @@
-package com.sparta.kidscafe.api.naver.service;
+package com.sparta.kidscafe.api.naver;
 
-import com.sparta.kidscafe.api.naver.response.NaverApiResponse;
 import com.sparta.kidscafe.exception.BusinessException;
 import com.sparta.kidscafe.exception.ErrorCode;
 import java.net.URI;

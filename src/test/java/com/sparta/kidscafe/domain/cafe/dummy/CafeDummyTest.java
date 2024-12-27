@@ -24,15 +24,15 @@ import com.sparta.kidscafe.dummy.DummyPricePolicy;
 import com.sparta.kidscafe.dummy.DummyRoom;
 import java.util.Collections;
 import java.util.List;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-@ActiveProfiles("!test")
 @SpringBootTest
+@Tag("dummy-test")
 public class CafeDummyTest {
 
   @Autowired

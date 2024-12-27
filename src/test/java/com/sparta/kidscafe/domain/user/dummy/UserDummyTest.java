@@ -3,7 +3,6 @@ package com.sparta.kidscafe.domain.user.dummy;
 import com.sparta.kidscafe.common.enums.RoleType;
 import com.sparta.kidscafe.domain.user.repository.UserRepository;
 import com.sparta.kidscafe.dummy.DummyUser;
-import javax.annotation.processing.Generated;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
