@@ -38,24 +38,17 @@ public class CafeCrawlerService {
   }
 
   public void crawlCafesByRegion(String city, String district) {
-    String region = city + " " + district;
-    String keyword = region + " 키즈카페";
-
-    int start = 1;
-    int display = 5;
-    while (true) {
-      try {
-        NaverApiResponse response = naverApiService.searchLocal(keyword, display, start, "random");
-        if (response.getItems() == null || response.getItems().isEmpty()) {
-          break;
-        }
-
-        cafeRepository.saveAll(convertDtoToEntity(response, region));
-        start += display; // 다음 페이지 요청
-        Thread.sleep(1000);
-      } catch (Exception e) {
-        logger.error(e.getMessage());
+    try {
+      Thread.sleep(1000);
+      String region = city + " " + district;
+      String keyword = region + " 키즈카페";
+      NaverApiResponse response = naverApiService.searchLocal(keyword);
+      if (response.getItems() == null || response.getItems().isEmpty()) {
+        return;
       }
+      cafeRepository.saveAll(convertDtoToEntity(response, region));
+    } catch (Exception e) {
+      logger.error(e.getMessage());
     }
   }
 

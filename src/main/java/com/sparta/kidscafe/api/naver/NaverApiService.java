@@ -27,9 +27,9 @@ public class NaverApiService {
     this.restTemplate = restTemplate;
   }
 
-  public NaverApiResponse searchLocal(String keyword, int display, int start, String sort) {
+  public NaverApiResponse searchLocal(String keyword) {
     RequestEntity<Void> requestEntity = RequestEntity
-        .get(makeUrl(keyword, display, start, sort))
+        .get(makeUrl(keyword))
         .headers(makeHeaders())
         .build();
 
@@ -53,14 +53,14 @@ public class NaverApiService {
     }
   }
 
-  private URI makeUrl(String keyword, int display, int start, String sort) {
+  private URI makeUrl(String keyword) {
     return UriComponentsBuilder
         .fromUriString("https://openapi.naver.com")
         .path("/v1/search/local.json")
         .queryParam("query", keyword)
-        .queryParam("display", display)
-        .queryParam("start", start)
-        .queryParam("sort", sort)
+        .queryParam("display", 5)
+        .queryParam("start", 1)
+        .queryParam("sort", "random")
         .encode()
         .build()
         .toUri();
