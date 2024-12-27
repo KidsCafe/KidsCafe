@@ -31,10 +31,9 @@ public class RoomController {
   @PostMapping("/cafes/{cafeId}/rooms")
   public ResponseEntity<StatusDto> createRoom(
       @Auth AuthUser authUser,
-      @RequestBody Map<String, Object> data, // 비정형 데이터 처리
+      @Valid @RequestBody RoomCreateRequestDto requestDto, // 비정형 데이터 처리
       @PathVariable("cafeId") Long cafeId
   ) {
-    RoomCreateRequestDto requestDto = new RoomCreateRequestDto(data); // Map 데이터를 DTO로 변환
     StatusDto response = roomService.createRoom(authUser, requestDto, cafeId);
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }

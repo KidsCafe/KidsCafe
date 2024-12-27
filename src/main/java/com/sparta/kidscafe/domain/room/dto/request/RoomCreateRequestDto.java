@@ -33,14 +33,6 @@ public class RoomCreateRequestDto {
   @Positive(message = "방 입장료는 0원 이상이어야 합니다.")
   private Integer price;
 
-  public RoomCreateRequestDto(Map<String, Object> data) {
-    this.name = data.get("name").toString();
-    this.description = data.getOrDefault("description", "").toString();
-    this.minCount = Integer.parseInt(data.getOrDefault("minCount", "1").toString());
-    this.maxCount = Integer.parseInt(data.getOrDefault("maxCount", "2").toString());
-    this.price = Integer.parseInt(data.getOrDefault("price", "0").toString());
-  }
-
   public Room convertDtoToEntity(Cafe cafe) {
     return Room.builder()
         .cafe(cafe)

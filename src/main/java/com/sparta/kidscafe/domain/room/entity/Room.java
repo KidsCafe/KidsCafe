@@ -48,16 +48,6 @@ public class Room extends Timestamped {
   @Column(nullable = false)
   private int price;
 
-  // Map<String, Object> 데이터를 처리하는 생성자
-  public Room(Cafe cafe, Map<String, Object> data) {
-    this.cafe = cafe;
-    this.name = data.get("name").toString();
-    this.description = data.getOrDefault("description", "").toString();
-    this.minCount = Integer.parseInt(data.getOrDefault("minCount", "1").toString());
-    this.maxCount = Integer.parseInt(data.getOrDefault("maxCount", "2").toString());
-    this.price = Integer.parseInt(data.getOrDefault("price", "0").toString());
-  }
-
   public void updateRoom(String name, String description, int minCount, int maxCount, int price) {
     this.name = name;
     this.description = description;

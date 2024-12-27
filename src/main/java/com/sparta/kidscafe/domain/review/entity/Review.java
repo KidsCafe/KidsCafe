@@ -59,17 +59,6 @@ public class Review extends Timestamped {
   @Column(nullable = false)
   private int depth;
 
-
-  // Map<String, Object> 데이터를 처리하는 생성자 추가
-  public Review(Cafe cafe, Map<String, Object> data) {
-    this.cafe = cafe;
-    this.user = null; // 기본적으로 user는 null로 설정
-    this.star = Double.parseDouble(data.get("star").toString());
-    this.content = data.get("content").toString();
-    this.depth = Integer.parseInt(data.getOrDefault("depth", "0").toString());
-  }
-
-  // 리뷰 업데이트 메서드
   public void updateReview(double star, String content) {
     this.star = star;
     this.content = content;

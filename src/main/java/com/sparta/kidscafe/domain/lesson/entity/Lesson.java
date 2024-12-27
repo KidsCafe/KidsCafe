@@ -35,14 +35,6 @@ public class Lesson extends Timestamped {
   @Column
   private int price;
 
-  // Map<String, Object> 데이터를 처리하는 생성자 추가
-  public Lesson(Cafe cafe, Map<String, Object> data) {
-    this.cafe = cafe;
-    this.name = data.get("name").toString();
-    this.description = data.get("description").toString();
-    this.price = Integer.parseInt(data.getOrDefault("price", "0").toString());
-  }
-
   public void update(LessonCreateRequestDto requestDto) {
     this.name = requestDto.getName();
     this.description = requestDto.getDescription();

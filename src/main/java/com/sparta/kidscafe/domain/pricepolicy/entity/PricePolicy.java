@@ -51,18 +51,6 @@ public class PricePolicy extends Timestamped {
   @Column(nullable = false)
   private double rate;
 
-  // Map<String, Object> 데이터를 처리하는 생성자 추가
-  public PricePolicy(Cafe cafe, TargetType targetType, Long targetId, String title, String dayType,
-      double rate) {
-    this.cafe = cafe;
-    this.targetType = targetType;
-    this.targetId = targetId;
-    this.title = title;
-    this.dayType = dayType;
-    this.rate = rate;
-  }
-
-  // 엔티티 업데이트 메서드
   public void updateDetails(Long targetId, String title, String dayType, Double rate) {
     if (targetId != null) {
       this.targetId = targetId;
