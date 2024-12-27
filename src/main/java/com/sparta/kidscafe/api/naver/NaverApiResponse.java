@@ -40,7 +40,7 @@ public class NaverApiResponse {
           .region(region)
           .openedAt(null) // 기본 오픈 시간
           .closedAt(null) // 기본 닫는 시간
-          .size(500) // 기본 크기 설정
+          .size(0) // 기본 크기 설정
           .parking(false) // 기본값 주차 불가능 설정
           .multiFamily(false) // 기본값 설정
           .restaurant(false) // 기본값 설정

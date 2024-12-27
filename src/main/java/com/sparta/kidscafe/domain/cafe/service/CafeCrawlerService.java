@@ -24,7 +24,6 @@ public class CafeCrawlerService {
   private final CafeRepository cafeRepository;
   private final MapService mapService;
 
-  @Transactional
   public void crawlingCafe() {
     String[][] regions = mapService.getRegions();
     for (String[] region : regions) {
