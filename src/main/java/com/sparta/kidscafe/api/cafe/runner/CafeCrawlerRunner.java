@@ -1,13 +1,14 @@
-/*
-package com.sparta.kidscafe.api.cafe.runner;
+/*package com.sparta.kidscafe.api.cafe.runner;
 
 import com.sparta.kidscafe.api.cafe.service.CafeCrawlerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
+@Profile("!test")
 public class CafeCrawlerRunner implements CommandLineRunner {
 
   private static final Logger logger = LoggerFactory.getLogger(CafeCrawlerRunner.class);

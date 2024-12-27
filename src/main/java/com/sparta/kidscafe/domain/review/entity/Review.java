@@ -46,6 +46,7 @@ public class Review extends Timestamped {
   @JoinColumn(name = "parent_review_id")
   private Review parentReview;
 
+  @Builder.Default
   @OneToMany(mappedBy = "parentReview", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Review> replies = new ArrayList<>();
 

@@ -1,33 +1,30 @@
 package com.sparta.kidscafe.api.cafe.service;
 
+import com.sparta.kidscafe.api.map.MapService;
 import com.sparta.kidscafe.api.naver.response.NaverApiResponse;
 import com.sparta.kidscafe.api.naver.service.NaverApiService;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
 import com.sparta.kidscafe.domain.cafe.repository.CafeRepository;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.Point;
+import com.sparta.kidscafe.domain.user.entity.User;
+import com.sparta.kidscafe.domain.user.repository.UserRepository;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Service
+@RequiredArgsConstructor
 public class CafeCrawlerService {
 
   private static final Logger logger = LoggerFactory.getLogger(CafeCrawlerService.class);
-
   private final NaverApiService naverApiService;
   private final CafeRepository cafeRepository;
-  private final GeometryFactory geometryFactory;
-
-  public CafeCrawlerService(NaverApiService naverApiService, CafeRepository cafeRepository) {
-    this.naverApiService = naverApiService;
-    this.cafeRepository = cafeRepository;
-    this.geometryFactory = new GeometryFactory();
-  }
+  private final UserRepository userRepository;
+  private final MapService mapService;
+  private User user;
 
   // 특정 지역 크롤링 및 저장
   public void crawlCafesByRegion(String city, String district) {
@@ -69,18 +66,21 @@ public class CafeCrawlerService {
   // Cafe 엔티티로 매핑
   private Cafe mapToCafeEntity(NaverApiResponse.Item item, String region) {
     try {
-      // 좌표 변환
-      Point location = createPoint(item.getMapx(), item.getMapy());
+      // 임시로 유저 생성
+      if(user == null) {
+        user = userRepository.findById(1L).orElse(null);
+      }
 
       // Cafe 엔티티 생성
       return Cafe.builder()
+          .user(user)
           .name(item.getTitle().replaceAll("<[^>]*>", "")) // HTML 태그 제거
           .hyperlink(item.getLink())
           .address(item.getAddress())
-          .location(location)
+          .location(mapService.convertAddressToGeo(item.getAddress()))
           .region(region)
-          .openedAt(java.time.LocalTime.of(9, 0)) // 기본 오픈 시간
-          .closedAt(java.time.LocalTime.of(21, 0)) // 기본 닫는 시간
+          .openedAt(LocalTime.of(9, 0)) // 기본 오픈 시간
+          .closedAt(LocalTime.of(21, 0)) // 기본 닫는 시간
           .size(500) // 기본 크기 설정
           .parking(false) // 기본값 주차 불가능 설정
           .multiFamily(false) // 기본값 설정
@@ -95,18 +95,6 @@ public class CafeCrawlerService {
           .build();
     } catch (Exception e) {
       logger.error("Error mapping cafe item to entity: {}, error: {}", item, e.getMessage());
-      return null;
-    }
-  }
-
-  // 좌표 생성ㅣ
-  private Point createPoint(String mapx, String mapy) {
-    try {
-      double longitude = Double.parseDouble(mapx) / 1_000_000.0; // 좌표는 소수점 형식으로 변환
-      double latitude = Double.parseDouble(mapy) / 1_000_000.0;
-      return geometryFactory.createPoint(new Coordinate(longitude, latitude));
-    } catch (Exception e) {
-      logger.warn("Invalid coordinates: mapx={}, mapy={}", mapx, mapy);
       return null;
     }
   }

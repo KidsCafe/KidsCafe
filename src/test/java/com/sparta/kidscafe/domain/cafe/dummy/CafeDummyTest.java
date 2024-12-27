@@ -16,18 +16,22 @@ import com.sparta.kidscafe.domain.room.entity.Room;
 import com.sparta.kidscafe.domain.room.repository.RoomRepository;
 import com.sparta.kidscafe.domain.user.entity.User;
 import com.sparta.kidscafe.domain.user.repository.UserRepository;
-import com.sparta.kidscafe.dummy.*;
-import org.junit.jupiter.api.Tag;
+import com.sparta.kidscafe.dummy.DummyCafe;
+import com.sparta.kidscafe.dummy.DummyCafeImage;
+import com.sparta.kidscafe.dummy.DummyFee;
+import com.sparta.kidscafe.dummy.DummyLesson;
+import com.sparta.kidscafe.dummy.DummyPricePolicy;
+import com.sparta.kidscafe.dummy.DummyRoom;
+import java.util.Collections;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
-import java.util.List;
-
-@Tag("dummy-test")
+@ActiveProfiles("!test")
 @SpringBootTest
 public class CafeDummyTest {
 

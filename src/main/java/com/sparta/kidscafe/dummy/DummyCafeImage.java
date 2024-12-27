@@ -11,7 +11,7 @@ public class DummyCafeImage {
 
   public static CafeImage createDummyCafeImage(Cafe cafe, String path) {
     return CafeImage.builder()
-        .cafe(cafe) // 수정: cafe 객체를 직접 설정
+        .cafeId(cafe.getId())
         .imagePath(path)
         .build();
   }
@@ -19,14 +19,14 @@ public class DummyCafeImage {
   public static CafeImage createDummyCafeImage(Long id, Cafe cafe) {
     return CafeImage.builder()
         .id(id)
-        .cafe(cafe) // 수정: cafe 객체를 직접 설정
+        .cafeId(cafe.getId())
         .build();
   }
 
   public static CafeImage createDummyCafeImage(Cafe cafe) {
     String randomImagePath = "https://..." + TestUtil.getRandomString(10) + ".jpg";
     return CafeImage.builder()
-        .cafe(cafe) // 수정: cafe 객체를 직접 설정
+        .cafeId(cafe.getId())
         .imagePath(randomImagePath)
         .build();
   }
