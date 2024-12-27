@@ -9,17 +9,15 @@ import com.sparta.kidscafe.domain.cafe.repository.CafeRepository;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.locationtech.jts.geom.Point;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j(topic = "CafeCrawlerService")
 public class CafeCrawlerService {
 
-  private static final Logger logger = LoggerFactory.getLogger(CafeCrawlerService.class);
   private final NaverApiService naverApiService;
   private final CafeRepository cafeRepository;
   private final MapService mapService;
@@ -47,7 +45,7 @@ public class CafeCrawlerService {
       }
       cafeRepository.saveAll(convertDtoToEntity(response, region));
     } catch (Exception e) {
-      logger.error(e.getMessage());
+      log.error(e.getMessage());
     }
   }
 
