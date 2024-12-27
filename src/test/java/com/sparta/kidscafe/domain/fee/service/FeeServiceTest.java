@@ -28,8 +28,6 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class FeeServiceTest {
 
-  // private static final Logger log = LoggerFactory.getLogger(FeeServiceTest.class);
-
   @Mock
   private FeeRepository feeRepository;
 
@@ -38,6 +36,21 @@ public class FeeServiceTest {
 
   @InjectMocks
   private FeeService feeService;
+
+  @Test
+  @DisplayName("가격표 생성: 카페를 찾을 수 없음 - 실패")
+  void createFee_cafeNotFound_fail() {
+    // given
+    AuthUser authUser = new AuthUser(1L, "owner@test.com", RoleType.OWNER);
+    FeeCreateRequestDto feeCreateRequestDto = new FeeCreateRequestDto(AgeGroup.CHILDREN, 10000);
+
+    when(cafeRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+    // when // then
+    assertThatThrownBy(() -> feeService.createFee(authUser, 1L, feeCreateRequestDto))
+        .isInstanceOf(BusinessException.class)
+        .hasMessageContaining(ErrorCode.CAFE_NOT_FOUND.getMessage());
+  }
 
   @Test
   @DisplayName("가격표 생성: OWNER 권한-본인가게-성공")
@@ -79,14 +92,14 @@ public class FeeServiceTest {
     // when // then
     assertThatThrownBy(() -> feeService.createFee(authUser, 2L, feeCreateRequestDto))
         .isInstanceOf(BusinessException.class)
-        .hasMessageContaining(String.valueOf(ErrorCode.FEE_TABLE_OWN_CREATE));
+        .hasMessageContaining(ErrorCode.FEE_TABLE_OWN_CREATE.getMessage());
 
     verify(cafeRepository, times(1)).findById(2L);
     verify(feeRepository, never()).save(any());
   }
 
   @Test
-  @DisplayName("가격표 생성: USER 권한 - 실패")
+  @DisplayName("가격표 생성: USER 권한-실패")
   void createFee_user_fail() {
     // given
     AuthUser authUser = new AuthUser(1L, "user@test.com", RoleType.USER);
@@ -95,7 +108,7 @@ public class FeeServiceTest {
     // when // then
     assertThatThrownBy(() -> feeService.createFee(authUser, 1L, feeCreateRequestDto))
         .isInstanceOf(BusinessException.class)
-        .hasMessageContaining(String.valueOf(ErrorCode.FEE_TABLE_UNAUTHORIZED));
+        .hasMessageContaining(ErrorCode.FEE_TABLE_UNAUTHORIZED.getMessage());
 
     verify(cafeRepository, never()).findById(any());
     verify(feeRepository, never()).save(any());
@@ -153,7 +166,7 @@ public class FeeServiceTest {
     // when // then
     assertThatThrownBy(() -> feeService.updateFee(authUser, 2L, 1L, feeUpdateRequestDto))
         .isInstanceOf(BusinessException.class)
-        .hasMessageContaining(String.valueOf(ErrorCode.FEE_TABLE_OWN_CREATE));
+        .hasMessageContaining(ErrorCode.FEE_TABLE_OWN_CREATE.getMessage());
 
     verify(cafeRepository, times(1)).findById(2L);
     verify(feeRepository, times(1)).findById(1L);
@@ -169,7 +182,7 @@ public class FeeServiceTest {
     // when // then
     assertThatThrownBy(() -> feeService.updateFee(authUser, 1L, 1L, feeUpdateRequestDto))
         .isInstanceOf(BusinessException.class)
-        .hasMessageContaining(String.valueOf(ErrorCode.FEE_TABLE_UNAUTHORIZED));
+        .hasMessageContaining(ErrorCode.FEE_TABLE_UNAUTHORIZED.getMessage());
 
     verify(cafeRepository, never()).findById(any());
     verify(feeRepository, never()).findById(any());

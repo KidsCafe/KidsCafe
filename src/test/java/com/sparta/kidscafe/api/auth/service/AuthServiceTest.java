@@ -8,6 +8,7 @@ import com.sparta.kidscafe.common.util.PasswordEncoder;
 import com.sparta.kidscafe.domain.user.entity.User;
 import com.sparta.kidscafe.domain.user.repository.UserRepository;
 import com.sparta.kidscafe.exception.BusinessException;
+import com.sparta.kidscafe.exception.ErrorCode;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,6 +39,9 @@ class AuthServiceTest {
   @Mock
   private HttpServletResponse response; // HTTP 응답 객체 Mock
 
+  @Mock
+  private ErrorCode errorCode;
+
   @InjectMocks
   private AuthService authService;
 
@@ -59,7 +63,7 @@ class AuthServiceTest {
     // when // then
     assertThatThrownBy(() -> authService.signup(signupRequestDto))
         .isInstanceOf(BusinessException.class)
-        .hasMessageContaining(String.valueOf(DUPLICATE_EMAIL));
+        .hasMessageContaining(ErrorCode.DUPLICATE_EMAIL.getMessage());
   }
 
   @Test
@@ -97,7 +101,7 @@ class AuthServiceTest {
     // when // then
     assertThatThrownBy(() -> authService.signin(response, signinRequestDto))
         .isInstanceOf(BusinessException.class)
-        .hasMessageContaining(String.valueOf(USER_NOT_FOUND));
+        .hasMessageContaining(ErrorCode.USER_NOT_FOUND.getMessage());
   }
 
   @Test
@@ -115,7 +119,7 @@ class AuthServiceTest {
     // when // then
     assertThatThrownBy(() -> authService.signin(response, signinRequestDto))
         .isInstanceOf(BusinessException.class)
-        .hasMessageContaining(String.valueOf(WRONG_PASSWORD));
+        .hasMessageContaining(ErrorCode.WRONG_PASSWORD.getMessage());
   }
 
   @Test

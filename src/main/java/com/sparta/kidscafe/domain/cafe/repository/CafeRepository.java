@@ -26,4 +26,6 @@ public interface CafeRepository extends JpaRepository<Cafe, Long>, CafeDslReposi
 }
 
   List<Cafe> findAllByRegion(String region);
+
+  Long countByUserId(Long userId);
 }

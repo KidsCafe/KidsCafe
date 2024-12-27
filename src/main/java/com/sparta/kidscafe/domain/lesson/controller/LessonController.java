@@ -27,9 +27,11 @@ public class LessonController {
       @Valid @RequestBody LessonCreateRequestDto requestDto
   ) {
     AuthValidationCheck.validOwner(authUser);
+    lessonService.createLesson(authUser, cafeId, requestDto);
+    String message = "[" + requestDto.getName() + "] 프로그램 등록 성공";
     return ResponseEntity
         .status(HttpStatus.CREATED)
-        .body(lessonService.createLesson(authUser, cafeId, requestDto));
+        .body(StatusDto.createStatusDto(HttpStatus.CREATED, message));
   }
 
   @GetMapping("/cafes/{cafeId}/lessons")
@@ -40,7 +42,7 @@ public class LessonController {
     AuthValidationCheck.validOwner(authUser);
     return ResponseEntity
         .status(HttpStatus.OK)
-        .body(lessonService.searchLesson(authUser, cafeId));
+        .body(ListResponseDto.create(lessonService.searchLesson(authUser, cafeId)));
   }
 
   @PatchMapping("/lessons/{lessonId}")
@@ -50,9 +52,11 @@ public class LessonController {
       @Valid @RequestBody LessonCreateRequestDto requestDto
   ) {
     AuthValidationCheck.validOwner(authUser);
+    lessonService.updateLesson(lessonId, requestDto);
+    String message = "[" + requestDto.getName() + "] 수정 성공";
     return ResponseEntity
         .status(HttpStatus.OK)
-        .body(lessonService.updateLesson(lessonId, requestDto));
+        .body(StatusDto.createStatusDto(HttpStatus.OK, message));
   }
 
   @DeleteMapping("lessons/{lessonId}")

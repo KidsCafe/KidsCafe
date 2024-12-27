@@ -113,3 +113,6 @@ CREATE TABLE IF NOT EXISTS bookmarks
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
     FOREIGN KEY (cafe_id) REFERENCES cafes (id) ON DELETE CASCADE
 );
+
+-- Cafe SPATIAL INDEX 생성 JPA에서 제공 안해줌ㅠ
+ALTER TABLE cafe ADD SPATIAL INDEX idx_location (location);
