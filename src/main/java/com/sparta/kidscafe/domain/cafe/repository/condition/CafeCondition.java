@@ -74,11 +74,11 @@ public class CafeCondition extends BaseCondition {
   }
 
   public BooleanExpression withInRadius(Double lon, Double lat, Double radiusMeter) {
-    if(geoUtil.validWktPoint(lon, lat)) {
+    if (geoUtil.validWktPoint(lon, lat)) {
       return null;
     }
 
-    if(radiusMeter == null || radiusMeter <= 0) {
+    if (radiusMeter == null || radiusMeter <= 0) {
       return null;
     }
 

@@ -1,7 +1,6 @@
 package com.sparta.kidscafe.domain.cafe.service;
 
 import com.sparta.kidscafe.common.dto.AuthUser;
-import com.sparta.kidscafe.common.dto.ListResponseDto;
 import com.sparta.kidscafe.common.enums.ImageType;
 import com.sparta.kidscafe.common.util.FileStorageUtil;
 import com.sparta.kidscafe.common.util.valid.CafeValidationCheck;
@@ -13,7 +12,6 @@ import com.sparta.kidscafe.domain.image.dto.ImageResponseDto;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,7 +26,8 @@ public class CafeImageService {
   private final FileStorageUtil fileStorage;
 
   @Transactional
-  public List<ImageResponseDto> uploadCafeImage(AuthUser authUser, Long cafeId, List<MultipartFile> images) {
+  public List<ImageResponseDto> uploadCafeImage(AuthUser authUser, Long cafeId,
+      List<MultipartFile> images) {
     imageValidationCheck.cafeImageOverCount(cafeId, images.size());
     return uploadCafeImage(authUser.getId(), cafeId, images);
   }
@@ -42,7 +41,8 @@ public class CafeImageService {
     }
   }
 
-  private List<ImageResponseDto> uploadCafeImage(Long userId, Long cafeId, List<MultipartFile> images) {
+  private List<ImageResponseDto> uploadCafeImage(Long userId, Long cafeId,
+      List<MultipartFile> images) {
     List<ImageResponseDto> responseImages = new ArrayList<>();
     for (MultipartFile image : images) {
       String imagePath = uploadCafeImage(userId, image);
