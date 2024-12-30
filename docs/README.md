@@ -64,16 +64,14 @@
 
 ## 🖥️개발환경
 ### 🧷사용 언어/라이브러리
-<img src="https://img.shields.io/badge/Java-000000?style=for-the-badge&logo=java&logoColor=white">
-<img src="https://img.shields.io/badge/Spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white">
+<img src="https://img.shields.io/badge/Java-000000?style=for-the-badge&logo=java&logoColor=white"><img src="https://img.shields.io/badge/Spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white">
 <img src="https://img.shields.io/badge/JPA-6DB33F?style=for-the-badge&logo=java&logoColor=white">
 <img src="https://img.shields.io/badge/JWT-FF007F?style=for-the-badge&logo=java&logoColor=white">
 <img src="https://img.shields.io/badge/QueryDsl-4374D9?style=for-the-badge&logo=java&logoColor=white">
 <img src="https://img.shields.io/badge/junit5-25A162?style=for-the-badge&logo=junit5&logoColor=white">
 
 ### 🧷운용 환경
-<img src="https://img.shields.io/badge/Windows 11-02A8EF?style=for-the-badge&logo=windows&logoColor=white">
-<img src="https://img.shields.io/badge/EC2-FF9900?style=for-the-badge&logo=amazonec2&logoColor=white">
+<img src="https://img.shields.io/badge/Windows 11-02A8EF?style=for-the-badge&logo=windows&logoColor=white"><img src="https://img.shields.io/badge/EC2-FF9900?style=for-the-badge&logo=amazonec2&logoColor=white">
 <img src="https://img.shields.io/badge/S3 bucket-569A31?style=for-the-badge&logo=amazons3&logoColor=white">
 <img src="https://img.shields.io/badge/RDS-527FFF?style=for-the-badge&logo=amazonrds&logoColor=white">
 <img src="https://img.shields.io/badge/Elastic Load Blalancing-8C4FFF?style=for-the-badge&logo=awselasticloadbalancing&logoColor=white"><br/>
@@ -81,17 +79,15 @@
 <img src="https://img.shields.io/badge/Github Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white">
 
 ### 🧷개발 환경 & 데이터베이스
-<img src="https://img.shields.io/badge/Intellij-000000?style=for-the-badge&logo=intellij idea&logoColor=white">
-<img src="https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white"> 
+<img src="https://img.shields.io/badge/Intellij-000000?style=for-the-badge&logo=intellij idea&logoColor=white"><img src="https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white"> 
 <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white"> <br/>
 <img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white">
 <img src="https://img.shields.io/badge/Redis-FF4438?style=for-the-badge&logo=redis&logoColor=white">
 
 ### 🧷외부 API
-<img src="https://img.shields.io/badge/Kakao-FFCD00?style=for-the-badge&logo=kakaotalk&logoColor=black">
-<img src="https://img.shields.io/badge/Naver-03C75A?style=for-the-badge&logo=Naver&logoColor=white">
+<img src="https://img.shields.io/badge/Kakao-FFCD00?style=for-the-badge&logo=kakaotalk&logoColor=black"><img src="https://img.shields.io/badge/Naver-03C75A?style=for-the-badge&logo=Naver&logoColor=white">
 <img src="https://img.shields.io/badge/Google-4285F4?style=for-the-badge&logo=Google&logoColor=white">
-<img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white"> <br/>
+<img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white">
 
 ## 📑API 명세서
 ### 🧷유저 API 명세
