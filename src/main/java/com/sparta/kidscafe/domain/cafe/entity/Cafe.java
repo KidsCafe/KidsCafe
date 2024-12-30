@@ -92,6 +92,9 @@ public class Cafe extends Timestamped {
   @Column(updatable = false)
   private LocalTime closedAt;
 
+  @OneToOne(mappedBy = "cafe", cascade = CascadeType.ALL, orphanRemoval = true)
+  CafeViewCount cafeViewCount;
+
   @Builder.Default
   @OneToMany(
       mappedBy = "cafe",

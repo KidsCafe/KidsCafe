@@ -19,12 +19,6 @@ public interface CafeRepository extends JpaRepository<Cafe, Long>, CafeDslReposi
 
   List<Cafe> findAllByUserIdAndIdIn(Long userId, List<Long> ids);
 
-//  @Query("Select new dto(c.id, c.name, c.address) From Cafe c Where c.name Like %:keyword%")
-//  List<Cafe> findByKeyword(@Param("keyword") String keyword);
-
-//  Page<Cafe> findByNameContaining(String name, Pageable pageable);
-}
-
   List<Cafe> findAllByRegion(String region);
 
   Long countByUserId(Long userId);
