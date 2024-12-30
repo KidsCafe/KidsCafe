@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
-public class CafeViewController {
+public class CafeViewCountController {
 
   private final CafeViewCountService cafeViewCountService;
 
