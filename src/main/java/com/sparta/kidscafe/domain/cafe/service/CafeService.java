@@ -9,7 +9,6 @@ import com.sparta.kidscafe.domain.cafe.dto.request.CafeSimpleRequestDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeDetailResponseDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeResponseDto;
 import com.sparta.kidscafe.domain.cafe.dto.response.CafeSimpleResponseDto;
-import com.sparta.kidscafe.domain.cafe.dto.response.CafeSearchResponseDto;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
 import com.sparta.kidscafe.domain.cafe.entity.CafeImage;
 import com.sparta.kidscafe.domain.cafe.repository.CafeImageRepository;
@@ -18,13 +17,9 @@ import com.sparta.kidscafe.domain.cafe.repository.condition.CafeSearchCondition;
 import com.sparta.kidscafe.domain.user.entity.User;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.Point;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,13 +43,13 @@ public class CafeService {
   }
 
   public void creatCafe(AuthUser authUser, List<CafeSimpleRequestDto> requestCafes) {
-    if(requestCafes == null || requestCafes.isEmpty()) {
+    if (requestCafes == null || requestCafes.isEmpty()) {
       return;
     }
 
     User user = userValidationCheck.findUser(authUser.getId());
     List<Cafe> cafes = new ArrayList<>();
-    for(CafeSimpleRequestDto requestCafe : requestCafes) {
+    for (CafeSimpleRequestDto requestCafe : requestCafes) {
       Point location = mapService.convertAddressToGeo(requestCafe.getAddress());
       Cafe cafe = requestCafe.convertDtoToEntity(user, location);
       cafes.add(cafe);
@@ -72,7 +67,7 @@ public class CafeService {
   }
 
   @Transactional
-  public void updateCafe(AuthUser authUser, Long cafeId, CafeSimpleRequestDto requestDto)  {
+  public void updateCafe(AuthUser authUser, Long cafeId, CafeSimpleRequestDto requestDto) {
     Point location = mapService.convertAddressToGeo(requestDto.getAddress());
     Cafe cafe = cafeValidationCheck.validMyCafe(cafeId, authUser.getId());
     cafe.update(requestDto, location);
@@ -131,17 +126,4 @@ public class CafeService {
     cafeDetailResponseDto.setPricePolicies(cafe.getPricePolicies());
     return cafeDetailResponseDto;
   }
-
-  // DB 검색
-//  public PageResponseDto<CafeSearchResponseDto> searchCafeV1(String name, int page, int size) {
-//    Pageable pageable = PageRequest.of(page, size);
-//    Page<Cafe> cafePage = cafeRepository.findByNameContaining(name, pageable);
-//    Page<CafeSearchResponseDto> cafes = cafePage
-//        .map(cafe -> new CafeSearchResponseDto(
-//            cafe.getId(),
-//            cafe.getName(),
-//            cafe.getAddress()
-//        ));
-//    return PageResponseDto.success(cafes, HttpStatus.OK, "카페 검색 성공");
-//  }
 }
