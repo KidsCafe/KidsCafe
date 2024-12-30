@@ -76,4 +76,21 @@ public class TestUtil {
     int minute = random.nextInt(6) * 10; // 0, 10, 20, 30, 40, 50
     return LocalDateTime.of(LocalDate.now(), LocalTime.of(hour, minute));
   }
+
+  private static final List<String> KOREAN_MAJOR_CITIES = List.of(
+      "서울특별시",
+      "부산광역시",
+      "대구광역시",
+      "인천광역시",
+      "대전광역시",
+      "울산광역시",
+      "광주광역시"
+  );
+
+  public static String getRandomRegion() {
+    int randomIndex = getRandomInteger(0, KOREAN_MAJOR_CITIES.size() - 1);
+    return KOREAN_MAJOR_CITIES.get(randomIndex);
+  }
+
+
 }
