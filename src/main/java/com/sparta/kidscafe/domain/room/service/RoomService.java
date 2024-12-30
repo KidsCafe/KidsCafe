@@ -1,5 +1,9 @@
 package com.sparta.kidscafe.domain.room.service;
 
+import static com.sparta.kidscafe.exception.ErrorCode.CAFE_NOT_FOUND;
+import static com.sparta.kidscafe.exception.ErrorCode.FORBIDDEN;
+import static com.sparta.kidscafe.exception.ErrorCode.ROOM_NOT_FOUND;
+
 import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.ListResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
@@ -10,14 +14,11 @@ import com.sparta.kidscafe.domain.room.dto.response.RoomResponseDto;
 import com.sparta.kidscafe.domain.room.entity.Room;
 import com.sparta.kidscafe.domain.room.repository.RoomRepository;
 import com.sparta.kidscafe.exception.BusinessException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-
-import static com.sparta.kidscafe.exception.ErrorCode.*;
 
 @Transactional
 @Service
@@ -28,17 +29,16 @@ public class RoomService {
   private final CafeRepository cafeRepository;
 
   public StatusDto createRoom(AuthUser authUser, RoomCreateRequestDto request, Long cafeId) {
+    Long userId = authUser.getId();
 
-    Long id = authUser.getId();
+    Cafe cafe = cafeRepository.findById(cafeId)
+        .orElseThrow(() -> new BusinessException(CAFE_NOT_FOUND));
 
-    Cafe cafe = cafeRepository.findById(cafeId).orElseThrow(() -> new BusinessException(CAFE_NOT_FOUND));
-
-    if (!id.equals(cafe.getUser().getId())) {
+    if (!userId.equals(cafe.getUser().getId())) {
       throw new BusinessException(FORBIDDEN);
     }
 
     Room newRoom = request.convertDtoToEntity(cafe);
-
     roomRepository.save(newRoom);
 
     return StatusDto.builder()
@@ -49,45 +49,51 @@ public class RoomService {
 
   @Transactional(readOnly = true)
   public ListResponseDto<RoomResponseDto> getRooms(Long cafeId) {
-
-    cafeRepository.findById(cafeId).orElseThrow(() -> new BusinessException(CAFE_NOT_FOUND));
+    cafeRepository.findById(cafeId)
+        .orElseThrow(() -> new BusinessException(CAFE_NOT_FOUND));
 
     List<Room> roomList = roomRepository.findAllByCafeId(cafeId);
 
-    return ListResponseDto.success(roomList.stream()
+    return ListResponseDto.success(
+        roomList.stream()
             .map(RoomResponseDto::from)
             .toList(),
         HttpStatus.OK,
-        "룸 조회 성공");
+        "룸 조회 성공"
+    );
   }
 
   public StatusDto updateRoom(AuthUser authUser, Long roomId, RoomCreateRequestDto request) {
+    Long userId = authUser.getId();
 
-    Long id = authUser.getId();
+    Room room = roomRepository.findById(roomId)
+        .orElseThrow(() -> new BusinessException(ROOM_NOT_FOUND));
 
-    Room room = roomRepository.findById(roomId).orElseThrow(() -> new BusinessException(ROOM_NOT_FOUND));
-
-    //캐싱적용 가능 부분
-    if (!id.equals(room.getCafe().getUser().getId())) {
+    if (!userId.equals(room.getCafe().getUser().getId())) {
       throw new BusinessException(FORBIDDEN);
     }
 
-    room.updateRoom(request);
+    room.updateRoom(
+        request.getName(),
+        request.getDescription(),
+        request.getMinCount(),
+        request.getMaxCount(),
+        request.getPrice()
+    );
 
     return StatusDto.builder()
         .status(HttpStatus.OK.value())
-        .message("룸 수정완료")
+        .message("룸 수정 완료")
         .build();
   }
 
   public void deleteRoom(AuthUser authUser, Long roomId) {
+    Long userId = authUser.getId();
 
-    Long id = authUser.getId();
+    Room room = roomRepository.findById(roomId)
+        .orElseThrow(() -> new BusinessException(ROOM_NOT_FOUND));
 
-    Room room = roomRepository.findById(roomId).orElseThrow(() -> new BusinessException(ROOM_NOT_FOUND));
-
-    //캐싱적용 가능 부분
-    if (!id.equals(room.getCafe().getUser().getId())) {
+    if (!userId.equals(room.getCafe().getUser().getId())) {
       throw new BusinessException(FORBIDDEN);
     }
 

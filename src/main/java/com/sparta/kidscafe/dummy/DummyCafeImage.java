@@ -24,7 +24,7 @@ public class DummyCafeImage {
   }
 
   public static CafeImage createDummyCafeImage(Cafe cafe) {
-    String randomImagePath = "http://..." + TestUtil.getRandomString(10) + ".jpg";
+    String randomImagePath = "https://..." + TestUtil.getRandomString(10) + ".jpg";
     return CafeImage.builder()
         .cafeId(cafe.getId())
         .imagePath(randomImagePath)
@@ -48,7 +48,7 @@ public class DummyCafeImage {
   }
 
   public static List<CafeImage> createDummyGhostImages(int size) {
-    String randomImagePath = "http://..." + TestUtil.getRandomString(10) + ".jpg";
+    String randomImagePath = "https://..." + TestUtil.getRandomString(10) + ".jpg";
     List<CafeImage> images = new ArrayList<>();
     for (int idx = 0; idx < size; idx++) {
       images.add(CafeImage.builder().imagePath(randomImagePath).build());
