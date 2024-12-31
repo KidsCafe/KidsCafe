@@ -117,8 +117,9 @@ jobs:
           envs: GITHUB_SHA
           script: |
             sudo docker ps
+            sudo docker stop kidscafe 2> /dev/null
+            sudo docker rm kidscafe 2> /dev/null
             sudo docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_TOKEN }}
             sudo docker pull ${{ secrets.DOCKER_REPONAME }}/${{ secrets.DOCKER_IMAGE }}
-            sudo docker run -d -p 8080:8080 ${{ secrets.DOCKER_REPONAME }}/${{ secrets.DOCKER_IMAGE }}
-            sudo docker image prune -f
+            sudo docker run --name kidscafe -d -p 8080:8080 ${{ secrets.DOCKER_REPONAME }}/${{ secrets.DOCKER_IMAGE }}
             sudo docker ps
