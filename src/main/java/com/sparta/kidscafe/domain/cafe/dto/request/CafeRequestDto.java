@@ -65,29 +65,33 @@ public class CafeRequestDto extends CafeSimpleRequestDto {
 
   public List<Room> convertDtoToEntityByRoom(Cafe cafe) {
     List<Room> cafeRooms = new ArrayList<>();
-    for(RoomCreateRequestDto dto : rooms)
+    for (RoomCreateRequestDto dto : rooms) {
       cafeRooms.add(dto.convertDtoToEntity(cafe));
+    }
     return cafeRooms;
   }
 
   public List<Lesson> convertDtoToEntityByLesson(Cafe cafe) {
     List<Lesson> cafeLessons = new ArrayList<>();
-    for(LessonCreateRequestDto dto : lessons)
+    for (LessonCreateRequestDto dto : lessons) {
       cafeLessons.add(dto.convertDtoToEntity(cafe));
+    }
     return cafeLessons;
   }
 
   public List<Fee> convertDtoToEntityByFee(Cafe cafe) {
     List<Fee> cafeFees = new ArrayList<>();
-    for(FeeCreateRequestDto dto : fees)
+    for (FeeCreateRequestDto dto : fees) {
       cafeFees.add(dto.convertDtoToEntity(cafe));
+    }
     return cafeFees;
   }
 
   public List<PricePolicy> convertDtoToEntityByPricePolicy(Cafe cafe) {
     List<PricePolicy> cafePricePolicies = new ArrayList<>();
-    for(PricePolicyCreateRequestDto dto : pricePolicies)
+    for (PricePolicyCreateRequestDto dto : pricePolicies) {
       cafePricePolicies.add(dto.convertDtoToEntity(cafe));
+    }
     return cafePricePolicies;
   }
 }

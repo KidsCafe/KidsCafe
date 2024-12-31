@@ -43,13 +43,13 @@ public class CafeService {
   }
 
   public void creatCafe(AuthUser authUser, List<CafeSimpleRequestDto> requestCafes) {
-    if(requestCafes == null || requestCafes.isEmpty()) {
+    if (requestCafes == null || requestCafes.isEmpty()) {
       return;
     }
 
     User user = userValidationCheck.findUser(authUser.getId());
     List<Cafe> cafes = new ArrayList<>();
-    for(CafeSimpleRequestDto requestCafe : requestCafes) {
+    for (CafeSimpleRequestDto requestCafe : requestCafes) {
       Point location = mapService.convertAddressToGeo(requestCafe.getAddress());
       Cafe cafe = requestCafe.convertDtoToEntity(user, location);
       cafes.add(cafe);
@@ -67,7 +67,7 @@ public class CafeService {
   }
 
   @Transactional
-  public void updateCafe(AuthUser authUser, Long cafeId, CafeSimpleRequestDto requestDto)  {
+  public void updateCafe(AuthUser authUser, Long cafeId, CafeSimpleRequestDto requestDto) {
     Point location = mapService.convertAddressToGeo(requestDto.getAddress());
     Cafe cafe = cafeValidationCheck.validMyCafe(cafeId, authUser.getId());
     cafe.update(requestDto, location);
