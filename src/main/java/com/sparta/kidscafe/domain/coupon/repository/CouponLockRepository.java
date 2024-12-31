@@ -1,17 +1,14 @@
 package com.sparta.kidscafe.domain.coupon.repository;
 
 import com.sparta.kidscafe.domain.coupon.entity.CouponLock;
-import jakarta.persistence.LockModeType;
+import jakarta.persistence.QueryHint;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Lock;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+import org.springframework.data.jpa.repository.QueryHints;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface CouponLockRepository extends JpaRepository<CouponLock, Long> {
-
-  @Lock(LockModeType.OPTIMISTIC)
-  @Query("SELECT c FROM CouponLock c WHERE c.id = :id")
-  Optional<CouponLock> findByIdWithLock(@Param("id") Long id);
-
+  @QueryHints({@QueryHint(name = "javax.persistence.lock.timeout", value = "1000")})
+  Optional<CouponLock> findById(Long id);
 }

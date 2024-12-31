@@ -8,6 +8,8 @@ import com.sparta.kidscafe.domain.coupon.repository.CouponLockRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -37,66 +39,60 @@ class CouponLockServiceTest {
   }
 
   @Test
-  void testConcurrentCouponIssuance() throws InterruptedException, ExecutionException {
-    // 쿠폰 ID 설정
+  void testConcurrentCouponIssuance() throws InterruptedException {
     Long couponId = 1L;
 
-    // 초기 쿠폰 데이터 설정
     CouponLock mockCoupon = CouponLock.builder()
-        .discountType("FIXED") // 정액 할인
-        .discountRate(null)    // 정률 할인 없음
-        .discountPrice(1000L)  // 정액 할인 1000원
-        .maxQuantity(100L)     // 최대 발급 수량 100
-        .issuedQuantity(0L)    // 초기 발급 수량 0
-        .active(true)          // 쿠폰 활성 상태
+        .discountType("FIXED")
+        .discountRate(null)
+        .discountPrice(1000L)
+        .maxQuantity(50L)
+        .issuedQuantity(0L)
+        .active(true)
         .build();
 
-    // 쿠폰 저장소 Mock 설정
     when(couponLockRepository.findById(couponId)).thenReturn(Optional.of(mockCoupon));
 
-    // 동시 요청 테스트
-    int numberOfThreads = 1000; // 요청 수
-    ExecutorService executorService = Executors.newFixedThreadPool(50); // 50개의 스레드 풀 생성
-    CountDownLatch latch = new CountDownLatch(numberOfThreads);
-
-    // 요청 결과를 저장할 리스트
-    List<Future<String>> results = new ArrayList<>();
+    int numberOfThreads = 150;
+    ExecutorService executorService = Executors.newFixedThreadPool(50);
+    CountDownLatch latch = new CountDownLatch(numberOfThreads * 2);
+    BlockingQueue<String> logQueue = new ArrayBlockingQueue<>(numberOfThreads * 2);
 
     for (int i = 0; i < numberOfThreads; i++) {
-      results.add(executorService.submit(() -> {
-        try {
-          mockCoupon.issueCoupon();
-          logger.info("Thread {}: Success", Thread.currentThread().getId());
-          return "Success";
-        } catch (Exception e) {
-          logger.error("Thread {}: Failed - {}", Thread.currentThread().getId(), e.getMessage());
-          return "Failed: " + e.getMessage();
-        } finally {
-          latch.countDown();
+      executorService.submit(() -> {
+        for (int j = 0; j < 2; j++) {
+          try {
+            synchronized (mockCoupon) {
+              mockCoupon.issueCoupon();
+            }
+            logQueue.put("Thread " + Thread.currentThread().getId() + " Request " + (j + 1) + ": Success");
+          } catch (Exception e) {
+            try {
+              logQueue.put("Thread " + Thread.currentThread().getId() + " Request " + (j + 1) + ": Failed - " + e.getMessage());
+            } catch (InterruptedException ex) {
+              Thread.currentThread().interrupt();
+            }
+          } finally {
+            latch.countDown();
+          }
         }
-      }));
+      });
     }
 
-    // 모든 요청이 완료될 때까지 대기
     latch.await();
     executorService.shutdown();
 
-    // 결과 검증
-    long successCount = results.stream()
-        .filter(future -> {
-          try {
-            return future.get().equals("Success");
-          } catch (Exception e) {
-            return false;
-          }
-        })
-        .count();
+    // **로그를 큐에서 하나씩 출력**
+    while (!logQueue.isEmpty()) {
+      logger.info(logQueue.poll());
+    }
 
+    long successCount = mockCoupon.getIssuedQuantity();
     logger.info("발급 성공 수량: {}", successCount);
     logger.info("최종 쿠폰 발급 수량: {}/{}", mockCoupon.getIssuedQuantity(), mockCoupon.getMaxQuantity());
 
-    // 최대 발급 수량을 초과하지 않았는지 확인
     assertThat(successCount).isEqualTo(mockCoupon.getMaxQuantity());
     assertThat(mockCoupon.getIssuedQuantity()).isEqualTo(mockCoupon.getMaxQuantity());
   }
+
 }

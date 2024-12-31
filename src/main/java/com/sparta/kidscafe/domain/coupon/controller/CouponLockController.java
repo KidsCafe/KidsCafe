@@ -1,6 +1,7 @@
 package com.sparta.kidscafe.domain.coupon.controller;
 
-import com.sparta.kidscafe.domain.coupon.dto.request.CouponLockIssueRequestDto;
+import com.sparta.kidscafe.domain.coupon.dto.request.CouponLockCreateRequestDto;
+import com.sparta.kidscafe.domain.coupon.entity.CouponLock;
 import com.sparta.kidscafe.domain.coupon.service.CouponLockService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,14 +14,24 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/coupons")
+@RequestMapping("/api")
 public class CouponLockController {
 
   private final CouponLockService couponLockService;
 
+  @PostMapping("/cafes/{cafeId}/coupon}")
+  public ResponseEntity<String> createCoupon(@RequestBody CouponLockCreateRequestDto requestDto) {
+    couponLockService.createCoupon(requestDto);
+    return ResponseEntity.ok("Coupon created successfully");
+  }
+
   @PostMapping("/issue/{id}")
   public ResponseEntity<String> issueCoupon(@PathVariable Long id) {
-    String result = couponLockService.issueCoupon(id);
-    return ResponseEntity.ok(result);
+    try {
+      String result = couponLockService.issueCoupon(id);
+      return ResponseEntity.ok(result);
+    } catch (IllegalStateException e) {
+      return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+    }
   }
 }
