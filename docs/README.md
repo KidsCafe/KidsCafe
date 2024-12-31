@@ -15,11 +15,11 @@
 
 <table>
     <tr>
-        <td><img src="images/Team/김혜진.png", height="100x", width="100px"></td>
-        <td><img src="images/Team/박견우.png", height="100x", width="100px"></td>
-        <td><img src="images/Team/박도현.png", height="100x", width="100px"></td>
-        <td><img src="images/Team/류지수.png", height="100x", width="100px"></td>
-        <td><img src="images/Team/김현정.png", height="100x", width="100px"></td>
+ <td>![김혜진](https://github.com/user-attachments/assets/322a7b29-3024-46d1-b577-f8cab7466912), height="100x", width="100px"></td>
+ <td>![박견우](https://github.com/user-attachments/assets/c10c0a32-2e02-4ad8-8e5c-3b2cfef82acb), height="100x", width="100px"></td>
+ <td>![박도현](https://github.com/user-attachments/assets/bf27a70b-30ca-4cef-a7d0-ff96684158a2), height="100x", width="100px"></td>
+ <td>![류지수](https://github.com/user-attachments/assets/e9b41319-dc8d-4542-b571-0a4519db6372), height="100x", width="100px"></td>
+ <td>![김현정](https://github.com/user-attachments/assets/25daa37e-103b-4131-ab4d-9332c5a78328), height="100x", width="100px"></td>
     </tr>
     <tr>
         <td align="center">👑김혜진<br/>(리더)</td>
