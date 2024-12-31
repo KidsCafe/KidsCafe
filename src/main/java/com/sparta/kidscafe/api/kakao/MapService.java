@@ -1,4 +1,4 @@
-package com.sparta.kidscafe.api.map;
+package com.sparta.kidscafe.api.kakao;
 
 import com.sparta.kidscafe.common.util.GeoUtil;
 import org.json.JSONArray;
@@ -18,14 +18,20 @@ import java.net.URI;
 @Service
 public class MapService {
 
-  private final RestTemplate restTemplate;
-  private final GeoUtil geoUtil;
   @Value("${kakao.rest-api-key}")
   private String restApiKey;
+  private final RestTemplate restTemplate;
+  private final GeoUtil geoUtil;
+  private final Regions regions;
 
   public MapService(RestTemplateBuilder builder, GeoUtil geoUtil) {
     this.restTemplate = builder.build();
     this.geoUtil = geoUtil;
+    regions = new Regions();
+  }
+
+  public String[][] getRegions() {
+    return regions.getRegions();
   }
 
   public Point convertAddressToGeo(String address) {

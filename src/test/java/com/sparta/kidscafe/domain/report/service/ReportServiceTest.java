@@ -1,5 +1,11 @@
 package com.sparta.kidscafe.domain.report.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.PageResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
@@ -18,6 +24,8 @@ import com.sparta.kidscafe.domain.user.entity.User;
 import com.sparta.kidscafe.domain.user.repository.UserRepository;
 import com.sparta.kidscafe.exception.BusinessException;
 import com.sparta.kidscafe.exception.ErrorCode;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -28,15 +36,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ReportServiceTest {
@@ -59,15 +58,30 @@ class ReportServiceTest {
     Long userId = 1L;
     Long reviewId = 2L;
     Long cafeId = 3L;
+
     AuthUser authUser = new AuthUser(userId, "test@example.com", RoleType.OWNER);
     Cafe cafe = Cafe.builder()
         .id(cafeId)
-        .name("cafe")
+        .name("Test Cafe")
         .build();
+
+    User user = User.builder()
+        .id(userId)
+        .email("test@example.com")
+        .name("testUser") // `username` 대신 `name` 사용
+        .role(RoleType.OWNER)
+        .build();
+
+    Review review = Review.builder()
+        .id(reviewId)
+        .user(user)
+        .cafe(cafe)
+        .star(4.5)
+        .content("Test content")
+        .build();
+
     ReportRequestDto request = new ReportRequestDto("신고 내용");
 
-    User user = new User(userId, "testUser", RoleType.OWNER);
-    Review review = new Review(reviewId, user, cafe, 4.5, "content");
     when(userRepository.findById(userId)).thenReturn(Optional.of(user));
     when(reviewRepository.findById(reviewId)).thenReturn(Optional.of(review));
     when(cafeRepository.existsByIdAndUserId(review.getCafe().getId(), userId)).thenReturn(true);
@@ -139,7 +153,8 @@ class ReportServiceTest {
     AuthUser authUser = new AuthUser(userId, "test@example.com", RoleType.OWNER);
     Pageable pageable = PageRequest.of(0, 10);
 
-    Report report = new Report(1L, new User(userId, "testUser", RoleType.OWNER), new Review(), "신고 내용", ReportType.PENDING);
+    Report report = new Report(1L, new User(userId, "testUser", RoleType.OWNER), new Review(),
+        "신고 내용", ReportType.PENDING);
     Page<Report> reports = new PageImpl<>(List.of(report));
 
     when(reportRepository.findAllByUserId(userId, pageable)).thenReturn(reports);

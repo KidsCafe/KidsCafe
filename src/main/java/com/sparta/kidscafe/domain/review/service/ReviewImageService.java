@@ -32,8 +32,9 @@ public class ReviewImageService {
 
   public StatusDto uploadImage(Long userId, Long reviewId, List<MultipartFile> reviewImages) {
     List<ReviewImage> images = new ArrayList<>();
+    String dirPath = fileStorage.makeDirectory(ImageType.REVIEW, userId);
+    System.out.println("dirPath = " + dirPath);
     for (MultipartFile image : reviewImages) {
-      String dirPath = fileStorage.makeDirectory(ImageType.REVIEW, userId);
       String imagePath = fileStorage.makeFileName(dirPath, image);
       imagePath = fileStorage.uploadImage(imagePath, image);
       ReviewImage reviewImage = ReviewImage.builder()
@@ -51,19 +52,16 @@ public class ReviewImageService {
   }
 
   public void deleteImage(AuthUser authUser, Long reviewImageId) {
-    ReviewImage reviewImage = reviewImageRepository.findById(reviewImageId).orElseThrow(() -> new BusinessException(IMAGE_NOT_FOUND));
-    Review review = reviewRepository.findById(reviewImage.getReviewId()).orElseThrow(() -> new BusinessException(REVIEW_NOT_FOUND));
+    ReviewImage reviewImage = reviewImageRepository.findById(reviewImageId)
+        .orElseThrow(() -> new BusinessException(IMAGE_NOT_FOUND));
+    Review review = reviewRepository.findById(reviewImage.getReviewId())
+        .orElseThrow(() -> new BusinessException(REVIEW_NOT_FOUND));
     Long id = authUser.getId();
 
     if (!id.equals(review.getUser().getId())) {
       throw new BusinessException(FORBIDDEN);
     }
 
-    String filePath = reviewImage.getImagePath();
-    if (filePath != null && !filePath.isEmpty()) {
-//      fileStorage.deleteImage(filePath);
-//      reviewImageRepository.deleteById(reviewImageId);
-      reviewImage.deleteReviewId();
-    }
+    reviewImage.deleteReviewId();
   }
 }
