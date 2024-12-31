@@ -72,6 +72,9 @@ jobs:
           echo "${{ secrets.YML_OAUTH2 }}" > ./application-oauth2.yml
         shell: bash
 
+      - name: Change gradlew permissions
+        run: chmod +x ./gradlew
+
       # gradle build
       - name: Build with Gradle
         run: ./gradlew build -x test
