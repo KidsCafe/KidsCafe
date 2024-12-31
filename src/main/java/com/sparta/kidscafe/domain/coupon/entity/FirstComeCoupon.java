@@ -1,11 +1,15 @@
 package com.sparta.kidscafe.domain.coupon.entity;
 
 import com.sparta.kidscafe.common.entity.Timestamped;
+import com.sparta.kidscafe.domain.cafe.entity.Cafe;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import lombok.AllArgsConstructor;
@@ -18,45 +22,41 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "coupon_lock")
-public class CouponLock extends Timestamped {
+@Table(name = "firstcome_coupon")
+public class FirstComeCoupon extends Timestamped {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "cafe_id")
+  private Cafe cafe;
+
   @Column(nullable = false)
-  private String discountType; // 정액, 정률
+  private String name;
+
+  @Column(nullable = false)
+  private String discountType;
 
   @Column(nullable = true)
-  private Long discountRate; // 정률 할인 (nullable)
+  private Long discountRate;
 
   @Column(nullable = true)
-  private Long discountPrice; // 정액 할인 (nullable)
+  private Long discountPrice;
 
   @Column(nullable = false)
-  private Long maxQuantity; // 최대 발급 수량
+  private Long maxQuantity;
 
   @Column(nullable = false)
-  private Long issuedQuantity; // 발급된 수량
+  private Long issuedQuantity;
 
   @Version
-  private Long version; // Optimistic Locking에 사용
+  private Long version;
 
   @Column(nullable = false)
-  private boolean active; // 쿠폰 활성 상태
+  private boolean active;
 
-  // 생성자
-  public CouponLock(String discountType, Long discountRate, Long discountPrice, Long maxQuantity) {
-    this.discountType = discountType;
-    this.discountRate = discountRate;
-    this.discountPrice = discountPrice;
-    this.maxQuantity = maxQuantity;
-    this.issuedQuantity = 0L;
-    this.active = true;
-  }
-
-  // 쿠폰 발급 로직
   public void issueCoupon() {
     if (!active) {
       throw new IllegalStateException("이 쿠폰은 비활성화 상태입니다.");

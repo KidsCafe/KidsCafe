@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CouponLockIssueRequestDto {
+public class FirstComeCouponIssueRequestDto {
 
   private Long couponId;
 }

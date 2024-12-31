@@ -9,9 +9,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CouponLockResponseDto {
+public class FirstComeCouponResponseDto {
 
   private String message;
+  private String name;
   private Long issuedQuantity;
   private Long maxQuantity;
 
