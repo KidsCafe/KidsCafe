@@ -38,11 +38,12 @@ public class CafeImageController {
   ) {
     Long parseId = getCageId(cafeId);
     ImageValidationCheck.validCafeImage(images);
-    List<ImageResponseDto> responseImages = cafeImageService.uploadCafeImage(authUser, parseId, images);
+    List<ImageResponseDto> responseImages = cafeImageService.uploadCafeImage(authUser, parseId,
+        images);
     String message = "이미지 [" + images.size() + "]장 등록 성공";
     return ResponseEntity
         .status(HttpStatus.CREATED)
-        .body(ListResponseDto.create(responseImages,message));
+        .body(ListResponseDto.create(responseImages, message));
   }
 
   @DeleteMapping("/cafes/images")

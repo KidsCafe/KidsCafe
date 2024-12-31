@@ -15,7 +15,7 @@ public class DummyCafe {
   public static Cafe createDummyCafe(User owner, Long cafeId) {
     GeoUtil geoUtil = new GeoUtil();
     String randomCafeName = TestUtil.getRandomString(10);
-    String region = "부산광역시";
+    String region = TestUtil.getRandomRegion();
     String address = "대한민국 어딘가";
     Double randomLon = TestUtil.getRandomDouble(124.6, 131.9);
     Double randomLat = TestUtil.getRandomDouble(33.1, 38.6);

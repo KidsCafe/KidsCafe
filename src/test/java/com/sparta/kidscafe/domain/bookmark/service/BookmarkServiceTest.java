@@ -249,5 +249,3 @@ public class BookmarkServiceTest {
     assertEquals(ErrorCode.UNAUTHORIZED, ex.getErrorCode());
   }
 }
-
-
