@@ -68,7 +68,8 @@ public class CafeDslRepositoryImpl implements CafeDslRepository {
         .having(makeHaving(condition))
         .orderBy(makeOrderBy(condition));
 
-    List<CafeSimpleResponseDto> cafes = cafeCondition.makePaging(query, condition.getPageable()).fetch();
+    List<CafeSimpleResponseDto> cafes = cafeCondition.makePaging(query, condition.getPageable())
+        .fetch();
     return new PageImpl<>(cafes, condition.getPageable(), cntTotal);
   }
 

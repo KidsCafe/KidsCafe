@@ -1,12 +1,11 @@
 package com.sparta.kidscafe.domain.cafe.dto.response;
 
 import com.sparta.kidscafe.domain.cafe.entity.CafeImage;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Builder
 @Getter

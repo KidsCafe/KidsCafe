@@ -17,6 +17,7 @@ import org.locationtech.jts.geom.Point;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CafeSimpleRequestDto {
+
   @NotBlank(message = "카페 이름을 입력해주세요.")
   private String name;
 
