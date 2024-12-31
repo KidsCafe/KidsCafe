@@ -102,7 +102,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKERHUB_REPONAME }}
+          tags: ${{ secrets.DOCKER_REPONAME }}/${{ secrets.DOCKER_IMAGE }}
 
       ## deploy to production
       - name: Deploy to prod
@@ -116,6 +116,6 @@ jobs:
           envs: GITHUB_SHA
           script: |
             sudo docker ps
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKERHUB_REPONAME }}
-            sudo docker run -d -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKERHUB_REPONAME }}
+            sudo docker pull ${{ secrets.DOCKER_REPONAME }}/${{ secrets.DOCKER_IMAGE }}
+            sudo docker run -d -p 8080:8080 ${{ secrets.DOCKER_REPONAME }}/${{ secrets.DOCKER_IMAGE }}
             sudo docker image prune -f
