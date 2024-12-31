@@ -1,6 +1,5 @@
 package com.sparta.kidscafe.domain.coupon.service;
 
-import com.sparta.kidscafe.common.annotation.Auth;
 import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.StatusDto;
 import com.sparta.kidscafe.common.enums.RoleType;
@@ -54,7 +53,7 @@ public class FirstComeCouponService {
         .build();
   }
 
-  // 낙관적 락
+  // 낙관적 락 적용 선착순 쿠폰 뿌리기
   @Transactional
   public StatusDto issueCoupon(AuthUser authUser, Long couponId) {
     for (int i = 0; i < 3; i++) { // 최대 3번 재시도
@@ -72,8 +71,6 @@ public class FirstComeCouponService {
                 + firstComeCoupon.getMaxQuantity())
             .build();
       } catch (OptimisticLockException e) {
-        // 낙관적 락 충돌 시 재시도
-        System.out.println("낙관적 락 충돌 발생, 재시도 중... (" + (i + 1) + "/3)");
         try {
           Thread.sleep(50); // 잠시 대기 후 재시도
         } catch (InterruptedException ex) {
