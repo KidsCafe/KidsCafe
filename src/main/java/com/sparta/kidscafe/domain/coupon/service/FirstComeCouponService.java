@@ -49,7 +49,7 @@ public class FirstComeCouponService {
     firstComeCouponRepository.save(firstComeCoupon);
     return StatusDto.builder()
         .status(HttpStatus.CREATED.value())
-        .message(firstComeCoupon.getName() + "선착순 쿠폰 생성")
+        .message(firstComeCoupon.getName() + "생성")
         .build();
   }
 
