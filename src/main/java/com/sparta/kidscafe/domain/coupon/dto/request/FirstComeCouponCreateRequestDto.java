@@ -21,7 +21,7 @@ public class FirstComeCouponCreateRequestDto {
   @Pattern(regexp = "FIXED|PERCENT", message = "할인 정책은 FIXED 또는 PERCENT 중 하나여야 합니다.")
   private String discountType;
 
-  private Long discountRate;
+  private Double discountRate;
 
   private Long discountPrice;
 

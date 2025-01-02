@@ -40,7 +40,7 @@ public class FirstComeCoupon extends Timestamped {
   private String discountType;
 
   @Column(nullable = true)
-  private Long discountRate;
+  private Double discountRate;
 
   @Column(nullable = true)
   private Long discountPrice;
@@ -52,7 +52,7 @@ public class FirstComeCoupon extends Timestamped {
   private Long issuedQuantity;
 
   @Version
-  private Long version;
+  private Long version;     // 트랜잭션 관리용 컬럼
 
   @Column(nullable = false)
   private boolean active;
