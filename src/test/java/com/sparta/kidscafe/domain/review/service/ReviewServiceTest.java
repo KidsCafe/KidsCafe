@@ -1,5 +1,11 @@
 package com.sparta.kidscafe.domain.review.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.dto.PageResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
@@ -14,6 +20,9 @@ import com.sparta.kidscafe.domain.review.repository.ReviewImageRepository;
 import com.sparta.kidscafe.domain.review.repository.ReviewRepository;
 import com.sparta.kidscafe.domain.user.entity.User;
 import com.sparta.kidscafe.domain.user.repository.UserRepository;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -23,13 +32,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ReviewServiceTest {
@@ -52,7 +54,8 @@ class ReviewServiceTest {
   @Test
   void createReview_success() {
     AuthUser authUser = new AuthUser(1L, "test@gmail.com", RoleType.USER);
-    ReviewCreateRequestDto request = new ReviewCreateRequestDto(5.0, "Great place!", null, List.of(1L, 2L));
+    ReviewCreateRequestDto request = new ReviewCreateRequestDto(5.0, "Great place!", null,
+        List.of(1L, 2L));
     Long cafeId = 1L;
 
     User user = User.builder().id(1L).email("test@gmail.com").build();
@@ -101,7 +104,9 @@ class ReviewServiceTest {
 
     // Mock 설정
     when(cafeRepository.findById(cafeId)).thenReturn(Optional.of(cafe));
-    when(reviewRepository.findByCafeIdAndParentReviewIsNullWithReplies(cafeId, pageable)).thenReturn(reviewPage);
+    when(
+        reviewRepository.findByCafeIdAndParentReviewIsNullWithReplies(cafeId, pageable)).thenReturn(
+        reviewPage);
 
     // 테스트 실행
     PageResponseDto<ReviewResponseDto> response = reviewService.getReviews(cafeId, pageable);
@@ -132,7 +137,14 @@ class ReviewServiceTest {
     PageRequest pageable = PageRequest.of(0, 10);
 
     User user = User.builder().id(1L).email("test@gmail.com").build();
-    Review review = new Review(1L, user, Cafe.builder().id(1L).name("Test Cafe").build(), 5, "Great!");
+    Review review = Review.builder()
+        .id(1L)
+        .user(user)
+        .cafe(Cafe.builder().id(1L).name("Test Cafe").build())
+        .star(5.0)
+        .content("Great!")
+        .build();
+
     Page<Review> reviewPage = new PageImpl<>(List.of(review));
 
     when(userRepository.findById(authUser.getId())).thenReturn(Optional.of(user));
@@ -148,17 +160,23 @@ class ReviewServiceTest {
   void updateReview_success() {
     AuthUser authUser = new AuthUser(1L, "test@gmail.com", RoleType.USER);
     Long reviewId = 1L;
-    ReviewCreateRequestDto request = new ReviewCreateRequestDto(4.0, "Updated review!", null, List.of(3L));
+    ReviewCreateRequestDto request = new ReviewCreateRequestDto(4.0, "Updated review!", null,
+        List.of(3L));
 
-    Review review = new Review(1L, new User(1L, "test@gmail.com", RoleType.USER), Cafe.builder().id(1L).name("Test Cafe").build(), 5, "Great!");
+    Review review = Review.builder()
+        .id(reviewId)
+        .user(User.builder().id(1L).email("test@gmail.com").role(RoleType.USER).build())
+        .cafe(Cafe.builder().id(1L).name("Test Cafe").build())
+        .star(5.0)
+        .content("Great!")
+        .build();
 
-    // Mock 설정
     when(reviewRepository.findById(reviewId)).thenReturn(Optional.of(review));
 
     StatusDto response = reviewService.updateReview(authUser, reviewId, request);
 
     assertEquals(HttpStatus.OK.value(), response.getStatus());
-    assertEquals("리뷰 수정 완료", response.getMessage()); // 메시지를 서비스와 일치시키세요.
+    assertEquals("리뷰 수정 완료", response.getMessage());
     assertEquals(4.0, review.getStar());
     assertEquals("Updated review!", review.getContent());
   }
@@ -168,7 +186,14 @@ class ReviewServiceTest {
     AuthUser authUser = new AuthUser(1L, "test@gmail.com", RoleType.USER);
     Long reviewId = 1L;
 
-    Review review = new Review(1L, new User(1L, "test@gmail.com", RoleType.USER), Cafe.builder().id(1L).name("Test Cafe").build(), 5, "Great!");
+    Review review = Review.builder()
+        .id(reviewId)
+        .user(User.builder().id(1L).email("test@gmail.com").role(RoleType.USER).build())
+        .cafe(Cafe.builder().id(1L).name("Test Cafe").build())
+        .star(5.0)
+        .content("Great!")
+        .build();
+
     List<ReviewImage> reviewImages = Collections.singletonList(new ReviewImage(1L, 2L, "image"));
 
     when(reviewRepository.findById(reviewId)).thenReturn(Optional.of(review));
