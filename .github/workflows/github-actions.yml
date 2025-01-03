@@ -122,6 +122,14 @@ jobs:
         env:
           DOCKER_REPONAME: ${{ secrets.DOCKER_REPONAME }}
           DOCKER_IMAGE: ${{ secrets.DOCKER_IMAGE }}
+      - name: Debug docker-compose.yml
+        run: |
+          if [ -f ./docker-compose.yml ]; then
+          echo "docker-compose.yml exists."
+          cat ./docker-compose.yml
+          else
+          echo "docker-compose.yml not found!"
+          fi
 
       ## deploy to production
       - name: Deploy to prod
