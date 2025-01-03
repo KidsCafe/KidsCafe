@@ -112,6 +112,9 @@ jobs:
           script: | # 기존 컨테이너 종료 후 최신 이미지를 가져와서 컨테이너 재시작
             echo "${{ env.YML_DOCKER_COMPOSE }}"
             
+            DOCKER_REPONAME=${{ secrets.DOCKER_REPONAME }}
+            DOCKER_IMAGE=${{ secrets.DOCKER_IMAGE }}
+            
             touch ./docker-compose.yml
             echo "${{ env.YML_DOCKER_COMPOSE }}" | base64 --decode > ./docker-compose.yml
             cat ./docker-compose.yml
