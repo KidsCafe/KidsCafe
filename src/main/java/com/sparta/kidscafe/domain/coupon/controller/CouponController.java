@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -55,7 +56,7 @@ public class CouponController {
         .body(couponService.assignCouponToUser(couponId, userId));
   }
 
-  @PostMapping("/{couponId}/use")
+  @PutMapping("/{couponId}/use")
   public ResponseEntity<StatusDto> useCoupon(@Auth AuthUser authUser, @PathVariable Long couponId) {
     return ResponseEntity
         .status(HttpStatus.OK)
