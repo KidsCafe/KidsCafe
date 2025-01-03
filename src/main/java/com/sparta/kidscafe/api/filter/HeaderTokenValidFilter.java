@@ -65,6 +65,14 @@ public class HeaderTokenValidFilter extends OncePerRequestFilter {
 			return true;
 		}
 
+		if (url.startsWith("/api/cafes/popular/db") ||
+			url.startsWith("/api/cafes/popular/redis") ||
+			url.startsWith("/api/popular/redis/update") ||
+			url.startsWith("/api/cafes/popular/ranking") ||
+			url.startsWith("/api/cafes/popular/ranking/update")) {
+			return true;
+		}
+
 		return url.startsWith("/api/auth") ||
 			url.startsWith("/api/oauth2") ||
 			url.startsWith("/oauth2") ||
