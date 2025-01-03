@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   app:
-    image: "${DOCKER_REPONAME}/${DOCKER_IMAGE}:latest" # Docker Hub 이미지
+    image: "dudodo/kidscafe:latest" # Docker Hub 이미지
     container_name: app
     ports:
       - "8080:8080"

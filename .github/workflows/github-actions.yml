@@ -115,6 +115,11 @@ jobs:
             export DOCKER_REPONAME=${{ secrets.DOCKER_REPONAME }}
             export DOCKER_IMAGE=${{ secrets.DOCKER_IMAGE }}
             
+            echo $DOCKER_REPONAME
+            echo ${{ secrets.DOCKER_REPONAME }}
+            echo $DOCKER_IMAGE
+            echo ${{ secrets.DOCKER_IMAGE }}
+            
             touch ./docker-compose.yml
             echo "${{ env.YML_DOCKER_COMPOSE }}" | base64 --decode > ./docker-compose.yml
             cat ./docker-compose.yml
