@@ -117,6 +117,6 @@ jobs:
             touch ./docker-compose.yml
             echo "${{ env.YML_DOCKER_COMPOSE }}" | base64 --decode > ./docker-compose.yml
             cat ./docker-compose.yml
-            sudo docker compose -f ./docker-compose.yml down 
-            sudo docker compose -f ./docker-compose.yml pull
-            sudo docker compose -f ./docker-compose.yml up -d
+            sudo docker compose -f ./docker-compose.yml --env-file .env down 
+            sudo docker compose -f ./docker-compose.yml --env-file .env pull
+            sudo docker compose -f ./docker-compose.yml --env-file .env up -d
