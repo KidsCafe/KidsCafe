@@ -5,7 +5,7 @@ name: CI/CD using github actions & docker
 # main이나 develop 브랜치에 push가 되었을 때 실행
 on:
   push:
-    branches: [ "main", "dev" ]
+    branches: [ "main", "dev", "feat/document" ]
 
 # 저장소(어디 저장소?) 읽기 권한 부여
 permissions:
