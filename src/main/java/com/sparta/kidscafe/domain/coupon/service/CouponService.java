@@ -6,7 +6,7 @@ import com.sparta.kidscafe.common.dto.StatusDto;
 import com.sparta.kidscafe.common.enums.RoleType;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
 import com.sparta.kidscafe.domain.cafe.repository.CafeRepository;
-import com.sparta.kidscafe.domain.coupon.dto.request.CouponCreateRequestDto;
+import com.sparta.kidscafe.domain.coupon.dto.request.CouponRequestDto;
 import com.sparta.kidscafe.domain.coupon.dto.response.CouponResponseDto;
 import com.sparta.kidscafe.domain.coupon.entity.Coupon;
 import com.sparta.kidscafe.domain.coupon.repository.CouponRepository;
@@ -46,12 +46,12 @@ public class CouponService {
   }
 
   @Transactional
-  public StatusDto createCoupon(AuthUser authUser, Long cafeId, CouponCreateRequestDto couponCreateRequestDto) {
+  public StatusDto createCoupon(AuthUser authUser, Long cafeId, CouponRequestDto couponRequestDto) {
     Cafe cafe = cafeRepository.findById(cafeId)
             .orElseThrow(() -> new BusinessException(ErrorCode.CAFE_NOT_FOUND));
 
     validationOwner(authUser, cafe);
-    Coupon coupon = couponCreateRequestDto.convertToEntity(cafe);
+    Coupon coupon = couponRequestDto.convertToEntity(cafe);
 
     couponRepository.save(coupon);
 
@@ -59,6 +59,30 @@ public class CouponService {
             .status(HttpStatus.CREATED.value())
             .message(coupon.getName() + "생성")
             .build();
+  }
+
+  @Transactional
+  public StatusDto updateCoupon(AuthUser authUser, Long cafeId, Long couponId, CouponRequestDto couponRequestDto) {
+    Cafe cafe = cafeRepository.findById(cafeId)
+        .orElseThrow(() -> new BusinessException(ErrorCode.CAFE_NOT_FOUND));
+
+    Coupon coupon = couponRepository.findById(couponId)
+        .orElseThrow(() -> new BusinessException(ErrorCode.COUPON_NOT_FOUND));
+
+    validationOwner(authUser, cafe);
+
+    coupon.update(
+        couponRequestDto.getName(),
+        couponRequestDto.getDiscountType(),
+        couponRequestDto.getDiscountRate(),
+        couponRequestDto.getDiscountPrice(),
+        couponRequestDto.getValidTo()
+    );
+
+    return StatusDto.builder()
+        .status(HttpStatus.OK.value())
+        .message(coupon.getName() + "수정")
+        .build();
   }
 
   public ListResponseDto<CouponResponseDto> getCouponByUser(AuthUser authUser){

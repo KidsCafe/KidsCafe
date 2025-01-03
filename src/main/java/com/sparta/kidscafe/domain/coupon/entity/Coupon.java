@@ -58,6 +58,14 @@ public class Coupon extends Timestamped {
 	@Column(nullable = false)
 	private LocalDateTime validTo;
 
+	public void update(String name, String discountType, Double discountRate, Long discountPrice, LocalDateTime validTo) {
+		this.name = name;
+		this.discountType = discountType;
+		this.discountRate = discountRate;
+		this.discountPrice = discountPrice;
+		this.validTo = validTo;
+	}
+
 	public void assignToUser(User user){
 		this.user = user;
 	}
