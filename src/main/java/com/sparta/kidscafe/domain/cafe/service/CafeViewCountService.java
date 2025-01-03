@@ -25,6 +25,9 @@ public class CafeViewCountService {
   private final CafeRepository cafeRepository;
   private final RedisTemplate<String, Object> redisTemplate;
 
+  /**
+   * 특정 카페의 조회수를 +1 DB 저장 & Redis Sorted Set 반영
+   */
   public int incrementViewCount(Long cafeId) {
     Cafe cafe = cafeRepository.findById(cafeId)
         .orElseThrow(() -> new BusinessException(ErrorCode.CAFE_NOT_FOUND));
