@@ -15,14 +15,6 @@ jobs:
   CI-CD:
     runs-on: ubuntu-latest # 우분투 최신버전
     steps:
-
-      - name: test
-        run: |
-          pwd
-          ls -l
-          echo "YML_DOCKER_COMPOSE=`cat ./docker-compose.yml`" >> $GITHUB_ENV
-          echo "$env.YML_DOCKER_COMPOSE"
-
       # JDK setting - github actions에서 사용할 JDK 설정 (프로젝트나 AWS의 java 버전과 달라도 무방)
       - uses: actions/checkout@v3
       - name: Set up JDK 17
@@ -75,6 +67,13 @@ jobs:
           echo "${{ secrets.YML_OAUTH2 }}" > ./application-oauth2.yml
         shell: bash
 
+      - name: saving docker-compose.yml
+        run: |
+          pwd
+          ls -l
+          echo "YML_DOCKER_COMPOSE=`cat ./docker-compose.yml`" >> $GITHUB_ENV
+          echo "$env.YML_DOCKER_COMPOSE"
+
       # gradle 빌드 권한 부여
       - name: Change gradlew permissions
         run: chmod +x ./gradlew
@@ -106,6 +105,8 @@ jobs:
       ## docker-compose.yml 환경변수에 저장
       - name: saving docker-compose.yml
         run: |
+          pwd
+          ls -l
           echo "YML_DOCKER_COMPOSE=`cat ./docker-compose.yml`" >> $GITHUB_ENV
           echo "$env.YML_DOCKER_COMPOSE"
 
