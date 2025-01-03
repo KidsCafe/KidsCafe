@@ -36,10 +36,6 @@ jobs:
 
       # 환경별 yml 파일 생성(1) - application.yml
       - name: make application.yml
-        if: |
-          contains(github.ref, 'main')
-          || contains(github.ref, 'dev')
-          || contains(github.ref, 'feat/document')
         run: |
           mkdir -p ./src/main/resources # resources 폴더 생성
           cd ./src/main/resources # resources 폴더로 이동
@@ -49,10 +45,6 @@ jobs:
 
       # 환경별 yml 파일 생성(2) - prod
       - name: make application-prod.yml
-        if: |
-          contains(github.ref, 'main')
-          || contains(github.ref, 'dev')
-          || contains(github.ref, 'feat/document')
         run: |
           cd ./src/main/resources
           touch ./application-prod.yml
@@ -61,10 +53,6 @@ jobs:
 
       # 환경별 yml 파일 생성(3) - aws
       - name: make application-dev.yml
-        if: |
-          contains(github.ref, 'main')
-          || contains(github.ref, 'dev')
-          || contains(github.ref, 'feat/document')
         run: |
           cd ./src/main/resources
           touch ./application-aws.yml
@@ -73,26 +61,10 @@ jobs:
 
       # 환경별 yml 파일 생성(4) - oauth2
       - name: make application-oauth2.yml
-        if: |
-          contains(github.ref, 'main')
-          || contains(github.ref, 'dev')
-          || contains(github.ref, 'feat/document')
         run: |
           cd ./src/main/resources
           touch ./application-oauth2.yml
           echo "${{ secrets.YML_OAUTH2 }}" > ./application-oauth2.yml
-        shell: bash
-
-      # 환경별 yml 파일 생성(5) - docker-compose
-      - name: make docker-compose.yml
-        if: |
-          contains(github.ref, 'main')
-          || contains(github.ref, 'dev')
-          || contains(github.ref, 'feat/document')
-        run: |
-          touch ./docker-compose.yml
-          echo "${{ secrets.YML_DOCKER_COMPOSE }}" > ./docker-compose.yml
-          cat ./docker-compose.yml
         shell: bash
 
       # gradle 빌드 권한 부여
@@ -114,40 +86,36 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      # Docker Compose 설정 및 실행
-      - name: Build and Push using Docker Compose
-        run: |
-          docker compose build
-          docker compose push
-        env:
-          DOCKER_REPONAME: ${{ secrets.DOCKER_REPONAME }}
-          DOCKER_IMAGE: ${{ secrets.DOCKER_IMAGE }}
+      # docker 이미지 빌드 및 푸시
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKER_REPONAME }}/${{ secrets.DOCKER_IMAGE }}
 
-      - name: Debug docker-compose.yml
+      ## docker-compose.yml 환경변수에 저장
+      - name: saving docker-compose.yml
         run: |
-          if [ -f ./docker-compose.yml ]; then
-          echo "docker-compose.yml exists."
-          cat ./docker-compose.yml
-          else
-          echo "docker-compose.yml not found!"
-          fi
+          echo "YML_DOCKER_COMPOSE=`cat ./docker-compose.yml`" >> $GITHUB_ENV
+          echo "$YML_DOCKER_COMPOSE"
 
       ## deploy to production
       - name: Deploy to prod
         uses: appleboy/ssh-action@master
-        if: |
-          contains(github.ref, 'main')
-          || contains(github.ref, 'dev')
-          || contains(github.ref, 'feat/document')
         with:
           host: ${{ secrets.HOST_PROD }} # EC2 퍼블릭 IPv4 DNS
           username: ubuntu
           key: ${{ secrets.PRIVATE_KEY }}
           script: | # 기존 컨테이너 종료 후 최신 이미지를 가져와서 컨테이너 재시작
-            touch ./docker-compose.yml
-            echo "${{ secrets.YML_DOCKER_COMPOSE }}" > ./docker-compose.yml
-            cat ./docker-compose.yml
+            echo "${{ env.YML_DOCKER_COMPOSE }}"
+            echo "$env.YML_DOCKER_COMPOSE"
+            echo "$YML_DOCKER_COMPOSE"
             
+            touch ./docker-compose.yml
+            echo "${{ env.YML_DOCKER_COMPOSE }}" > ./docker-compose.yml
+            cat ./docker-compose.yml
             sudo docker compose -f ./docker-compose.yml down 
             sudo docker compose -f ./docker-compose.yml pull
             sudo docker compose -f ./docker-compose.yml up -d
