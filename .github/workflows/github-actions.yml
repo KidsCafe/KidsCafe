@@ -122,7 +122,7 @@ jobs:
           script: | # 이미지 삭제 후 다시 풀 땡겨서 실행
             sudo docker ps
             sudo docker stop kidscafe 2> /dev/null
-            sudo docker rmi -f kidscafe 2> /dev/null
+            sudo docker rm kidscafe 2> /dev/null
             sudo docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_TOKEN }}
             sudo docker pull ${{ secrets.DOCKER_REPONAME }}/${{ secrets.DOCKER_IMAGE }}
             sudo docker run --name kidscafe -d -p 8080:8080 ${{ secrets.DOCKER_REPONAME }}/${{ secrets.DOCKER_IMAGE }}
