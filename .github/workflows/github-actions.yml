@@ -124,7 +124,7 @@ jobs:
           username: ubuntu
           key: ${{ secrets.PRIVATE_KEY }}
           envs: GITHUB_SHA
-          script: |
-            docker compose down # 기존 컨테이너 종료
-            docker compose pull # 최신 이미지 가져오기
-            docker compose up -d # 컨테이너 재시작
+          script: | # 기존 컨테이너 종료 후 최신 이미지를 가져와서 컨테이너 재시작
+            docker compose down 
+            docker compose pull
+            docker compose up -d
