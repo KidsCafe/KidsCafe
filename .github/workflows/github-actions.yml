@@ -98,11 +98,8 @@ jobs:
       ## docker-compose.yml 환경변수에 저장
       - name: saving docker-compose.yml
         run: |
-          echo "YML_DOCKER_COMPOSE<<EOF" >> $GITHUB_ENV
-          cat ./docker-compose.yml >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
-          
-          echo "${{ env.YML_DOCKER_COMPOSE }}"
+          YML_DOCKER_COMPOSE=$(cat ./docker-compose.yml | base64)
+          echo "YML_DOCKER_COMPOSE=$YML_DOCKER_COMPOSE" >> $GITHUB_ENV
 
       ## deploy to production
       - name: Deploy to prod
@@ -115,7 +112,7 @@ jobs:
             echo "${{ env.YML_DOCKER_COMPOSE }}"
             
             touch ./docker-compose.yml
-            echo "${{ env.YML_DOCKER_COMPOSE }}" > ./docker-compose.yml
+            echo "${{ env.YML_DOCKER_COMPOSE }}" | base64 --decode > ./docker-compose.yml
             cat ./docker-compose.yml
             sudo docker compose -f ./docker-compose.yml down 
             sudo docker compose -f ./docker-compose.yml pull
