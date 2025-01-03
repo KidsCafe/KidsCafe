@@ -18,6 +18,8 @@ jobs:
 
       - name: test
         run: |
+          pwd
+          ls -l
           echo "YML_DOCKER_COMPOSE=`cat ./docker-compose.yml`" >> $GITHUB_ENV
           echo "$env.YML_DOCKER_COMPOSE"
 
