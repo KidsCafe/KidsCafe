@@ -44,7 +44,13 @@ public class Coupon extends Timestamped {
 	private String name;
 
 	@Column(nullable = false)
-	private Integer discount_rate;
+	private String discountType;
+
+	@Column(nullable = true)
+	private Double discountRate;
+
+	@Column(nullable = true)
+	private Long discountPrice;
 
 	@Column(nullable = false)
 	private boolean isUsed;

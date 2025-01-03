@@ -16,7 +16,7 @@ public class CouponResponseDto {
 
     private Long id;
     private String name;
-    private Integer discountRate;
+    private String discountType;
     private boolean used;
     private LocalDateTime validTo;
 
@@ -24,7 +24,7 @@ public class CouponResponseDto {
     return CouponResponseDto.builder()
         .id(coupon.getId())
         .name(coupon.getName())
-        .discountRate(coupon.getDiscount_rate())
+        .discountType(coupon.getDiscountType())
         .used(coupon.isUsed())
         .validTo(coupon.getValidTo())
         .build();
