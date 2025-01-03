@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CouponCreateRequestDto {
+public class CouponRequestDto {
 
   @NotBlank(message = "쿠폰 이름을 입력해주세요.")
   private String name;
