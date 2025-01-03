@@ -100,6 +100,7 @@ jobs:
         run: |
           YML_DOCKER_COMPOSE=$(cat ./docker-compose.yml | base64)
           echo "YML_DOCKER_COMPOSE=$YML_DOCKER_COMPOSE" >> $GITHUB_ENV
+          echo "$YML_DOCKER_COMPOSE" | base64 --decode
 
       ## deploy to production
       - name: Deploy to prod
