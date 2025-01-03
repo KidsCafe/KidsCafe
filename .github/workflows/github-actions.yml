@@ -107,6 +107,9 @@ jobs:
         run: |
           docker compose build
           docker compose push
+        env:
+          DOCKER_REPONAME: ${{ secrets.DOCKER_REPONAME }}
+          DOCKER_IMAGE: ${{ secrets.DOCKER_IMAGE }}
 
       ## deploy to production
       - name: Deploy to prod
