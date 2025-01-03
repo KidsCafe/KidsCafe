@@ -105,8 +105,8 @@ jobs:
       # Docker Compose 설정 및 실행
       - name: Build and Push using Docker Compose
         run: |
-          docker-compose build
-          docker-compose push
+          docker compose build
+          docker compose push
 
       ## deploy to production
       - name: Deploy to prod
