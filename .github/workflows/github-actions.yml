@@ -98,7 +98,7 @@ jobs:
       ## docker-compose.yml 환경변수에 저장
       - name: saving docker-compose.yml
         run: |
-          YML_DOCKER_COMPOSE=$(cat ./docker-compose.yml | base64)
+          YML_DOCKER_COMPOSE=$(cat ./docker-compose.yml | base64 -w 0)
           echo "YML_DOCKER_COMPOSE=$YML_DOCKER_COMPOSE" >> $GITHUB_ENV
           echo "$YML_DOCKER_COMPOSE" | base64 --decode
 
