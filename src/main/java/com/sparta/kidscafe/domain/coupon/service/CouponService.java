@@ -57,7 +57,7 @@ public class CouponService {
 
     return StatusDto.builder()
             .status(HttpStatus.CREATED.value())
-            .message(coupon.getName() + "쿠폰 생성")
+            .message(coupon.getName() + "생성")
             .build();
   }
 
@@ -66,7 +66,7 @@ public class CouponService {
     return ListResponseDto.success(
         coupons.stream()
             .map(CouponResponseDto::from)
-            .collect(Collectors.toList()), HttpStatus.OK, "쿠폰 조회");
+            .collect(Collectors.toList()), HttpStatus.OK, "조회");
   }
 
   public ListResponseDto<CouponResponseDto> getCouponByOwner(AuthUser authUser, Long cafeId){
@@ -79,7 +79,7 @@ public class CouponService {
     return ListResponseDto.success(
         coupons.stream()
             .map(CouponResponseDto::from)
-            .collect(Collectors.toList()), HttpStatus.OK, "쿠폰 조회");
+            .collect(Collectors.toList()), HttpStatus.OK, "조회");
   }
 
   @Transactional
