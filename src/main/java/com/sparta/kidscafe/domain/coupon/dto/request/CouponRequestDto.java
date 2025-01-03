@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,7 +30,7 @@ public class CouponRequestDto {
   private Long discountPrice;
 
   @Future(message = "유효 기간은 현재일로부터 시작입니다.")
-  private LocalDateTime validTo;
+  private LocalDate validTo;
 
   public Coupon convertToEntity(Cafe cafe) {
     if (discountType.equals("FIXED") && discountPrice == null) {

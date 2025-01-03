@@ -1,6 +1,7 @@
 package com.sparta.kidscafe.domain.coupon.dto.response;
 
 import com.sparta.kidscafe.domain.coupon.entity.Coupon;
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,7 +19,7 @@ public class CouponResponseDto {
     private String name;
     private String discountType;
     private boolean used;
-    private LocalDateTime validTo;
+    private LocalDate validTo;
 
   public static CouponResponseDto from(Coupon coupon) {
     return CouponResponseDto.builder()
