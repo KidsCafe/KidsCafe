@@ -143,6 +143,7 @@ jobs:
           username: ubuntu
           key: ${{ secrets.PRIVATE_KEY }}
           script: | # 기존 컨테이너 종료 후 최신 이미지를 가져와서 컨테이너 재시작
-            docker compose down 
-            docker compose pull
-            docker compose up -d
+            cat ./docker-compose.yml 
+            sudo docker compose -f ./docker-compose.yml down 
+            sudo docker compose -f ./docker-compose.yml pull
+            sudo docker compose -f ./docker-compose.yml up -d
