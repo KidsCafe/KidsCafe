@@ -72,7 +72,7 @@ jobs:
           echo "YML_DOCKER_COMPOSE<<EOF" >> $GITHUB_ENV
           echo `cat ./docker-compose.yml` >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
-          echo "$env.YML_DOCKER_COMPOSE"
+          echo "$YML_DOCKER_COMPOSE"
 
       # gradle 빌드 권한 부여
       - name: Change gradlew permissions
