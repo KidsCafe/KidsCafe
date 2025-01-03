@@ -1,7 +1,23 @@
+#version: "3.8"
+#services:
+#  app:
+#    image: "dudodo/kidscafe:latest" # Docker Hub 이미지
+#    container_name: app
+#    ports:
+#      - "8080:8080"
+#    depends_on:
+#      - redis
+#
+#  redis:
+#    image: redis:latest
+#    container_name: redis
+#    ports:
+#      - "6379:6379"
+
 version: "3.8"
 services:
   app:
-    image: "dudodo/kidscafe:latest" # Docker Hub 이미지
+    image: "${DOCKER_REPONAME}/${DOCKER_IMAGE}:latest" # Docker Hub 이미지
     container_name: app
     ports:
       - "8080:8080"
