@@ -1,7 +1,6 @@
 package com.sparta.kidscafe.domain.coupon.service;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -13,13 +12,14 @@ import com.sparta.kidscafe.common.dto.AuthUser;
 import com.sparta.kidscafe.common.enums.RoleType;
 import com.sparta.kidscafe.domain.cafe.entity.Cafe;
 import com.sparta.kidscafe.domain.cafe.repository.CafeRepository;
-import com.sparta.kidscafe.domain.coupon.dto.request.CouponCreateRequestDto;
+import com.sparta.kidscafe.domain.coupon.dto.request.CouponRequestDto;
 import com.sparta.kidscafe.domain.coupon.entity.Coupon;
 import com.sparta.kidscafe.domain.coupon.repository.CouponRepository;
 import com.sparta.kidscafe.domain.user.entity.User;
 import com.sparta.kidscafe.domain.user.repository.UserRepository;
 import com.sparta.kidscafe.exception.BusinessException;
 import com.sparta.kidscafe.exception.ErrorCode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -54,13 +54,13 @@ class CouponServiceTest {
         .user(authUser.toUser())
         .build();
 
-    CouponCreateRequestDto couponCreateRequestDto = new CouponCreateRequestDto("Coupon", 10,
-        LocalDateTime.parse("2025-01-01T23:59:59"));
+    CouponRequestDto couponRequestDto = new CouponRequestDto("Coupon", "FIXED", null, 1000L,
+        LocalDate.parse("2025-01-01"));
 
     when(cafeRepository.findById(1L)).thenReturn(Optional.of(cafe));
 
     // when
-    couponService.createCoupon(authUser, 1L, couponCreateRequestDto);
+    couponService.createCoupon(authUser, 1L, couponRequestDto);
 
     // then
     verify(cafeRepository, times(1)).findById(1L);
@@ -77,13 +77,13 @@ class CouponServiceTest {
         .user(mock(User.class))
         .build();
 
-    CouponCreateRequestDto couponCreateRequestDto = new CouponCreateRequestDto("Coupon", 20,
-        LocalDateTime.parse("2025-01-01T23:59:59"));
+    CouponRequestDto couponRequestDto = new CouponRequestDto("Coupon", "FIXED", null, 1000L,
+        LocalDate.parse("2025-01-01"));
 
     when(cafeRepository.findById(2L)).thenReturn(Optional.of(otherCafe));
 
     // when // then
-    assertThatThrownBy(() -> couponService.createCoupon(authUser, 2L, couponCreateRequestDto))
+    assertThatThrownBy(() -> couponService.createCoupon(authUser, 2L, couponRequestDto))
         .isInstanceOf(BusinessException.class)
         .hasMessageContaining(ErrorCode.COUPON_TABLE_OWN_CREATE.getMessage());
 
@@ -100,11 +100,11 @@ class CouponServiceTest {
 
     when(cafeRepository.findById(1L)).thenReturn(Optional.of(mockCafe));
 
-    CouponCreateRequestDto couponCreateRequestDto = new CouponCreateRequestDto("Coupon", 20,
-        LocalDateTime.parse("2025-01-01T23:59:59"));
+    CouponRequestDto couponRequestDto = new CouponRequestDto("Coupon", "FIXED", null, 1000L,
+        LocalDate.parse("2025-01-01"));
 
     // when // then
-    assertThatThrownBy(() -> couponService.createCoupon(authUser, 1L, couponCreateRequestDto))
+    assertThatThrownBy(() -> couponService.createCoupon(authUser, 1L, couponRequestDto))
         .isInstanceOf(BusinessException.class)
         .hasMessageContaining(ErrorCode.COUPON_TABLE_UNAUTHORIZED.getMessage());
   }
