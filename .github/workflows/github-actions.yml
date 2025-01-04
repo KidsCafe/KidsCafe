@@ -129,4 +129,4 @@ jobs:
             sudo docker compose -f ./docker-compose.yml --env-file .env up -d # 컨테이너 재시작
             
             rm .env
-# ci-cd 테스트용 주석
+# ci-cd 테스트용 주석입니다.
