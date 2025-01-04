@@ -56,6 +56,11 @@ public class FirstComeCouponService {
   // 낙관적 락 적용 선착순 쿠폰 뿌리기
   @Transactional
   public StatusDto issueCoupon(AuthUser authUser, Long couponId) {
+
+    if (authUser.getRoleType() == RoleType.OWNER) {
+      throw new BusinessException(ErrorCode.COUPON_ISSUE_UNAUTHORIZED);
+    }
+
     for (int i = 0; i < 3; i++) { // 최대 3번 재시도
       try {
         FirstComeCoupon firstComeCoupon = firstComeCouponRepository.findById(couponId)
@@ -63,6 +68,7 @@ public class FirstComeCouponService {
 
         firstComeCoupon.issueCoupon(); // 쿠폰 발급
         firstComeCouponRepository.save(firstComeCoupon); // 발급 수량 업데이트
+
         return StatusDto.builder()
             .status(HttpStatus.OK.value())
             .message("쿠폰 발급 성공! 현재 발급 수량: "
