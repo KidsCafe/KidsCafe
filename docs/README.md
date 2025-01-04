@@ -1,5 +1,5 @@
 ## 🧸KIDS~CAFE
-<img src="images/Title.png" width="30%"/> <br/>
+<img src="images/Title.png" width="70%"/> <br/>
 
 ### 다양한 검색 조건으로 전국의 키즈 카페를 검색할 수 있는 서비스 
 [📜요구 사항 명세서](https://docs.google.com/spreadsheets/d/1eh0r9hYyVVUQ92XYT-rk2FwpvCrG8vPuZbZYwLYN7ow/edit?gid=0#gid=0)
