@@ -1,5 +1,8 @@
 package com.sparta.kidscafe.domain.coupon.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonFormat.Shape;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import com.sparta.kidscafe.common.entity.Timestamped;
@@ -44,13 +47,28 @@ public class Coupon extends Timestamped {
 	private String name;
 
 	@Column(nullable = false)
-	private Integer discount_rate;
+	private String discountType;
+
+	@Column(nullable = true)
+	private Double discountRate;
+
+	@Column(nullable = true)
+	private Long discountPrice;
 
 	@Column(nullable = false)
 	private boolean isUsed;
 
 	@Column(nullable = false)
-	private LocalDateTime validTo;
+	@JsonFormat(shape = Shape.STRING, pattern = "yyyy-MM-dd")
+	private LocalDate validTo;
+
+	public void update(String name, String discountType, Double discountRate, Long discountPrice, LocalDate validTo) {
+		this.name = name;
+		this.discountType = discountType;
+		this.discountRate = discountRate;
+		this.discountPrice = discountPrice;
+		this.validTo = validTo;
+	}
 
 	public void assignToUser(User user){
 		this.user = user;
