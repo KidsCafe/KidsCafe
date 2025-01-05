@@ -98,4 +98,15 @@ public class CafeDummyTest {
       }
     }
   }
+
+  @Test
+  @Rollback(false)
+  void createSimpleCafe() {
+    //  user dummy test 돌려야함
+    List<User> owners = userRepository.findAllByRole(RoleType.OWNER);
+    for (User owner : owners) {
+      List<Cafe> cafes = DummyCafe.createDummyCafes(owner, 100000);
+      cafeRepository.saveAll(cafes);
+    }
+  }
 }

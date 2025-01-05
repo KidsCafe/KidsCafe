@@ -1,5 +1,6 @@
 ## 🧸KIDS~CAFE
-<img src="images/Title.png" width="30%"/> <br/>
+<img src="images/Title.png" width="70%"/> <br/>
+
 
 ### 다양한 검색 조건으로 전국의 키즈 카페를 검색할 수 있는 서비스 
 [📜요구 사항 명세서](https://docs.google.com/spreadsheets/d/1eh0r9hYyVVUQ92XYT-rk2FwpvCrG8vPuZbZYwLYN7ow/edit?gid=0#gid=0)
@@ -292,7 +293,7 @@
         <td><code>Public</code></td>
         <td><a href="https://www.notion.so/teamsparta/KIDS-CAFE-1502dc3ef51481c08983c06a64b6fe10?p=9453f35436704e0f9c501963b6cc4f5e&pm=s">🔗인기 카페(키워드 기반) 검색 v1</a></td>
         <td>/api/cafes/v1/search?keyword={keyword}</td>
-        <td><span style=background-color:#3B36CFAA;font-weight:bold;>진행중</span></td>
+        <td><span style=background-color:#22741CAA;font-weight:bold;>완료</span></td>
     </tr>   
     <tr>
         <td><span style=background-color:#8041D9AA;font-weight:bold;>류지수</span></td>
@@ -300,7 +301,7 @@
         <td><code>Public</code></td>
         <td><a href="https://www.notion.so/teamsparta/KIDS-CAFE-1502dc3ef51481c08983c06a64b6fe10?p=b4334ebc158c440082908a3c85a3fec6&pm=s">🔗인기 키워드 Top 10 v1</a></td>
         <td>/api/cafes/v1/search/keywords/top10</td>
-        <td><span style=background-color:#3B36CFAA;font-weight:bold;>진행중</span></td>
+        <td><span style=background-color:#22741CAA;font-weight:bold;>완료</span></td>
     </tr>
     <tr>
         <td><span style=background-color:#8041D9AA;font-weight:bold;>류지수</span></td>

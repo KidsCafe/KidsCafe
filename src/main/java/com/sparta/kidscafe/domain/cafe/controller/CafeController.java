@@ -99,7 +99,7 @@ public class CafeController {
         .body(ResponseDto.create(cafeService.findCafe(cafeId)));
   }
 
-  @PatchMapping("/cafes/{cafeId}")
+  @PatchMapping("/owners/cafes/{cafeId}")
   public ResponseEntity<StatusDto> updateCafe(
       @Auth AuthUser authUser,
       @PathVariable Long cafeId,

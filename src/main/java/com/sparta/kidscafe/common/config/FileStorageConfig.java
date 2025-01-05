@@ -22,7 +22,7 @@ public class FileStorageConfig {
   }
 
   @Bean
-  @Profile("dev")
+  @Profile({"dev", "prod"})
   public FileStorageUtil s3FileStorageService(
       @Value("${cloud.aws.credentials.accessKey}") String accessKey,
       @Value("${cloud.aws.credentials.secretKey}") String secretKey,

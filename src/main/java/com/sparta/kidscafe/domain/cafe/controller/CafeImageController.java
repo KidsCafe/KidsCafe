@@ -30,7 +30,7 @@ public class CafeImageController {
 
   private final CafeImageService cafeImageService;
 
-  @PostMapping("/cafes/images")
+  @PostMapping("/owners/cafes/images")
   public ResponseEntity<StatusDto> uploadCafeImage(
       @Auth AuthUser authUser,
       @RequestParam(value = "cafeId", required = false) String cafeId,
@@ -46,7 +46,7 @@ public class CafeImageController {
         .body(ListResponseDto.create(responseImages, message));
   }
 
-  @DeleteMapping("/cafes/images")
+  @DeleteMapping("/owners/cafes/images")
   public ResponseEntity<StatusDto> deleteCafeImage(
       @Auth AuthUser authUser,
       @RequestBody CafeImageDeleteRequestDto requestDto

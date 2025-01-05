@@ -299,3 +299,101 @@ SELECT id,
        ST_SRID(location)   AS srid,
        ST_AsText(location) AS point_text
 FROM cafe;
+
+select c1_0.id,
+       c1_0.name,
+       avg(r1_0.star),
+       count(distinct r1_0.id),
+       c1_0.day_off,
+       c1_0.hyperlink,
+       c1_0.opened_at,
+       c1_0.closed_at
+from cafe c1_0
+         left join
+     review r1_0
+     on r1_0.cafe_id = c1_0.id
+         left join
+     room r2_0
+     on r2_0.cafe_id = c1_0.id
+         left join
+     lesson l1_0
+     on l1_0.cafe_id = c1_0.id
+         left join
+     fee f1_0
+     on f1_0.cafe_id = c1_0.id
+where st_within(
+              c1_0.location,
+              st_buffer(st_geomfromtext('POINT(36.348172 127.388301)', 4326), 0.1)
+      )
+group by c1_0.id
+order by avg(r1_0.star)
+limit 0, 1000
+;
+
+# cafe dummy
+DELIMITER $$
+
+CREATE PROCEDURE GenerateCafeDummyData()
+BEGIN
+    DECLARE i INT DEFAULT 1;
+
+    WHILE i <= 10000000 DO
+            INSERT INTO cafe (
+                user_id,
+                name,
+                region,
+                address,
+                location,
+                size,
+                multi_family,
+                day_off,
+                parking,
+                restaurant,
+                care_service,
+                swimming_pool,
+                clothes_rental,
+                monitoring,
+                feeding_room,
+                outdoor_playground,
+                safety_guard,
+                hyperlink,
+                opened_at,
+                closed_at
+            )
+            VALUES (
+                       FLOOR(5 + RAND() * 14), -- user_id: 1~1000 범위의 랜덤 값
+                       CONCAT('카페_', i), -- name: 카페_1, 카페_2, ...
+                       CONCAT('지역_', FLOOR(1 + RAND() * 10)), -- region: 지역_1 ~ 지역_10
+                       CONCAT('주소_', i), -- address: 주소_1, 주소_2, ...
+                       ST_GeomFromText(
+                               CONCAT(
+                                       'POINT(',
+                                       (33.0 + RAND() * (38.6 - 33.0)), -- 위도 (33.0 ~ 38.6)
+                                       (126.0 + RAND() * (130.9 - 126.0)), ' ', -- 경도 (126.0 ~ 130.9)
+                                       ')'
+                               )
+                       , 4326),
+                       FLOOR(50 + RAND() * 500), -- size: 50~550 사이의 랜덤 값
+                       FLOOR(RAND() * 2), -- multiFamily: 0 또는 1
+                       CASE WHEN RAND() < 0.5 THEN '월' ELSE NULL END, -- dayOff: 월요일 또는 NULL
+                       FLOOR(RAND() * 2), -- parking: 0 또는 1
+                       FLOOR(RAND() * 2), -- restaurant: 0 또는 1
+                       FLOOR(RAND() * 2), -- careService: 0 또는 1
+                       FLOOR(RAND() * 2), -- swimmingPool: 0 또는 1
+                       FLOOR(RAND() * 2), -- clothesRental: 0 또는 1
+                       FLOOR(RAND() * 2), -- monitoring: 0 또는 1
+                       FLOOR(RAND() * 2), -- feedingRoom: 0 또는 1
+                       FLOOR(RAND() * 2), -- outdoorPlayground: 0 또는 1
+                       FLOOR(RAND() * 2), -- safetyGuard: 0 또는 1
+                       CONCAT('https://example.com/cafe_', i), -- hyperlink: 예제 URL
+                       SEC_TO_TIME(FLOOR(28800 + RAND() * 14400)), -- openedAt: 08:00 ~ 11:59 (초로 변환)
+                       SEC_TO_TIME(FLOOR(72000 + RAND() * 14400)) -- closedAt: 20:00 ~ 23:59 (초로 변환)
+                   );
+
+            SET i = i + 1;
+        END WHILE;
+END$$
+
+DELIMITER ;
+
+CALL GenerateCafeDummyData();

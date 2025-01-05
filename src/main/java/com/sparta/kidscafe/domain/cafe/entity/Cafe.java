@@ -54,7 +54,7 @@ public class Cafe extends Timestamped {
   @Column(nullable = false)
   private String address;
 
-  @Column
+  @Column(nullable = false)
   private Point location;
 
   @Column(nullable = false)

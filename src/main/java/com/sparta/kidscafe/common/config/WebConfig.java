@@ -17,28 +17,37 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
 
-  private final AuthUserArgumentResolver authUserArgumentResolver;
-  private final JwtValidInterceptor jwtValidInterceptor;
+	private final AuthUserArgumentResolver authUserArgumentResolver;
+	private final JwtValidInterceptor jwtValidInterceptor;
 
-  @Override
-  public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-    resolvers.add(authUserArgumentResolver);
-  }
+	@Override
+	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers){
+		resolvers.add(authUserArgumentResolver);
+	}
 
-  @Override
-  public void addInterceptors(InterceptorRegistry registry) {
-    registry.addInterceptor(jwtValidInterceptor)
-        .excludePathPatterns("/api/oauth2/**", "/api/auth/**", "/favicon.ico", "/error",
-            "/index.html", "/", "/redirect/oauth/**",
-            "/api/cafes/popular/db", "/api/cafes/popular/redis", "/api/popular/redis/update", "/api/cafes/popular/ranking", "/api/cafes/popular/ranking/update");
-  }
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+		registry.addInterceptor(jwtValidInterceptor)
+			.excludePathPatterns("/api/oauth2/**", "/api/auth/**",
+					"/api/cafes",
+					"/api/cafes/{cafeId}",
+					"/api/cafes/{cafeId}/fees",
+          "/api/cafes/popular/db",
+          "/api/cafes/popular/redis",
+          "/api/popular/redis/update",
+          "/api/cafes/popular/ranking",
+          "/api/cafes/popular/ranking/update",
+					"/api/cafes/{cafeId}/rooms",
+					"/api/cafes/{cafeId}/reviews",
+					"/favicon.ico", "/error", "/index.html", "/",  "/redirect/oauth/**");
+	}
 
-  @Override
-  public void addCorsMappings(CorsRegistry registry) {
-    registry.addMapping("/**") // 모든 경로 허용
-        .allowedOrigins("http://localhost:3000", "http://localhost:8080") // 허용할 출처
-        .allowedMethods("GET", "POST", "PUT", "DELETE") // 허용할 HTTP 메서드
-        .allowedHeaders("*") // 모든 헤더 허용
-        .allowCredentials(true); // 인증 정보 허용
-  }
+	@Override
+	public void addCorsMappings(CorsRegistry registry) {
+		registry.addMapping("/**") // 모든 경로 허용
+				.allowedOrigins("http://localhost:3000", "http://localhost:8080") // 허용할 출처
+				.allowedMethods("GET", "POST", "PUT", "DELETE") // 허용할 HTTP 메서드
+				.allowedHeaders("*") // 모든 헤더 허용
+				.allowCredentials(true); // 인증 정보 허용
+	}
 }
