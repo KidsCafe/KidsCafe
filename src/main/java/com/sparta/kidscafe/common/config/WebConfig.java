@@ -31,6 +31,7 @@ public class WebConfig implements WebMvcConfigurer {
 			.excludePathPatterns("/api/oauth2/**", "/api/auth/**",
 					"/api/cafes",
 					"/api/cafes/{cafeId}",
+					"/api/cafes/{cafeId}/fees",
 					"/api/cafes/v1/search?keyword={keyword}",
 					"/api/cafes/v1/search/keywords/top10",
 					"/api/cafes/v2/trends?keyword={keyword}",
