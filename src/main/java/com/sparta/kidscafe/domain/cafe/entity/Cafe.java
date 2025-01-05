@@ -140,6 +140,12 @@ public class Cafe extends Timestamped {
       orphanRemoval = true)
   private List<Lesson> lessons = new ArrayList<>();
 
+  public Cafe(Long id, String name, String region) {
+    this.id = id;
+    this.name = name;
+    this.region = region;
+  }
+
   public void update(CafeSimpleRequestDto requestDto, Point location) {
     name = requestDto.getName();
     region = requestDto.getRegion();
