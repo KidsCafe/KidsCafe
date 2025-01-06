@@ -45,7 +45,8 @@ public class ImageValidationCheck {
   }
 
   private static void overSize(MultipartFile image) {
-    if (image.getSize() > MAXIMUM_SIZE) {
+    long fileSizeInMB  = image.getSize() / (1024 * 1024);
+    if (fileSizeInMB > MAXIMUM_SIZE) {
       throw new BusinessException(ErrorCode.IMAGE_OVER_MAXIMUM_SIZE);
     }
   }
