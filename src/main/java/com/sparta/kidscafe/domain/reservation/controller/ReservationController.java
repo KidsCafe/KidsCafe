@@ -6,6 +6,9 @@ import com.sparta.kidscafe.common.dto.PageResponseDto;
 import com.sparta.kidscafe.common.dto.ResponseDto;
 import com.sparta.kidscafe.common.dto.StatusDto;
 import com.sparta.kidscafe.common.util.valid.AuthValidationCheck;
+import com.sparta.kidscafe.domain.payment.dto.request.PaymentRequestDto;
+import com.sparta.kidscafe.domain.payment.dto.response.PaymentResponseDto;
+import com.sparta.kidscafe.domain.payment.service.PaymentService;
 import com.sparta.kidscafe.domain.reservation.dto.request.ReservationCreateRequestDto;
 import com.sparta.kidscafe.domain.reservation.dto.request.ReservationUpdateRequestDto;
 import com.sparta.kidscafe.domain.reservation.dto.response.ReservationResponseDto;
@@ -14,7 +17,15 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,6 +33,7 @@ import org.springframework.web.bind.annotation.*;
 public class ReservationController {
 
   private final ReservationService reservationService;
+  private final PaymentService paymentService;
 
   // 예약 생성
   @PostMapping("/reservations/cafes/{cafeId}")
@@ -32,6 +44,17 @@ public class ReservationController {
     AuthValidationCheck.validUser(authUser);
     StatusDto response = reservationService.createReservation(authUser, cafeId, requestDto);
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
+  }
+
+  // 결제 요청 추가
+  @PostMapping("/reservations/{reservationId}/payment")
+  public ResponseEntity<PaymentResponseDto> createPayment(
+      @Auth AuthUser authUser,
+      @PathVariable Long reservationId,
+      @Valid @RequestBody PaymentRequestDto paymentRequestDto) {
+    paymentRequestDto.setReservationId(reservationId); // 예약 ID 설정
+    PaymentResponseDto response = paymentService.createPayment(paymentRequestDto);
+    return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 
   // 예약 내역 조회(User용)

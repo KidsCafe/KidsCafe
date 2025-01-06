@@ -38,10 +38,6 @@ public class CafeViewCountDummyTest {
           .viewCount(randomViewCount)
           .build();
       dummyData.add(cafeViewCount);
-
-      if (dummyData.size() >= 200) {
-        break;
-      }
     }
     cafeViewCountRepository.saveAll(dummyData);
     System.out.println("총 " + dummyData.size() + "개의 CafeViewCount 더미 데이터를 생성했습니다.");
